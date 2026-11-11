@@ -3,647 +3,191 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TevCraft V8 — Survival World</title>
+<title>TevCraft V9.4 — Underground Graphics</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#82c9f2;font-family:Arial,Helvetica,sans-serif;touch-action:none}
-canvas{position:fixed;inset:0;z-index:0;display:block}
-button{font-family:inherit;touch-action:none;cursor:pointer}
-#menu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,rgba(5,18,35,.76),rgba(9,41,54,.66))}
-.menu-card{width:min(450px,94vw);padding:30px 24px 26px;border:2px solid #ffffff66;border-radius:26px;background:linear-gradient(160deg,#244d68f2,#102b42f5);box-shadow:0 18px 60px #0008;text-align:center;color:white}
-.menu-kicker{font-size:12px;letter-spacing:4px;font-weight:900;color:#ffcf70;margin-bottom:10px}
-.menu-title{font-size:clamp(36px,9vw,56px);font-weight:1000;letter-spacing:1px;text-shadow:0 4px 0 #7c241d,0 8px 18px #0008;line-height:1;margin:0 0 10px}
-.menu-subtitle{color:#d8eaf2;font-size:15px;margin:0 0 24px}
-.menu-button{display:block;width:100%;padding:17px 14px;border:2px solid #ffffff88;border-radius:15px;font-size:19px;font-weight:900;letter-spacing:.5px;margin-top:12px;color:white;box-shadow:0 5px 0 #0005}
-#singleplayer{background:linear-gradient(#69c94e,#328e2b);border-color:#b6f09f}
-#multiplayer{background:#536879;color:#d4dce2;opacity:.82}
-.menu-note{font-size:12px;color:#bdd0dc;margin-top:18px}
-#hud{position:fixed;inset:0;z-index:5;pointer-events:none}
-#hud.hidden{display:none}
-#hud>*{pointer-events:auto}
-#logo{position:fixed;top:12px;left:12px;background:#c62828;color:white;padding:9px 14px;border-radius:12px;font-weight:900;z-index:6;box-shadow:0 3px 10px #0004}
-#cross{position:fixed;left:50%;top:50%;color:white;font-size:25px;transform:translate(-50%,-50%);z-index:6;text-shadow:1px 1px #000;pointer-events:none}
-#joystick{position:fixed;left:19px;bottom:18px;width:132px;height:132px;border-radius:50%;background:#17354c66;border:3px solid #ffffffaa;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px #0003}
-#stick{width:60px;height:60px;border-radius:50%;background:#e6f2f8e8;border:3px solid #ffffff;box-shadow:0 3px 10px #0006;transform:translate(0,0);pointer-events:none}
-#jump{position:fixed;right:18px;bottom:120px;width:104px;height:104px;border-radius:50%;padding:0;background:linear-gradient(rgba(114,201,255,.68),rgba(38,118,195,.68));border:3px solid rgba(234,248,255,.8);color:white;font-size:18px;font-weight:1000;box-shadow:0 5px 0 rgba(18,72,117,.7),0 6px 16px #0007;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
-#jump:active{transform:translateY(3px);box-shadow:0 2px 0 #124875,0 3px 10px #0007}
-.hand{position:fixed;right:0;bottom:62px;width:74px;height:92px;background:linear-gradient(120deg,#e2b084,#bd8052);border:4px solid #754b31;border-right:0;border-radius:22px 0 0 0;transform:rotate(-13deg);z-index:4;pointer-events:none;opacity:.92}
-#stats{position:fixed;left:50%;bottom:69px;transform:translateX(-50%);display:flex;flex-direction:column;gap:3px;align-items:center;padding:5px 9px;background:#1018209c;border:1px solid #ffffff35;border-radius:9px;white-space:nowrap;pointer-events:none}
-.stat-row{height:19px;display:flex;gap:1px;align-items:center;justify-content:center}
-.stat-icon{font-size:17px;line-height:18px;width:19px;text-align:center;text-shadow:1px 2px 2px #0009}
-.heart-full{color:#ff3b48}.heart-empty{color:#7d8790}
-.food-full{filter:drop-shadow(0 1px 1px #000)}.food-empty{filter:grayscale(1);opacity:.38}
-#hotbar{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);width:min(390px,88vw);height:48px;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;padding:3px;background:#101820bb;border:2px solid #dceaf2aa;border-radius:8px;pointer-events:auto}
-.hot-slot{position:relative;min-width:0;border:2px solid #8d9aa4;background:linear-gradient(#52616b,#29343d);border-radius:4px;color:white;padding:0;display:flex;align-items:center;justify-content:center}
-.hot-slot.selected{border:3px solid #ffe27a;background:linear-gradient(#6e7d88,#3c4b55);box-shadow:0 0 8px #ffd95a99}
-.slot-num{position:absolute;left:2px;top:0;font-size:8px;color:#e5e5e5}
-.slot-icon{font-size:20px;line-height:1}
-.slot-count{position:absolute;right:2px;bottom:0;font-size:10px;font-weight:900;color:white;text-shadow:1px 1px 2px #000}
-@media(max-width:500px){
- #joystick{left:12px;bottom:13px;width:116px;height:116px}
- #stick{width:54px;height:54px}
- #jump{right:12px;bottom:112px;width:92px;height:92px;font-size:16px}
- .actions{right:8px;bottom:16px}
- .action-button{min-width:72px;padding:10px 8px;font-size:12px}
- #hotbar{width:min(350px,91vw);height:43px;bottom:8px;gap:2px}
- .slot-icon{font-size:17px}.slot-count{font-size:9px}
- #stats{bottom:58px;padding:3px 6px}
- .stat-icon{font-size:15px;width:17px}
- #logo{font-size:12px;padding:7px 10px}
- .hand{width:55px;height:72px;bottom:55px}
-}
-
-/* V8.2 Leaderboard */
-#menuName{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #ffffff44;background:#08121bd9;color:white;font-size:18px;font-weight:800;text-align:center;outline:none;margin:8px 0 12px}
-#menuName:focus{border-color:#ffd95a;box-shadow:0 0 0 3px #ffd95a33}
-#skinBadge{position:fixed;right:12px;top:102px;z-index:21;background:#17222ccc;border:1px solid #fff7;border-radius:12px;color:white;padding:6px 9px;font-weight:900;font-size:12px;display:none}
-#leaderboard{position:fixed;top:12px;left:12px;width:min(310px,72vw);z-index:30;color:white;background:linear-gradient(135deg,#132235ed,#0a101be8);border:2px solid #ffffff35;border-radius:16px;box-shadow:0 10px 30px #0008;overflow:hidden;pointer-events:auto;transition:width .25s ease,opacity .2s ease}
-#leaderHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#ffffff0c;font-weight:1000;letter-spacing:.5px;font-size:14px}
-#leaderToggle{margin-left:auto;width:34px;height:30px;border:0;border-radius:9px;background:#ffffff18;color:white;font-size:17px;font-weight:900}
-#leaderBody{padding:4px 10px 10px;max-height:45vh;overflow:auto}
-#leaderboard.collapsed{width:46px}
-#leaderboard.collapsed #leaderTitle,#leaderboard.collapsed #leaderBody{display:none}
-.leader-you{display:flex;align-items:center;gap:9px;padding:9px 6px;border-bottom:1px solid #ffffff16;font-size:14px}.leader-you:last-child{border-bottom:0}.leader-rank{color:#ffd95a;font-weight:1000;min-width:22px}.leader-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:900}.leader-score{margin-left:auto;color:#b8e8ff;font-size:12px}
-@media(max-width:500px){#leaderboard{top:8px;left:8px;width:min(280px,76vw)}#leaderHead{padding:8px 10px}}
-
-/* V9 BIG UPDATE */#topRight{position:fixed;top:12px;right:12px;z-index:20;display:flex;gap:8px}#backMenu,#crouchBtn,#musicBtn{border:1px solid #fff8;background:#17222ccc;color:white;border-radius:12px;padding:9px;font-weight:900}#chatBox{position:fixed;left:12px;bottom:145px;z-index:25;width:min(330px,70vw);display:none}.chat-log{max-height:120px;overflow:auto;background:#0008;padding:7px;border-radius:10px;color:white;font-size:12px}.chat-row{display:flex;gap:5px;margin-top:5px}.chat-row input{flex:1;padding:8px;border-radius:9px;border:0}.chat-row button{padding:8px 10px}.achievement{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:50;background:#222e;color:white;border:1px solid #fff8;border-radius:14px;padding:10px 16px;font-weight:900;display:none}.skin-pick{display:flex;justify-content:center;gap:8px;margin:8px}.skin-pick button{font-size:24px;padding:7px}.world-clock{position:fixed;top:58px;right:12px;color:white;background:#0008;padding:7px 10px;border-radius:10px;font-weight:800;z-index:20}</style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#82c9f2;font-family:Arial,Helvetica,sans-serif;touch-action:none}canvas{position:fixed;inset:0;z-index:0;display:block}button{font-family:inherit;touch-action:none;cursor:pointer}
+#menu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,rgba(5,18,35,.76),rgba(9,41,54,.66))}.menu-card{width:min(450px,94vw);padding:30px 24px 26px;border:2px solid #ffffff66;border-radius:26px;background:linear-gradient(160deg,#244d68f2,#102b42f5);box-shadow:0 18px 60px #0008;text-align:center;color:white}.menu-kicker{font-size:12px;letter-spacing:4px;font-weight:900;color:#ffcf70;margin-bottom:10px}.menu-title{font-size:clamp(36px,9vw,56px);font-weight:1000;letter-spacing:1px;text-shadow:0 4px 0 #7c241d,0 8px 18px #0008;line-height:1;margin:0 0 10px}.menu-subtitle{color:#d8eaf2;font-size:15px;margin:0 0 24px}.menu-button{display:block;width:100%;padding:17px 14px;border:2px solid #ffffff88;border-radius:15px;font-size:19px;font-weight:900;letter-spacing:.5px;margin-top:12px;color:white;box-shadow:0 5px 0 #0005}#singleplayer{background:linear-gradient(#69c94e,#328e2b);border-color:#b6f09f}#multiplayer{background:#536879;color:#d4dce2;opacity:.82}.menu-note{font-size:12px;color:#bdd0dc;margin-top:18px}
+#menuName{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #ffffff44;background:#08121bd9;color:white;font-size:18px;font-weight:800;text-align:center;outline:none;margin:8px 0 12px}#menuName:focus{border-color:#ffd95a;box-shadow:0 0 0 3px #ffd95a33}.skin-pick{display:flex;justify-content:center;gap:8px;margin:8px}.skin-pick button{font-size:24px;padding:7px;border-radius:10px;border:1px solid #ffffff55;background:#ffffff16;color:white}.skin-pick button.active{outline:3px solid #ffd95a;background:#ffffff30}
+#hud{position:fixed;inset:0;z-index:5;pointer-events:none}#hud.hidden{display:none}#hud>*{pointer-events:auto}#logo{position:fixed;top:12px;left:12px;background:#c62828;color:white;padding:9px 14px;border-radius:12px;font-weight:900;z-index:6;box-shadow:0 3px 10px #0004}#cross{position:fixed;left:50%;top:50%;color:white;font-size:25px;transform:translate(-50%,-50%);z-index:6;text-shadow:1px 1px #000;pointer-events:none}
+#joystick{position:fixed;left:19px;bottom:18px;width:132px;height:132px;border-radius:50%;background:#17354c66;border:3px solid #ffffffaa;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px #0003}#stick{width:60px;height:60px;border-radius:50%;background:#e6f2f8e8;border:3px solid white;box-shadow:0 3px 10px #0006;transform:translate(0,0);pointer-events:none}#jump{position:fixed;right:18px;bottom:120px;width:104px;height:104px;border-radius:50%;padding:0;background:linear-gradient(rgba(114,201,255,.68),rgba(38,118,195,.68));border:3px solid rgba(234,248,255,.8);color:white;font-size:18px;font-weight:1000;box-shadow:0 5px 0 rgba(18,72,117,.7),0 6px 16px #0007;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}#jump:active{transform:translateY(3px);box-shadow:0 2px 0 #124875,0 3px 10px #0007}
+#stats{position:fixed;left:50%;bottom:69px;transform:translateX(-50%);display:flex;flex-direction:column;gap:3px;align-items:center;padding:5px 9px;background:#1018209c;border:1px solid #ffffff35;border-radius:9px;white-space:nowrap;pointer-events:none}.stat-row{height:19px;display:flex;gap:1px;align-items:center;justify-content:center}.stat-icon{font-size:17px;line-height:18px;width:19px;text-align:center;text-shadow:1px 2px 2px #0009}.heart-full{color:#ff3b48}.heart-empty{color:#7d8790}.food-full{filter:drop-shadow(0 1px 1px #000)}.food-empty{filter:grayscale(1);opacity:.38}
+#hotbar{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);width:min(390px,88vw);height:48px;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;padding:3px;background:#101820bb;border:2px solid #dceaf2aa;border-radius:8px;pointer-events:auto}.hot-slot{position:relative;min-width:0;border:2px solid #8d9aa4;background:linear-gradient(#52616b,#29343d);border-radius:4px;color:white;padding:0;display:flex;align-items:center;justify-content:center}.hot-slot.selected{border:3px solid #ffe27a;background:linear-gradient(#6e7d88,#3c4b55);box-shadow:0 0 8px #ffd95a99}.slot-num{position:absolute;left:2px;top:0;font-size:8px;color:#e5e5e5}.slot-icon{font-size:20px;line-height:1}.slot-count{position:absolute;right:2px;bottom:0;font-size:10px;font-weight:900;color:white;text-shadow:1px 1px 2px #000}
+#leaderboard{position:fixed;top:12px;left:12px;width:min(310px,72vw);z-index:30;color:white;background:linear-gradient(135deg,#132235ed,#0a101be8);border:2px solid #ffffff35;border-radius:16px;box-shadow:0 10px 30px #0008;overflow:hidden;pointer-events:auto;transition:width .25s ease,opacity .2s ease}#leaderHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#ffffff0c;font-weight:1000;letter-spacing:.5px;font-size:14px}#leaderToggle{margin-left:auto;width:34px;height:30px;border:0;border-radius:9px;background:#ffffff18;color:white;font-size:17px;font-weight:900}#leaderBody{padding:4px 10px 10px;max-height:45vh;overflow:auto}#leaderboard.collapsed{width:46px}#leaderboard.collapsed #leaderTitle,#leaderboard.collapsed #leaderBody{display:none}.leader-row{display:flex;align-items:center;gap:9px;padding:9px 6px;border-bottom:1px solid #ffffff16;font-size:14px}.leader-rank{color:#ffd95a;font-weight:1000;min-width:22px}.leader-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:900}.leader-score{margin-left:auto;color:#b8e8ff;font-size:12px}
+#skinBadge{position:fixed;right:12px;top:102px;z-index:21;background:#17222ccc;border:1px solid #fff7;border-radius:12px;color:white;padding:6px 9px;font-weight:900;font-size:12px;display:none}#topRight{position:fixed;top:12px;right:12px;z-index:20;display:flex;gap:8px}#backMenu,#crouchBtn,#musicBtn{border:1px solid #fff8;background:#17222ccc;color:white;border-radius:12px;padding:9px;font-weight:900}#chatBox{position:fixed;left:12px;bottom:145px;z-index:25;width:min(330px,70vw);display:none}.chat-log{max-height:120px;overflow:auto;background:#0008;padding:7px;border-radius:10px;color:white;font-size:12px}.chat-row{display:flex;gap:5px;margin-top:5px}.chat-row input{flex:1;min-width:0;padding:8px;border-radius:9px;border:0}.chat-row button{padding:8px 10px}.achievement{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:50;background:#222e;color:white;border:1px solid #fff8;border-radius:14px;padding:10px 16px;font-weight:900;display:none}.world-clock{position:fixed;top:58px;right:12px;color:white;background:#0008;padding:7px 10px;border-radius:10px;font-weight:800;z-index:20}
+@media(max-width:500px){#joystick{left:12px;bottom:13px;width:116px;height:116px}#stick{width:54px;height:54px}#jump{right:12px;bottom:112px;width:92px;height:92px;font-size:16px}#hotbar{width:min(350px,91vw);height:43px;bottom:8px;gap:2px}.slot-icon{font-size:17px}.slot-count{font-size:9px}#stats{bottom:58px;padding:3px 6px}.stat-icon{font-size:15px;width:17px}#logo{font-size:12px;padding:7px 10px}#leaderboard{top:8px;left:8px;width:min(280px,76vw)}#leaderHead{padding:8px 10px}#topRight{gap:4px;right:6px;top:6px}#backMenu,#crouchBtn,#musicBtn{font-size:11px;padding:7px 6px}}
+</style>
 </head>
 <body>
-
-<div id="leaderboard" class="collapsed">
- <div id="leaderHead"><span>🏆</span><span id="leaderTitle">LEADERBOARD</span><button id="leaderToggle" aria-label="Expand leaderboard">⌄</button></div>
- <div id="leaderBody"></div>
-</div>
-<div id="menu">
- <div class="menu-card">
-  <div class="menu-kicker">WELCOME TO</div>
-  <h1 class="menu-title">TEVCRAFT</h1>
-  <p class="menu-subtitle">Explore a bigger world. Build your own adventure.</p>
-  <input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME (REQUIRED)" autocomplete="off"><div class="skin-pick"><button type="button" class="skin" data-skin="🧑‍🚀">🧑‍🚀</button><button type="button" class="skin" data-skin="🧙">🧙</button><button type="button" class="skin" data-skin="🥷">🥷</button></div>
-  <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
-  <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
-  <div class="menu-note">V8 · SURVIVAL WORLD</div>
- </div>
-</div>
-
-<div id="skinBadge">🧑‍🚀 YOU</div><div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div><div id="hud" class="hidden">
- <div id="logo">TEVCRAFT V9.3 ⛏️</div>
- <div id="cross">+</div>
- <div class="hand"></div>
- <div id="joystick"><div id="stick"></div></div>
- <button id="jump">JUMP ⬆️</button>
- <div id="stats">
-  <div class="stat-row" id="healthRow" aria-label="10 hearts"></div>
-  <div class="stat-row" id="hungerRow" aria-label="10 hunger"></div>
- </div>
- <div id="hotbar" aria-label="Hotbar"></div>
-</div>
-
+<div id="leaderboard" class="collapsed"><div id="leaderHead"><span>🏆</span><span id="leaderTitle">LEADERBOARD</span><button id="leaderToggle" aria-label="Expand leaderboard">⌄</button></div><div id="leaderBody"></div></div>
+<div id="menu"><div class="menu-card"><div class="menu-kicker">WELCOME TO</div><h1 class="menu-title">TEVCRAFT</h1><p class="menu-subtitle">Explore a bigger world. Build your own adventure.</p><input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME (REQUIRED)" autocomplete="off"><div class="skin-pick"><button type="button" class="skin active" data-skin="🧑‍🚀">🧑‍🚀</button><button type="button" class="skin" data-skin="🧙">🧙</button><button type="button" class="skin" data-skin="🥷">🥷</button></div><button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button><button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button><div class="menu-note">V9.4 · UNDERGROUND GRAPHICS UPDATE</div></div></div>
+<div id="skinBadge">🧑‍🚀 YOU</div><div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div>
+<div id="hud" class="hidden"><div id="logo">TEVCRAFT V9.4 ⛏️</div><div id="cross">+</div><div id="joystick"><div id="stick"></div></div><button id="jump">JUMP ⬆️</button><div id="stats"><div class="stat-row" id="healthRow" aria-label="10 hearts"></div><div class="stat-row" id="hungerRow" aria-label="10 hunger"></div></div><div id="hotbar" aria-label="Hotbar"></div></div>
 <script type="module">
 import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-
-// ---------- Player username and playtime leaderboard ----------
+// Player name and local-device playtime leaderboard.
 let playerName = localStorage.getItem("tevcraftName") || "Player";
 const menuName = document.getElementById("menuName");
 menuName.value = playerName === "Player" ? "" : playerName;
+let selectedSkin = localStorage.getItem("tevcraftSkin") || "🧑‍🚀";
 const leaderboard = document.getElementById("leaderboard");
 const leaderBody = document.getElementById("leaderBody");
 const leaderToggle = document.getElementById("leaderToggle");
 const playtimeKey = "tevcraftPlaytimes";
-let playtimes = JSON.parse(localStorage.getItem(playtimeKey) || "{}");
-function formatPlaytime(seconds){
-  seconds = Math.floor(seconds || 0);
-  const h = Math.floor(seconds/3600), m = Math.floor((seconds%3600)/60), sec = seconds%60;
-  return h ? `${h}h ${m}m` : (m ? `${m}m ${sec}s` : `${sec}s`);
-}
-function savePlaytimes(){ localStorage.setItem(playtimeKey, JSON.stringify(playtimes)); }
-function renderLeaderboard(){
- leaderBody.innerHTML = "";
- const rows = Object.entries(playtimes).map(([name,time])=>({name,time:Number(time)||0}));
- if(playerName && playerName !== "Player" && !rows.some(r=>r.name===playerName)) rows.push({name:playerName,time:0});
- rows.sort((a,b)=>b.time-a.time);
- rows.slice(0,20).forEach((row,i)=>{
-   const el=document.createElement("div"); el.className="leader-you";
-   el.innerHTML=`<span class="leader-rank">#${i+1}</span><span class="leader-name"></span><span class="leader-score"></span>`;
-   el.querySelector(".leader-name").textContent=row.name;
-   el.querySelector(".leader-score").textContent=formatPlaytime(row.time);
-   leaderBody.appendChild(el);
- });
-}
-leaderToggle.addEventListener("click",()=>{const closed=leaderboard.classList.toggle("collapsed");leaderToggle.textContent=closed?"⌄":"⌃";leaderToggle.setAttribute("aria-label",closed?"Expand leaderboard":"Shrink leaderboard");});
-renderLeaderboard();
+let playtimes = {};
+try { playtimes = JSON.parse(localStorage.getItem(playtimeKey) || "{}") || {}; } catch { playtimes = {}; }
+function formatPlaytime(seconds){seconds=Math.floor(seconds||0);const h=Math.floor(seconds/3600),m=Math.floor((seconds%3600)/60),s=seconds%60;return h?`${h}h ${m}m`:(m?`${m}m ${s}s`:`${s}s`);}
+function savePlaytimes(){localStorage.setItem(playtimeKey,JSON.stringify(playtimes));}
+function renderLeaderboard(){leaderBody.innerHTML="";const rows=Object.entries(playtimes).map(([name,time])=>({name,time:Number(time)||0}));if(playerName&&playerName!=="Player"&&!rows.some(r=>r.name===playerName))rows.push({name:playerName,time:0});rows.sort((a,b)=>b.time-a.time);rows.slice(0,20).forEach((row,i)=>{const el=document.createElement("div");el.className="leader-row";el.innerHTML='<span class="leader-rank"></span><span class="leader-name"></span><span class="leader-score"></span>';el.querySelector(".leader-rank").textContent="#"+(i+1);el.querySelector(".leader-name").textContent=row.name;el.querySelector(".leader-score").textContent=formatPlaytime(row.time);leaderBody.appendChild(el);});}
+leaderToggle.addEventListener("click",()=>{const closed=leaderboard.classList.toggle("collapsed");leaderToggle.textContent=closed?"⌄":"⌃";leaderToggle.setAttribute("aria-label",closed?"Expand leaderboard":"Shrink leaderboard");});renderLeaderboard();
 
-// ---------- Scene and lighting ----------
-const scene = new T.Scene();
-scene.background = new T.Color(0x8bcdf2);
-scene.fog = new T.Fog(0x8bcdf2, 72, 190);
-const camera = new T.PerspectiveCamera(74, innerWidth / innerHeight, 0.1, 230);
-const renderer = new T.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.25));
-renderer.outputColorSpace = T.SRGBColorSpace;
-document.body.prepend(renderer.domElement);
+// Scene and lighting.
+const scene=new T.Scene();scene.background=new T.Color(0x8bcdf2);scene.fog=new T.Fog(0x8bcdf2,72,190);
+const camera=new T.PerspectiveCamera(74,innerWidth/innerHeight,0.1,260);
+const renderer=new T.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.outputColorSpace=T.SRGBColorSpace;document.body.prepend(renderer.domElement);
+scene.add(new T.HemisphereLight(0xffffff,0x596a48,1.9));const sunlight=new T.DirectionalLight(0xfff2d7,1.65);sunlight.position.set(45,80,30);scene.add(sunlight);
 
-scene.add(new T.HemisphereLight(0xffffff, 0x596a48, 1.9));
-const sunlight = new T.DirectionalLight(0xfff2d7, 1.65);
-sunlight.position.set(45, 80, 30);
-scene.add(sunlight);
-
-// ---------- Pixel-style procedural block textures ----------
-function makeTexture(kind, seed) {
-  const size = 64;
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  let state = seed >>> 0;
-  const rand = () => {
-    state = (state * 1664525 + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-  const pixel = (x, y, w, h, colors) => {
-    ctx.fillStyle = colors[Math.floor(rand() * colors.length)];
-    ctx.fillRect(x, y, w, h);
-  };
-  const fillNoise = (base, palette, amount = 190) => {
-    ctx.fillStyle = base;
-    ctx.fillRect(0, 0, size, size);
-    for (let i = 0; i < amount; i++) {
-      const x = Math.floor(rand() * 16) * 4;
-      const y = Math.floor(rand() * 16) * 4;
-      pixel(x, y, 4 + (rand() > .75 ? 4 : 0), 4 + (rand() > .8 ? 4 : 0), palette);
-    }
-  };
-
-  if (kind === "grassTop") {
-    fillNoise("#4f9e38", ["#438c31","#5eaa42","#70b94a","#397e2d","#80bf55"], 250);
-    for (let i = 0; i < 22; i++) {
-      const x = Math.floor(rand() * 16) * 4, y = Math.floor(rand() * 16) * 4;
-      pixel(x, y, 4, 8, ["#367b2b","#75b84a","#2f7028"]);
-    }
-  } else if (kind === "grassSide") {
-    fillNoise("#8a5a35", ["#76502f","#9b693d","#a97845","#71472b","#bd8650"], 210);
-    ctx.fillStyle = "#4b9636"; ctx.fillRect(0,0,64,11);
-    for (let x = 0; x < 64; x += 4) {
-      const h = 7 + Math.floor(rand() * 8);
-      ctx.fillStyle = ["#367e2d","#5ba542","#73b74b"][Math.floor(rand()*3)];
-      ctx.fillRect(x, 7, 4, h);
-    }
-    for (let i = 0; i < 12; i++) pixel(Math.floor(rand()*16)*4, 12+Math.floor(rand()*12)*4, 4,4,["#a16e3f","#79502f"]);
-  } else if (kind === "dirt") {
-    fillNoise("#865832", ["#704a2b","#9b693d","#a97848","#774b2b","#b17a47"], 250);
-    for(let i=0;i<9;i++){ctx.fillStyle="#65452c";ctx.fillRect(Math.floor(rand()*56),Math.floor(rand()*56),4,4);}
-  } else if (kind === "stone") {
-    fillNoise("#777d80", ["#62696d","#8d9497","#a1a5a5","#555e63","#70777b"], 230);
-    for(let i=0;i<12;i++){ctx.fillStyle="#4f585c";ctx.fillRect(Math.floor(rand()*56),Math.floor(rand()*56),8,4);}
-  } else if (kind === "wood") {
-    fillNoise("#976332", ["#744722","#b27b40","#855329","#c18a4b"], 125);
-    for(let x=5;x<64;x+=13){ctx.fillStyle="#5f3c21";ctx.fillRect(x,0,3,64);ctx.fillStyle="#c08b4b";ctx.fillRect(x+4,0,2,64);}
-    ctx.fillStyle="#58381f";ctx.fillRect(26,18,8,3);ctx.fillRect(29,14,3,11);
-  } else if (kind === "leaves") {
-    fillNoise("#337d35", ["#246b2b","#438f3d","#5aa447","#1e5a28","#6aaa4c"], 250);
-    for(let i=0;i<20;i++){ctx.fillStyle=["#1e6229","#69ad4c","#2c7430"][Math.floor(rand()*3)];ctx.fillRect(Math.floor(rand()*15)*4,Math.floor(rand()*15)*4,4,4);}
-  }
-  const texture = new T.CanvasTexture(canvas);
-  texture.colorSpace = T.SRGBColorSpace;
-  texture.magFilter = T.NearestFilter;
-  texture.minFilter = T.NearestMipmapNearestFilter;
-  texture.generateMipmaps = true;
-  return texture;
-}
-const grassTopMat = new T.MeshLambertMaterial({ map: makeTexture("grassTop", 1) });
-const grassSideMat = new T.MeshLambertMaterial({ map: makeTexture("grassSide", 2) });
-const dirtMat = new T.MeshLambertMaterial({ map: makeTexture("dirt", 3) });
-const stoneMat = new T.MeshLambertMaterial({ map: makeTexture("stone", 4) });
-const deepslateMat = new T.MeshLambertMaterial({ color: 0x2f343d });
-const coalOreMat = new T.MeshLambertMaterial({ color: 0x353535 });
-const ironOreMat = new T.MeshLambertMaterial({ color: 0xb69b7d });
-const diamondOreMat = new T.MeshLambertMaterial({ color: 0x38e6e0 });
-const woodMat = new T.MeshLambertMaterial({ map: makeTexture("wood", 5) });
-const leavesMat = new T.MeshLambertMaterial({ map: makeTexture("leaves", 6) });
-const grassBlockMaterials = [grassSideMat, grassSideMat, grassTopMat, dirtMat, grassSideMat, grassSideMat];
-const cube = new T.BoxGeometry(1, 1, 1);
-
-// ---------- Instanced block world (large map, low draw-call count) ----------
-const WORLD_RADIUS = 100;
-const WORLD_SIZE = WORLD_RADIUS * 2 + 1;
-const BASE_Y = -32;
-const terrainHeights = new Int8Array(WORLD_SIZE * WORLD_SIZE);
-const blockGroups = {};
-const occupied = new Map();
-const tempObject = new T.Object3D();
-const definitions = {
- grass: { material: grassBlockMaterials, emoji: "🌿", label: "Grass" },
- dirt: { material: dirtMat, emoji: "🟫", label: "Dirt" },
- stone: { material: stoneMat, emoji: "🪨", label: "Stone" },
- deepslate: { material: deepslateMat, emoji: "⬛", label: "Deepslate" },
- coal: { material: coalOreMat, emoji: "⚫", label: "Coal Ore" },
- iron: { material: ironOreMat, emoji: "🟤", label: "Iron Ore" },
- diamond: { material: diamondOreMat, emoji: "💎", label: "Diamond Ore" },
- wood: { material: woodMat, emoji: "🪵", label: "Wood" },
- leaves: { material: leavesMat, emoji: "🍃", label: "Leaves" }
-};
-for (const [kind, def] of Object.entries(definitions)) {
-  blockGroups[kind] = { material: def.material, records: [], mesh: null, alive: [], items: [], count: 0, capacity: 0 };
-}
-const keyOf = (x,y,z) => `${x},${y},${z}`;
-function addRecord(kind,x,y,z) {
-  const key = keyOf(x,y,z);
-  if (occupied.has(key)) return false;
-  const record = { kind, x, y, z };
-  blockGroups[kind].records.push(record);
-  occupied.set(key, record);
-  return true;
-}
-function terrainHeightAt(x,z) {
-  const ix = Math.max(-WORLD_RADIUS, Math.min(WORLD_RADIUS, Math.round(x)));
-  const iz = Math.max(-WORLD_RADIUS, Math.min(WORLD_RADIUS, Math.round(z)));
-  return terrainHeights[(ix + WORLD_RADIUS) * WORLD_SIZE + (iz + WORLD_RADIUS)];
-}
-function smoothHeight(x,z) {
-  const broad = 2.0
-    + 2.0 * Math.sin(x * 0.050)
-    + 1.7 * Math.cos(z * 0.058)
-    + 1.25 * Math.sin((x + z) * 0.083)
-    + 0.65 * Math.cos((x - z) * 0.13)
-    + 0.35 * Math.sin(z * 0.24) * Math.cos(x * 0.19);
-  return Math.max(-2, Math.min(8, Math.round(broad)));
-}
-let seed = 20261111;
-function randomWorld() {
-  seed = (seed * 1664525 + 1013904223) >>> 0;
-  return seed / 4294967296;
-}
-for (let x = -WORLD_RADIUS; x <= WORLD_RADIUS; x++) {
-  for (let z = -WORLD_RADIUS; z <= WORLD_RADIUS; z++) {
-    const h = smoothHeight(x,z);
-    terrainHeights[(x + WORLD_RADIUS) * WORLD_SIZE + (z + WORLD_RADIUS)] = h;
-    for (let y = BASE_Y; y <= h; y++) {
-      let kind;
-      if (y === h) kind = "grass";
-      else if (y >= h - 3) kind = "dirt";
-      else if (y <= -8) {
-        // Deep underground: mostly deepslate, with rare ores.
-        const r = Math.abs(Math.sin(x*12.9898 + y*78.233 + z*37.719));
-        kind = r > 0.996 ? "diamond" : (r > 0.988 ? "iron" : (r > 0.976 ? "coal" : "deepslate"));
-      } else {
-        const r = Math.abs(Math.sin(x*9.31 + y*41.7 + z*17.2));
-        kind = r > 0.993 ? "iron" : (r > 0.982 ? "coal" : "stone");
+// Pixel-art canvas textures. Ore seams are drawn as blocky mineral clusters over rock,
+// instead of tinting the entire cube one flat color.
+function makeTexture(kind,seed){
+  const size=64,canvas=document.createElement("canvas");canvas.width=canvas.height=size;const ctx=canvas.getContext("2d");let state=seed>>>0;
+  const rand=()=>{state=(state*1664525+1013904223)>>>0;return state/4294967296;};
+  const pick=a=>a[Math.floor(rand()*a.length)];
+  const fillNoise=(base,palette,amount=220)=>{ctx.fillStyle=base;ctx.fillRect(0,0,size,size);for(let i=0;i<amount;i++){const x=Math.floor(rand()*16)*4,y=Math.floor(rand()*16)*4;ctx.fillStyle=pick(palette);ctx.fillRect(x,y,4+(rand()>.82?4:0),4+(rand()>.88?4:0));}};
+  const pixel=(x,y,color,w=4,h=4)=>{ctx.fillStyle=color;ctx.fillRect(x,y,w,h);};
+  if(kind==="grassTop"){
+    fillNoise("#4f9e38",["#438c31","#5eaa42","#70b94a","#397e2d","#80bf55"],250);
+    for(let i=0;i<22;i++)pixel(Math.floor(rand()*16)*4,Math.floor(rand()*16)*4,pick(["#367b2b","#75b84a","#2f7028"]),4,8);
+  }else if(kind==="grassSide"){
+    fillNoise("#8a5a35",["#76502f","#9b693d","#a97845","#71472b","#bd8650"],210);ctx.fillStyle="#4b9636";ctx.fillRect(0,0,64,11);
+    for(let x=0;x<64;x+=4){ctx.fillStyle=pick(["#367e2d","#5ba542","#73b74b"]);ctx.fillRect(x,7,4,7+Math.floor(rand()*8));}
+  }else if(kind==="dirt"){
+    fillNoise("#865832",["#704a2b","#9b693d","#a97848","#774b2b","#b17a47"],250);for(let i=0;i<12;i++)pixel(Math.floor(rand()*16)*4,Math.floor(rand()*16)*4,"#65452c");
+  }else if(["stone","coal","iron","diamond","deepCoal","deepIron","deepDiamond"].includes(kind)){
+    const isDeepOre=kind.startsWith("deep"),oreKind=isDeepOre?kind.slice(4).toLowerCase():kind;
+    if(isDeepOre){
+      fillNoise("#30343b",["#252a31","#3a4049","#454b55","#2c323a","#515761","#383e47"],270);
+      for(let y=6;y<64;y+=15){ctx.fillStyle=pick(["#242a31","#4b515a","#353b44"]);ctx.fillRect(0,y,64,2);ctx.fillStyle="#59616b";ctx.fillRect(0,y+2,64,1);}
+    }else fillNoise("#777d80",["#62696d","#8d9497","#a1a5a5","#555e63","#70777b","#858b8e"],235);
+    // Fine stone grains and darker natural seams.
+    for(let i=0;i<16;i++){const x=Math.floor(rand()*15)*4,y=Math.floor(rand()*15)*4;pixel(x,y,isDeepOre?pick(["#20262d","#59616b","#454c56"]):pick(["#4f585c","#a0a4a4","#687175"]),4,4);}
+    if(oreKind!=="stone"){
+      const palettes={coal:{main:["#171b1e","#252a2d","#343a3e"],light:["#626a70","#42494e"]},iron:{main:["#b87943","#d99a5d","#e4b879"],light:["#f0c98f","#8f5735"]},diamond:{main:["#20bfc4","#35e1dc","#77f4e9"],light:["#c4fff7","#2b9fae"]}};
+      const p=palettes[oreKind];
+      // Multiple irregular 4px clusters make each ore patch read as mineral inside stone.
+      const clusters=kind==="diamond"?5:kind==="iron"?7:8;
+      for(let c=0;c<clusters;c++){
+        const cx=Math.floor(rand()*13)*4+2,cy=Math.floor(rand()*13)*4+2;
+        const shape=[[0,0],[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[2,0],[0,2]];
+        const n=kind==="diamond"?4+Math.floor(rand()*3):4+Math.floor(rand()*5);
+        for(let j=0;j<n;j++){const [ox,oy]=shape[Math.floor(rand()*shape.length)];const x=Math.max(0,Math.min(60,cx+ox*4)),y=Math.max(0,Math.min(60,cy+oy*4));pixel(x,y,pick(p.main));if(rand()>.48)pixel(x,y,pick(p.light),2,2);}
       }
-      addRecord(kind,x,y,z);
+      // Tiny rim highlights give the mineral flecks a faceted, pixel-rock appearance.
+      for(let i=0;i<12;i++){const x=Math.floor(rand()*16)*4,y=Math.floor(rand()*16)*4;pixel(x,y,pick(p.light),2,2);}
     }
+  }else if(kind==="deepslate"){
+    fillNoise("#30343b",["#252a31","#3a4049","#454b55","#2c323a","#515761","#383e47"],290);
+    // Layered slate bands and stepped fractures.
+    for(let y=4;y<64;y+=12+Math.floor(rand()*5)){ctx.fillStyle=pick(["#242a31","#4b515a","#353b44"]);ctx.fillRect(0,y,64,2);ctx.fillStyle="#59616b";ctx.fillRect(0,y+2,64,1);}
+    for(let c=0;c<7;c++){let x=Math.floor(rand()*14)*4,y=Math.floor(rand()*14)*4;ctx.fillStyle="#20262d";for(let s=0;s<4;s++){ctx.fillRect(x,y,4,4);x+=Math.floor(rand()*3-1)*4;y+=4;ctx.fillStyle=pick(["#20262d","#4b525d","#303740"]);}}
+    for(let i=0;i<26;i++)pixel(Math.floor(rand()*16)*4,Math.floor(rand()*16)*4,pick(["#59616b","#1e242b","#454c56"]),4,4);
+  }else if(kind==="wood"){
+    fillNoise("#976332",["#744722","#b27b40","#855329","#c18a4b"],125);for(let x=5;x<64;x+=13){ctx.fillStyle="#5f3c21";ctx.fillRect(x,0,3,64);ctx.fillStyle="#c08b4b";ctx.fillRect(x+4,0,2,64);}ctx.fillStyle="#58381f";ctx.fillRect(26,18,8,3);ctx.fillRect(29,14,3,11);
+  }else if(kind==="leaves"){
+    fillNoise("#337d35",["#246b2b","#438f3d","#5aa447","#1e5a28","#6aaa4c"],250);for(let i=0;i<20;i++)pixel(Math.floor(rand()*15)*4,Math.floor(rand()*15)*4,pick(["#1e6229","#69ad4c","#2c7430"]));
+  }
+  const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;texture.magFilter=T.NearestFilter;texture.minFilter=T.NearestMipmapNearestFilter;texture.generateMipmaps=true;return texture;
+}
+const grassTopMat=new T.MeshLambertMaterial({map:makeTexture("grassTop",1)});
+const grassSideMat=new T.MeshLambertMaterial({map:makeTexture("grassSide",2)});
+const dirtMat=new T.MeshLambertMaterial({map:makeTexture("dirt",3)});
+const stoneMat=new T.MeshLambertMaterial({map:makeTexture("stone",4)});
+const deepslateMat=new T.MeshLambertMaterial({map:makeTexture("deepslate",7)});
+const coalOreMat=new T.MeshLambertMaterial({map:makeTexture("coal",8)});
+const ironOreMat=new T.MeshLambertMaterial({map:makeTexture("iron",9)});
+const diamondOreMat=new T.MeshLambertMaterial({map:makeTexture("diamond",10),emissive:0x0b5052,emissiveIntensity:.22});
+const deepCoalOreMat=new T.MeshLambertMaterial({map:makeTexture("deepCoal",11)});
+const deepIronOreMat=new T.MeshLambertMaterial({map:makeTexture("deepIron",12)});
+const deepDiamondOreMat=new T.MeshLambertMaterial({map:makeTexture("deepDiamond",13),emissive:0x0b5052,emissiveIntensity:.28});
+const woodMat=new T.MeshLambertMaterial({map:makeTexture("wood",5)});
+const leavesMat=new T.MeshLambertMaterial({map:makeTexture("leaves",6)});
+const grassBlockMaterials=[grassSideMat,grassSideMat,grassTopMat,dirtMat,grassSideMat,grassSideMat];
+const cube=new T.BoxGeometry(1,1,1);
+
+// Large voxel terrain with stone, deepslate, coal, iron and diamond layers.
+const WORLD_RADIUS=100,WORLD_SIZE=WORLD_RADIUS*2+1,BASE_Y=-32;
+const terrainHeights=new Int8Array(WORLD_SIZE*WORLD_SIZE),blockGroups={},occupied=new Map(),tempObject=new T.Object3D();
+const definitions={grass:{material:grassBlockMaterials,emoji:"🌿",label:"Grass"},dirt:{material:dirtMat,emoji:"🟫",label:"Dirt"},stone:{material:stoneMat,emoji:"🪨",label:"Stone"},deepslate:{material:deepslateMat,emoji:"⬛",label:"Deepslate"},coal:{material:coalOreMat,emoji:"⚫",label:"Coal Ore"},iron:{material:ironOreMat,emoji:"🟠",label:"Iron Ore"},diamond:{material:diamondOreMat,emoji:"💎",label:"Diamond Ore"},deepCoal:{material:deepCoalOreMat,emoji:"⚫",label:"Deepslate Coal Ore"},deepIron:{material:deepIronOreMat,emoji:"🟠",label:"Deepslate Iron Ore"},deepDiamond:{material:deepDiamondOreMat,emoji:"💎",label:"Deepslate Diamond Ore"},wood:{material:woodMat,emoji:"🪵",label:"Wood"},leaves:{material:leavesMat,emoji:"🍃",label:"Leaves"}};
+for(const [kind,def] of Object.entries(definitions))blockGroups[kind]={material:def.material,records:[],mesh:null,alive:[],items:[],count:0,capacity:0};
+const keyOf=(x,y,z)=>`${x},${y},${z}`;
+function addRecord(kind,x,y,z){const key=keyOf(x,y,z);if(occupied.has(key))return false;const rec={kind,x,y,z};blockGroups[kind].records.push(rec);occupied.set(key,rec);return true;}
+function terrainHeightAt(x,z){const ix=Math.max(-WORLD_RADIUS,Math.min(WORLD_RADIUS,Math.round(x))),iz=Math.max(-WORLD_RADIUS,Math.min(WORLD_RADIUS,Math.round(z)));return terrainHeights[(ix+WORLD_RADIUS)*WORLD_SIZE+(iz+WORLD_RADIUS)];}
+function smoothHeight(x,z){const h=2+2*Math.sin(x*.05)+1.7*Math.cos(z*.058)+1.25*Math.sin((x+z)*.083)+.65*Math.cos((x-z)*.13)+.35*Math.sin(z*.24)*Math.cos(x*.19);return Math.max(-2,Math.min(8,Math.round(h)));}
+let seed=20261111;function randomWorld(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+for(let x=-WORLD_RADIUS;x<=WORLD_RADIUS;x++)for(let z=-WORLD_RADIUS;z<=WORLD_RADIUS;z++){
+  const h=smoothHeight(x,z);terrainHeights[(x+WORLD_RADIUS)*WORLD_SIZE+(z+WORLD_RADIUS)]=h;
+  for(let y=BASE_Y;y<=h;y++){
+    let kind;if(y===h)kind="grass";else if(y>=h-3)kind="dirt";else if(y<=-8){const r=Math.abs(Math.sin(x*12.9898+y*78.233+z*37.719));kind=r>.996?"deepDiamond":r>.988?"deepIron":r>.976?"deepCoal":"deepslate";}else{const r=Math.abs(Math.sin(x*9.31+y*41.7+z*17.2));kind=r>.993?"iron":r>.982?"coal":"stone";}addRecord(kind,x,y,z);
   }
 }
-// Forests and scattered trees. Each tree is assembled from textured cube blocks.
-for (let x = -WORLD_RADIUS + 3; x <= WORLD_RADIUS - 3; x++) {
-  for (let z = -WORLD_RADIUS + 3; z <= WORLD_RADIUS - 3; z++) {
-    if (Math.abs(x) < 8 && Math.abs(z) < 8) continue;
-    if (randomWorld() < 0.021) {
-      const ground = terrainHeightAt(x,z);
-      const trunkHeight = 3 + Math.floor(randomWorld() * 3);
-      for (let y = 1; y <= trunkHeight; y++) addRecord("wood",x,ground+y,z);
-      const crownY = ground + trunkHeight;
-      for (let dy = 0; dy <= 2; dy++) {
-        const radius = dy === 2 ? 1 : 2;
-        for (let dx = -radius; dx <= radius; dx++) {
-          for (let dz = -radius; dz <= radius; dz++) {
-            if (Math.abs(dx) + Math.abs(dz) <= radius + 1 && randomWorld() > 0.10) {
-              addRecord("leaves",x+dx,crownY+dy,z+dz);
-            }
-          }
-        }
-      }
-      addRecord("leaves",x,crownY+3,z);
-    }
-  }
+for(let x=-WORLD_RADIUS+3;x<=WORLD_RADIUS-3;x++)for(let z=-WORLD_RADIUS+3;z<=WORLD_RADIUS-3;z++){
+  if(Math.abs(x)<8&&Math.abs(z)<8)continue;if(randomWorld()<.021){const ground=terrainHeightAt(x,z),trunk=3+Math.floor(randomWorld()*3);for(let y=1;y<=trunk;y++)addRecord("wood",x,ground+y,z);const crown=ground+trunk;for(let dy=0;dy<=2;dy++){const radius=dy===2?1:2;for(let dx=-radius;dx<=radius;dx++)for(let dz=-radius;dz<=radius;dz++)if(Math.abs(dx)+Math.abs(dz)<=radius+1&&randomWorld()>.1)addRecord("leaves",x+dx,crown+dy,z+dz);}addRecord("leaves",x,crown+3,z);}
 }
-for (const [kind, group] of Object.entries(blockGroups)) {
-  const initialCount = group.records.length;
-  group.capacity = initialCount + 2500;
-  group.mesh = new T.InstancedMesh(cube, group.material, group.capacity);
-  group.mesh.name = kind;
-  group.mesh.count = initialCount;
-  group.mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
-  group.mesh.frustumCulled = true;
-  group.items = new Array(group.capacity);
-  group.alive = new Array(group.capacity).fill(false);
-  group.count = initialCount;
-  for (let i = 0; i < initialCount; i++) {
-    const b = group.records[i];
-    tempObject.position.set(b.x,b.y,b.z);
-    tempObject.scale.set(1,1,1);
-    tempObject.rotation.set(0,0,0);
-    tempObject.updateMatrix();
-    group.mesh.setMatrixAt(i,tempObject.matrix);
-    group.items[i] = b;
-    group.alive[i] = true;
-  }
-  group.mesh.instanceMatrix.needsUpdate = true;
-  group.mesh.computeBoundingSphere();
-  scene.add(group.mesh);
+for(const [kind,group] of Object.entries(blockGroups)){
+  const n=group.records.length;group.capacity=n+2500;group.mesh=new T.InstancedMesh(cube,group.material,group.capacity);group.mesh.name=kind;group.mesh.count=n;group.mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);group.items=new Array(group.capacity);group.alive=new Array(group.capacity).fill(false);group.count=n;
+  for(let i=0;i<n;i++){const b=group.records[i];tempObject.position.set(b.x,b.y,b.z);tempObject.scale.set(1,1,1);tempObject.rotation.set(0,0,0);tempObject.updateMatrix();group.mesh.setMatrixAt(i,tempObject.matrix);group.items[i]=b;group.alive[i]=true;}group.mesh.instanceMatrix.needsUpdate=true;group.mesh.computeBoundingSphere();scene.add(group.mesh);
 }
 
-// ---------- Player, menu, and controls ----------
-const player = new T.Vector3(0, 0, 7);
-let yaw = 0, pitch = 0, looking = false, lastX = 0, lastY = 0, lookMoved = false;
-let moveX = 0, moveY = 0;
-let gameStarted = false, verticalVelocity = 0, grounded = true, jumpQueued = false;
-player.y = terrainHeightAt(player.x,player.z) + 2.1;
-const menu = document.getElementById("menu");
-const hud = document.getElementById("hud");
-document.getElementById("singleplayer").addEventListener("click", () => {
-  const typed = menuName.value.trim();
-  if (!typed) { menuName.focus(); menuName.style.outline="3px solid #ff4d4d"; return; }
-  playerName = typed.slice(0,16); localStorage.setItem("tevcraftName", playerName);
-  if (!(playerName in playtimes)) playtimes[playerName] = 0;
-  savePlaytimes(); renderLeaderboard();
-  document.getElementById("skinBadge").textContent = selectedSkin + " " + playerName;
-  document.getElementById("skinBadge").style.display = "block";
-  gameStarted = true;
-  menu.style.display = "none";
-  hud.classList.remove("hidden");
-});
-const jumpButton = document.getElementById("jump");
-jumpButton.addEventListener("pointerdown", e => {
-  e.preventDefault(); e.stopPropagation();
-  if (gameStarted && grounded) jumpQueued = true;
-});
-function updateCamera() {
-  camera.position.copy(player); if (crouching && gameStarted) camera.position.y -= .55;
-  camera.rotation.order = "YXZ";
-  camera.rotation.y = yaw;
-  camera.rotation.x = pitch;
-}
-renderer.domElement.addEventListener("pointerdown", e => {
-  if (!gameStarted) return;
-  looking = true; lookMoved = false; lastX = e.clientX; lastY = e.clientY;
-  renderer.domElement.setPointerCapture(e.pointerId);
-});
-renderer.domElement.addEventListener("pointermove", e => {
-  if (!looking) return;
-  if (Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY) > 3) lookMoved = true;
-  yaw -= (e.clientX - lastX) * 0.006;
-  pitch = Math.max(-1.55, Math.min(1.55, pitch - (e.clientY - lastY) * 0.006));
-  lastX = e.clientX; lastY = e.clientY;
-});
-renderer.domElement.addEventListener("pointerup", () => looking = false);
-renderer.domElement.addEventListener("pointercancel", () => looking = false);
-
-// Virtual joystick (up = forward, relative to camera facing)
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
-const joystickRadius = 42;
-let joystickPointer = null;
-function updateJoystick(e) {
-  const rect = joystick.getBoundingClientRect();
-  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
-  let dx = e.clientX-cx, dy = e.clientY-cy;
-  const length = Math.hypot(dx,dy);
-  if (length > joystickRadius) { dx = dx/length*joystickRadius; dy = dy/length*joystickRadius; }
-  moveX = dx/joystickRadius; moveY = -dy/joystickRadius;
-  stick.style.transform = `translate(${dx}px,${dy}px)`;
-}
-function resetJoystick() {
-  joystickPointer = null; moveX = 0; moveY = 0;
-  stick.style.transform = "translate(0px,0px)";
-}
-joystick.addEventListener("pointerdown", e => {
-  e.preventDefault(); e.stopPropagation();
-  joystickPointer = e.pointerId;
-  joystick.setPointerCapture(e.pointerId);
-  updateJoystick(e);
-});
-joystick.addEventListener("pointermove", e => {
-  if (e.pointerId === joystickPointer) { e.preventDefault(); updateJoystick(e); }
-});
-joystick.addEventListener("pointerup", e => { if (e.pointerId === joystickPointer) resetJoystick(); });
-joystick.addEventListener("pointercancel", resetJoystick);
-joystick.addEventListener("lostpointercapture", resetJoystick);
-
-// ---------- Hotbar, inventory, mining, and placing ----------
-const hotbarItems = ["fist",null,null,null,null,null,null,null,null];
-const inventory = { grass:0, dirt:0, wood:0, leaves:0, stone:0 };
-let selectedSlot = 0;
-const hotbarElement = document.getElementById("hotbar");
-function renderHotbar() {
-  hotbarElement.innerHTML = "";
-  hotbarItems.forEach((kind,index) => {
-    const slot = document.createElement("button");
-    slot.className = "hot-slot" + (index === selectedSlot ? " selected" : "");
-    slot.type = "button";
-    slot.setAttribute("aria-label", kind === "fist" ? `${index+1}: Fists` : (kind ? `${index+1}: ${definitions[kind].label}, ${inventory[kind]} blocks` : `${index+1}: empty`));
-    const number = document.createElement("span"); number.className = "slot-num"; number.textContent = index+1; slot.appendChild(number);
-    if (kind === "fist") {
-      const icon = document.createElement("span"); icon.className = "slot-icon"; icon.textContent = "👊"; slot.appendChild(icon);
-    } else if (kind) {
-      const icon = document.createElement("span"); icon.className = "slot-icon"; icon.textContent = definitions[kind].emoji; slot.appendChild(icon);
-      const count = document.createElement("span"); count.className = "slot-count"; count.textContent = inventory[kind]; slot.appendChild(count);
-    }
-    slot.addEventListener("click", () => { selectedSlot = index; renderHotbar(); });
-    hotbarElement.appendChild(slot);
-  });
-}
-renderHotbar();
-
-function createBlockInstance(kind,x,y,z) {
-  const group = blockGroups[kind];
-  if (group.count >= group.capacity) return false;
-  const key = keyOf(x,y,z);
-  if (occupied.has(key)) return false;
-  const i = group.count++;
-  group.items[i] = {kind,x,y,z};
-  group.alive[i] = true;
-  tempObject.position.set(x,y,z); tempObject.scale.set(1,1,1); tempObject.rotation.set(0,0,0); tempObject.updateMatrix();
-  group.mesh.setMatrixAt(i,tempObject.matrix);
-  group.mesh.count = group.count;
-  group.mesh.instanceMatrix.needsUpdate = true;
-  occupied.set(key,group.items[i]);
-  return true;
-}
-function removeBlock(hit) {
-  const group = blockGroups[hit.kind];
-  const i = hit.instanceId;
-  if (!group || !group.alive[i]) return false;
-  const block = group.items[i];
-  group.alive[i] = false;
-  occupied.delete(keyOf(block.x,block.y,block.z));
-  tempObject.position.set(0,0,0); tempObject.scale.set(0,0,0); tempObject.updateMatrix();
-  group.mesh.setMatrixAt(i,tempObject.matrix);
-  group.mesh.instanceMatrix.needsUpdate = true;
-  inventory[hit.kind] = (inventory[hit.kind] || 0) + 1;
-  if (!hotbarItems.includes(hit.kind)) {
-    const empty = hotbarItems.findIndex((item, idx) => idx > 0 && item === null);
-    if (empty !== -1) hotbarItems[empty] = hit.kind;
-  }
-  renderHotbar();
-  return true;
-}
-const raycaster = new T.Raycaster();
-raycaster.far = 7;
-function findTarget() {
-  raycaster.setFromCamera(new T.Vector2(0,0),camera);
-  const meshes = Object.values(blockGroups).map(g => g.mesh);
-  const hits = raycaster.intersectObjects(meshes,false);
-  for (const hit of hits) {
-    const group = blockGroups[hit.object.name];
-    if (group && group.alive[hit.instanceId]) {
-      return {kind:hit.object.name,instanceId:hit.instanceId,face:hit.face,point:hit.point};
-    }
-  }
-  return null;
-}
-// Mine using the selected fists in hotbar slot 1.
-function useSelectedHotbar() {
-  if (!gameStarted) return;
-  const selected = hotbarItems[selectedSlot];
-  const hit = findTarget();
-  if (selected === "fist") {
-    if (hit) removeBlock(hit);
-    return;
-  }
-  if (!hit || !selected || inventory[selected] < 1) return;
-  const group = blockGroups[hit.kind];
-  const block = group.items[hit.instanceId];
-  const n = hit.face.normal;
-  const x = Math.round(block.x + n.x), y = Math.round(block.y + n.y), z = Math.round(block.z + n.z);
-  if (Math.hypot(player.x-x,player.z-z) < 0.72 && Math.abs(player.y-y) < 1.8) return;
-  if (createBlockInstance(selected,x,y,z)) {
-    inventory[selected]--;
-    renderHotbar();
-  }
-}
-
-// Tap the game world to use the selected hotbar item.
-// Fists mine; block slots place.
-renderer.domElement.addEventListener("click", () => {
-  if (gameStarted && !lookMoved) useSelectedHotbar();
-});
-
-
-// ---------- Health and hunger survival HUD ----------
-let health = 10, hunger = 10;
-let hungerElapsed = 0, starvationElapsed = 0;
-const healthRow = document.getElementById("healthRow");
-const hungerRow = document.getElementById("hungerRow");
-function updateStats() {
-  healthRow.innerHTML = "";
-  hungerRow.innerHTML = "";
-  for (let i=0;i<10;i++) {
-    const heart = document.createElement("span");
-    heart.className = "stat-icon " + (i < health ? "heart-full" : "heart-empty");
-    heart.textContent = i < health ? "♥" : "♡";
-    healthRow.appendChild(heart);
-    const food = document.createElement("span");
-    food.className = "stat-icon " + (i < hunger ? "food-full" : "food-empty");
-    food.textContent = i < hunger ? "🍗" : "·";
-    hungerRow.appendChild(food);
-  }
-  healthRow.setAttribute("aria-label", `${health} of 10 hearts`);
-  hungerRow.setAttribute("aria-label", `${hunger} of 10 hunger`);
-}
-updateStats();
-
-
-// ---------- V9 BIG UPDATE FEATURES ----------
-// Username is required
-document.getElementById("singleplayer").addEventListener("click",()=>{}, {once:true});
-const oldStart = document.getElementById("singleplayer").onclick;
-let selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);document.getElementById("skinBadge").textContent=selectedSkin+" "+playerName;}));
-// Extra guard catches blank names before play
+// Player, menu and movement controls.
+const player=new T.Vector3(0,0,7);let yaw=0,pitch=0,looking=false,lastX=0,lastY=0,lookMoved=false,moveX=0,moveY=0;let gameStarted=false,verticalVelocity=0,grounded=true,jumpQueued=false,crouching=false;
+player.y=terrainHeightAt(player.x,player.z)+2.1;const menu=document.getElementById("menu"),hud=document.getElementById("hud"),skinBadge=document.getElementById("skinBadge");
+function updateSkinButtons(){document.querySelectorAll(".skin").forEach(b=>b.classList.toggle("active",b.dataset.skin===selectedSkin));}
+selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";updateSkinButtons();
+document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);updateSkinButtons();skinBadge.textContent=selectedSkin+" "+playerName;}));
+document.getElementById("singleplayer").addEventListener("click",()=>{const typed=menuName.value.trim();if(!typed){menuName.focus();menuName.style.outline="3px solid #ff4d4d";return;}playerName=typed.slice(0,16);localStorage.setItem("tevcraftName",playerName);if(!(playerName in playtimes))playtimes[playerName]=0;savePlaytimes();renderLeaderboard();skinBadge.textContent=selectedSkin+" "+playerName;skinBadge.style.display="block";gameStarted=true;menu.style.display="none";hud.classList.remove("hidden");});
 menuName.addEventListener("input",()=>menuName.style.outline="");
-const profanity=["fuck","shit","bitch","asshole","damn"];function cleanChat(t){let out=t;for(const w of profanity)out=out.replace(new RegExp(w,"gi"),"****");return out;}
-const chatLog=document.getElementById("chatLog"),chatInput=document.getElementById("chatInput");function sendChat(){const t=chatInput.value.trim();if(!t)return;const d=document.createElement("div");d.textContent=playerName+": "+cleanChat(t);chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight;chatInput.value="";}document.getElementById("chatSend").onclick=sendChat;chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
-let crouching=false;document.getElementById("crouchBtn").onclick=()=>{crouching=!crouching;document.getElementById("crouchBtn").textContent=crouching?"⬆ STAND":"⬇ CROUCH";};
-// Menu button
-document.getElementById("backMenu").onclick=()=>{gameStarted=false;savePlaytimes();renderLeaderboard();menu.style.display="flex";hud.classList.add("hidden");document.getElementById("chatBox").style.display="none";document.getElementById("skinBadge").style.display="none";};
-// Simple procedural music (tap to start/stop)
-let audioCtx=null,musicTimer=null,musicOn=false;document.getElementById("musicBtn").onclick=()=>{musicOn=!musicOn;const b=document.getElementById("musicBtn");b.textContent=musicOn?"🔇 MUSIC":"🎵 MUSIC";if(!musicOn){clearInterval(musicTimer);return;}audioCtx=audioCtx||new AudioContext();const notes=[261.6,329.6,392,329.6];let n=0;musicTimer=setInterval(()=>{if(!musicOn)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=notes[n++%notes.length];g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.32);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.34);},380);};
-// Day clock, sun and clouds
-let gameMinutes=720,achShown=false;const clock=document.getElementById("worldClock");function v9Tick(dt){if(!gameStarted)return;gameMinutes=(gameMinutes+dt*5)%1440;let h=Math.floor(gameMinutes/60),m=Math.floor(gameMinutes%60);clock.textContent="🕒 "+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");document.getElementById("chatBox").style.display="block";if(!achShown&&gameMinutes>721){achShown=true;const a=document.getElementById("achievement");a.textContent="🏆 Achievement: Welcome, "+playerName+"!";a.style.display="block";setTimeout(()=>a.style.display="none",3000);}}
-// Multiplayer stays menu-ready until a server is added
+document.getElementById("jump").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();if(gameStarted&&grounded)jumpQueued=true;});
+renderer.domElement.addEventListener("pointerdown",e=>{if(!gameStarted)return;looking=true;lookMoved=false;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId);});
+renderer.domElement.addEventListener("pointermove",e=>{if(!looking)return;if(Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY)>3)lookMoved=true;yaw-=(e.clientX-lastX)*.006;pitch=Math.max(-1.55,Math.min(1.55,pitch-(e.clientY-lastY)*.006));lastX=e.clientX;lastY=e.clientY;});
+renderer.domElement.addEventListener("pointerup",()=>looking=false);renderer.domElement.addEventListener("pointercancel",()=>looking=false);
+const joystick=document.getElementById("joystick"),stick=document.getElementById("stick"),joystickRadius=42;let joystickPointer=null;
+function updateJoystick(e){const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const len=Math.hypot(dx,dy);if(len>joystickRadius){dx=dx/len*joystickRadius;dy=dy/len*joystickRadius;}moveX=dx/joystickRadius;moveY=-dy/joystickRadius;stick.style.transform=`translate(${dx}px,${dy}px)`;}
+function resetJoystick(){joystickPointer=null;moveX=0;moveY=0;stick.style.transform="translate(0px,0px)";}
+joystick.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();joystickPointer=e.pointerId;joystick.setPointerCapture(e.pointerId);updateJoystick(e);});joystick.addEventListener("pointermove",e=>{if(e.pointerId===joystickPointer){e.preventDefault();updateJoystick(e);}});joystick.addEventListener("pointerup",e=>{if(e.pointerId===joystickPointer)resetJoystick();});joystick.addEventListener("pointercancel",resetJoystick);joystick.addEventListener("lostpointercapture",resetJoystick);
 
-// ---------- Main loop ----------
-let previousTime = performance.now();
-function animate(now) {
-  requestAnimationFrame(animate);
-  const dt = Math.min((now-previousTime)/1000,0.05);
-  previousTime = now;
+// Hotbar, block inventory, mining and placing.
+const hotbarItems=["fist",null,null,null,null,null,null,null,null];const inventory={grass:0,dirt:0,wood:0,leaves:0,stone:0,deepslate:0,coal:0,iron:0,diamond:0,deepCoal:0,deepIron:0,deepDiamond:0};let selectedSlot=0;const hotbarElement=document.getElementById("hotbar");
+function renderHotbar(){hotbarElement.innerHTML="";hotbarItems.forEach((kind,index)=>{const slot=document.createElement("button");slot.className="hot-slot"+(index===selectedSlot?" selected":"");slot.type="button";slot.setAttribute("aria-label",kind==="fist"?`${index+1}: Fists`:(kind?`${index+1}: ${definitions[kind].label}, ${inventory[kind]} blocks`:`${index+1}: empty`));const number=document.createElement("span");number.className="slot-num";number.textContent=index+1;slot.appendChild(number);if(kind==="fist"){const icon=document.createElement("span");icon.className="slot-icon";icon.textContent="👊";slot.appendChild(icon);}else if(kind){const icon=document.createElement("span");icon.className="slot-icon";icon.textContent=definitions[kind].emoji;slot.appendChild(icon);const count=document.createElement("span");count.className="slot-count";count.textContent=inventory[kind];slot.appendChild(count);}slot.addEventListener("click",()=>{selectedSlot=index;renderHotbar();});hotbarElement.appendChild(slot);});}renderHotbar();
+function createBlockInstance(kind,x,y,z){const g=blockGroups[kind];if(g.count>=g.capacity)return false;const key=keyOf(x,y,z);if(occupied.has(key))return false;const i=g.count++;g.items[i]={kind,x,y,z};g.alive[i]=true;tempObject.position.set(x,y,z);tempObject.scale.set(1,1,1);tempObject.rotation.set(0,0,0);tempObject.updateMatrix();g.mesh.setMatrixAt(i,tempObject.matrix);g.mesh.count=g.count;g.mesh.instanceMatrix.needsUpdate=true;occupied.set(key,g.items[i]);return true;}
+function removeBlock(hit){const g=blockGroups[hit.kind],i=hit.instanceId;if(!g||!g.alive[i])return false;const block=g.items[i];g.alive[i]=false;occupied.delete(keyOf(block.x,block.y,block.z));tempObject.position.set(0,0,0);tempObject.scale.set(0,0,0);tempObject.updateMatrix();g.mesh.setMatrixAt(i,tempObject.matrix);g.mesh.instanceMatrix.needsUpdate=true;inventory[hit.kind]=(inventory[hit.kind]||0)+1;if(!hotbarItems.includes(hit.kind)){const empty=hotbarItems.findIndex((v,idx)=>idx>0&&v===null);if(empty!==-1)hotbarItems[empty]=hit.kind;}renderHotbar();return true;}
+const raycaster=new T.Raycaster();raycaster.far=7;
+function findTarget(){raycaster.setFromCamera(new T.Vector2(0,0),camera);const hits=raycaster.intersectObjects(Object.values(blockGroups).map(g=>g.mesh),false);for(const h of hits){const g=blockGroups[h.object.name];if(g&&g.alive[h.instanceId])return{kind:h.object.name,instanceId:h.instanceId,face:h.face,point:h.point};}return null;}
+function useSelectedHotbar(){if(!gameStarted)return;const selected=hotbarItems[selectedSlot],hit=findTarget();if(selected==="fist"){if(hit)removeBlock(hit);return;}if(!hit||!selected||inventory[selected]<1)return;const b=blockGroups[hit.kind].items[hit.instanceId],n=hit.face.normal,x=Math.round(b.x+n.x),y=Math.round(b.y+n.y),z=Math.round(b.z+n.z);if(Math.hypot(player.x-x,player.z-z)<.72&&Math.abs(player.y-y)<1.8)return;if(createBlockInstance(selected,x,y,z)){inventory[selected]--;renderHotbar();}}
+renderer.domElement.addEventListener("click",()=>{if(gameStarted&&!lookMoved)useSelectedHotbar();});
 
-  if (gameStarted) {
-    v9Tick(dt);
-    let forward = moveY, strafe = moveX;
-    const length = Math.hypot(forward,strafe);
-    if (length > 1) { forward /= length; strafe /= length; }
-    const speed = 5.4;
-    player.x += (-Math.sin(yaw)*forward + Math.cos(yaw)*strafe) * speed * dt;
-    player.z += (-Math.cos(yaw)*forward - Math.sin(yaw)*strafe) * speed * dt;
-    player.x = Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x));
-    player.z = Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z));
+// Health and hunger HUD.
+let health=10,hunger=10,hungerElapsed=0,starvationElapsed=0;const healthRow=document.getElementById("healthRow"),hungerRow=document.getElementById("hungerRow");
+function updateStats(){healthRow.innerHTML="";hungerRow.innerHTML="";for(let i=0;i<10;i++){const heart=document.createElement("span");heart.className="stat-icon "+(i<health?"heart-full":"heart-empty");heart.textContent=i<health?"♥":"♡";healthRow.appendChild(heart);const food=document.createElement("span");food.className="stat-icon "+(i<hunger?"food-full":"food-empty");food.textContent=i<hunger?"🍗":"·";hungerRow.appendChild(food);}healthRow.setAttribute("aria-label",`${health} of 10 hearts`);hungerRow.setAttribute("aria-label",`${hunger} of 10 hunger`);}updateStats();
 
-    if (jumpQueued && grounded) {
-      verticalVelocity = 7.4;
-      grounded = false;
-      jumpQueued = false;
-    }
-    // Find the highest remaining ground block under the player.
-    // This means mined blocks create REAL holes you can walk or fall into.
-    const px = Math.round(player.x), pz = Math.round(player.z);
-    let highestGround = BASE_Y;
-    for (let y = 24; y >= BASE_Y; y--) {
-      const block = occupied.get(keyOf(px,y,pz));
-      if (block && !["wood","leaves"].includes(block.kind)) {
-        highestGround = y;
-        break;
-      }
-    }
-    const floorY = highestGround + 2.1;
-    if (!grounded) {
-      verticalVelocity -= 18 * dt;
-      player.y += verticalVelocity * dt;
-      if (player.y <= floorY) {
-        player.y = floorY;
-        verticalVelocity = 0;
-        grounded = true;
-      }
-    } else {
-      // Stay grounded while walking downhill as well as uphill.
-      player.y = floorY;
-    }
+// Chat, crouch, menu, music, in-game clock and first achievement.
+const profanity=["fuck","shit","bitch","asshole","damn"];function cleanChat(t){let out=t;for(const w of profanity)out=out.replace(new RegExp("\\b"+w+"\\b","gi"),"****");return out;}
+const chatLog=document.getElementById("chatLog"),chatInput=document.getElementById("chatInput");function sendChat(){const t=chatInput.value.trim();if(!t)return;const d=document.createElement("div");d.textContent=playerName+": "+cleanChat(t);chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight;chatInput.value="";}document.getElementById("chatSend").addEventListener("click",sendChat);chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
+document.getElementById("crouchBtn").addEventListener("click",()=>{crouching=!crouching;document.getElementById("crouchBtn").textContent=crouching?"⬆ STAND":"⬇ CROUCH";});
+document.getElementById("backMenu").addEventListener("click",()=>{gameStarted=false;savePlaytimes();renderLeaderboard();menu.style.display="flex";hud.classList.add("hidden");chatBox.style.display="none";skinBadge.style.display="none";});
+let audioCtx=null,musicTimer=null,musicOn=false;document.getElementById("musicBtn").addEventListener("click",()=>{musicOn=!musicOn;const b=document.getElementById("musicBtn");b.textContent=musicOn?"🔇 MUSIC":"🎵 MUSIC";if(!musicOn){clearInterval(musicTimer);return;}audioCtx=audioCtx||new AudioContext();const notes=[261.6,329.6,392,329.6];let n=0;musicTimer=setInterval(()=>{if(!musicOn)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=notes[n++%notes.length];g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.32);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.34);},380);});
+let gameMinutes=720,achievementShown=false;const clock=document.getElementById("worldClock"),achievement=document.getElementById("achievement"),chatBox=document.getElementById("chatBox");function gameTick(dt){if(!gameStarted)return;gameMinutes=(gameMinutes+dt*5)%1440;const h=Math.floor(gameMinutes/60),m=Math.floor(gameMinutes%60);clock.textContent="🕒 "+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");chatBox.style.display="block";if(!achievementShown&&gameMinutes>721){achievementShown=true;achievement.textContent="🏆 Achievement: Welcome, "+playerName+"!";achievement.style.display="block";setTimeout(()=>achievement.style.display="none",3000);}}
 
-    if (playerName && playerName !== "Player") {
-      playtimes[playerName] = (Number(playtimes[playerName]) || 0) + dt;
-      if (Math.floor((playtimes[playerName] || 0) * 2) % 10 === 0) { savePlaytimes(); renderLeaderboard(); }
-    }
-    hungerElapsed += dt;
-    if (hungerElapsed >= 45) {
-      hungerElapsed -= 45;
-      if (hunger > 0) { hunger--; updateStats(); }
-    }
-    if (hunger === 0 && health > 0) {
-      starvationElapsed += dt;
-      if (starvationElapsed >= 18) {
-        starvationElapsed = 0;
-        health = Math.max(0,health-1);
-        updateStats();
-      }
-    } else {
-      starvationElapsed = 0;
-    }
+// Main movement/render loop.
+let previousTime=performance.now(),lastSave=0;
+function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previousTime)/1000,.05);previousTime=now;
+  if(gameStarted){gameTick(dt);let forward=moveY,strafe=moveX,len=Math.hypot(forward,strafe);if(len>1){forward/=len;strafe/=len;}const speed=crouching?2.4:5.4;player.x+=(-Math.sin(yaw)*forward+Math.cos(yaw)*strafe)*speed*dt;player.z+=(-Math.cos(yaw)*forward-Math.sin(yaw)*strafe)*speed*dt;player.x=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x));player.z=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z));
+    if(jumpQueued&&grounded){verticalVelocity=7.4;grounded=false;jumpQueued=false;}const px=Math.round(player.x),pz=Math.round(player.z);let highestGround=BASE_Y;for(let y=24;y>=BASE_Y;y--){const b=occupied.get(keyOf(px,y,pz));if(b&&!['wood','leaves'].includes(b.kind)){highestGround=y;break;}}const floorY=highestGround+2.1;if(!grounded){verticalVelocity-=18*dt;player.y+=verticalVelocity*dt;if(player.y<=floorY){player.y=floorY;verticalVelocity=0;grounded=true;}}else player.y=floorY;
+    if(playerName&&playerName!=="Player"){playtimes[playerName]=(Number(playtimes[playerName])||0)+dt;if(now-lastSave>5000){savePlaytimes();renderLeaderboard();lastSave=now;}}
+    hungerElapsed+=dt;if(hungerElapsed>=45){hungerElapsed-=45;if(hunger>0){hunger--;updateStats();}}if(hunger===0&&health>0){starvationElapsed+=dt;if(starvationElapsed>=18){starvationElapsed=0;health=Math.max(0,health-1);updateStats();}}else starvationElapsed=0;
   }
-
-  camera.position.copy(player);
-  camera.rotation.order = "YXZ";
-  camera.rotation.y = yaw;
-  camera.rotation.x = pitch;
-  renderer.render(scene,camera);
+  camera.position.copy(player);if(crouching&&gameStarted)camera.position.y-=.55;camera.rotation.order="YXZ";camera.rotation.y=yaw;camera.rotation.x=pitch;renderer.render(scene,camera);
 }
-requestAnimationFrame(animate);
-window.addEventListener("beforeunload", savePlaytimes);
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
+requestAnimationFrame(animate);window.addEventListener("beforeunload",savePlaytimes);window.addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 </script>
 </body>
 </html>
