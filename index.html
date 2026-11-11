@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TevCraft V6.1.1</title>
+<title>TevCraft V7</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;overflow:hidden;font-family:Arial;background:#87ceeb;touch-action:none}
@@ -15,13 +15,48 @@ canvas{display:block}
 .actions{position:fixed;bottom:25px;right:15px;z-index:3;display:flex;flex-direction:column;gap:8px}
 button{background:#17354cdd;color:white;border:2px solid #ffffff88;border-radius:13px;font-weight:bold;font-size:16px;padding:13px 15px;touch-action:none}
 .hand{position:fixed;right:0;bottom:55px;width:95px;height:120px;background:#d49a6a;border:4px solid #754b31;border-radius:20px 0 0 0;transform:rotate(-15deg);z-index:1;pointer-events:none}
+
+/* V7 start menu + Roblox-style jump button */
+canvas{position:fixed;inset:0;z-index:0}
+#menu{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,rgba(5,18,35,.78),rgba(9,41,54,.72));}
+.menu-card{width:min(440px,94vw);padding:30px 24px 26px;border:2px solid #ffffff55;border-radius:26px;background:linear-gradient(160deg,#244d68f2,#102b42f5);box-shadow:0 18px 60px #0008;text-align:center;color:white}
+.menu-kicker{font-size:12px;letter-spacing:4px;font-weight:900;color:#ffcf70;margin-bottom:10px}
+.menu-title{font-size:clamp(34px,9vw,54px);font-weight:1000;letter-spacing:1px;text-shadow:0 4px 0 #7c241d,0 8px 18px #0008;line-height:1;margin:0 0 10px}
+.menu-subtitle{color:#d8eaf2;font-size:15px;margin:0 0 25px}
+.menu-button{display:block;width:100%;padding:17px 14px;border-radius:15px;font-size:19px;font-weight:900;letter-spacing:.5px;margin-top:12px;box-shadow:0 5px 0 #0005}
+#singleplayer{background:linear-gradient(#69c94e,#328e2b);border-color:#b6f09f}
+#multiplayer{background:#536879;color:#d4dce2;border-color:#9aabb8;opacity:.82}
+.menu-note{font-size:12px;color:#bdd0dc;margin-top:18px}
+.hud.hidden{display:none}
+.hud{position:fixed;inset:0;z-index:5;pointer-events:none}
+.hud>*{pointer-events:auto}
+#cross{pointer-events:none}
+#joystick{z-index:7}
+.actions{z-index:7}
+#jump{position:fixed;right:26px;bottom:150px;width:78px;height:78px;border-radius:50%;padding:0;background:linear-gradient(#72c9ff,#2676c3);border:3px solid #eaf8ff;font-size:16px;font-weight:1000;box-shadow:0 5px 0 #124875,0 6px 16px #0007;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center}
+#jump:active{transform:translateY(3px);box-shadow:0 2px 0 #124875,0 3px 10px #0007}
+@media(max-width:500px){#jump{right:24px;bottom:145px;width:72px;height:72px}.menu-card{padding:26px 20px 22px}}
+
 </style>
 </head>
 <body>
-<div id="logo">TEVCRAFT V6.1.1 🕹️</div>
-<div id="cross">+</div><div class="hand"></div>
-<div id="joystick"><div id="stick"></div></div>
-<div class="actions"><button id="mine">MINE ⛏️</button><button id="place">PLACE 🧱</button></div>
+<div id="menu">
+  <div class="menu-card">
+    <div class="menu-kicker">WELCOME TO</div>
+    <h1 class="menu-title">TEVCRAFT</h1>
+    <p class="menu-subtitle">Build, explore, and make your own world.</p>
+    <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
+    <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
+    <div class="menu-note">V7 · FIRST-PERSON BLOCK ADVENTURE</div>
+  </div>
+</div>
+<div id="hud" class="hud hidden">
+  <div id="logo">TEVCRAFT V7 🕹️</div>
+  <div id="cross">+</div><div class="hand"></div>
+  <div id="joystick"><div id="stick"></div></div>
+  <div class="actions"><button id="mine">MINE ⛏️</button><button id="place">PLACE 🧱</button></div>
+  <button id="jump">JUMP ⬆️</button>
+</div>
 <script type="module">
 import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 const s=new T.Scene();s.background=new T.Color(0x87ceeb);s.fog=new T.Fog(0x87ceeb,18,45);
@@ -32,9 +67,24 @@ const mat={g:new T.MeshLambertMaterial({color:0x4fa83b}),d:new T.MeshLambertMate
 const geo=new T.BoxGeometry(1,1,1),grp=new T.Group(),blocks=[];s.add(grp);
 function add(x,y,z,m){let q=new T.Mesh(geo,mat[m]);q.position.set(x,y,z);grp.add(q);blocks.push(q)}
 for(let x=-12;x<=12;x++)for(let z=-12;z<=12;z++){let h=Math.floor(Math.sin(x*.3)+Math.cos(z*.25));for(let y=-2;y<=h;y++)add(x,y,z,y==h?'g':'d');if(Math.random()<.025&&Math.abs(x)+Math.abs(z)>8){for(let y=1;y<4;y++)add(x,h+y,z,'w');for(let dx=-1;dx<2;dx++)for(let dz=-1;dz<2;dz++)add(x+dx,h+4,z+dz,'leaf')}}
-let p=new T.Vector3(0,2,5),yaw=0,pitch=0,down=false,lx,ly,moveX=0,moveY=0;
+let p=new T.Vector3(0,2.1,5),yaw=0,pitch=0,down=false,lx,ly,moveX=0,moveY=0;
+let gameStarted=false, verticalVelocity=0, grounded=true, jumpQueued=false;
+const menu=document.getElementById('menu'),hud=document.getElementById('hud');
+document.getElementById('singleplayer').addEventListener('click',()=>{
+  gameStarted=true; menu.style.display='none'; hud.classList.remove('hidden');
+});
+function groundEyeHeight(x,z){
+  const bx=Math.round(x),bz=Math.round(z);
+  const surface=Math.floor(Math.sin(bx*.3)+Math.cos(bz*.25))+.5;
+  return surface+1.6;
+}
+p.y=groundEyeHeight(p.x,p.z);
+document.getElementById('jump').addEventListener('pointerdown',e=>{
+  e.preventDefault();e.stopPropagation();
+  if(gameStarted && grounded) jumpQueued=true;
+});
 function cam(){c.position.copy(p);c.rotation.order='YXZ';c.rotation.y=yaw;c.rotation.x=pitch}
-r.domElement.addEventListener('pointerdown',e=>{down=true;lx=e.clientX;ly=e.clientY;r.domElement.setPointerCapture(e.pointerId)});
+r.domElement.addEventListener('pointerdown',e=>{if(!gameStarted)return;down=true;lx=e.clientX;ly=e.clientY;r.domElement.setPointerCapture(e.pointerId)});
 r.domElement.addEventListener('pointermove',e=>{if(!down)return;yaw-=(e.clientX-lx)*.006;pitch=Math.max(-1.2,Math.min(1.2,pitch-(e.clientY-ly)*.006));lx=e.clientX;ly=e.clientY});
 r.domElement.addEventListener('pointerup',()=>down=false);r.domElement.addEventListener('pointercancel',()=>down=false);
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick'),radius=43;let joyPointer=null;
@@ -46,10 +96,22 @@ joy.addEventListener('pointerup',e=>{if(e.pointerId===joyPointer)resetJoystick()
 let ray=new T.Raycaster();function target(){ray.setFromCamera(new T.Vector2(0,0),c);return ray.intersectObjects(blocks,false)[0]}
 document.getElementById('mine').onclick=()=>{let h=target();if(h){grp.remove(h.object);blocks.splice(blocks.indexOf(h.object),1)}};
 document.getElementById('place').onclick=()=>{let h=target();if(h){let q=h.object.position,n=h.face.normal;add(Math.round(q.x+n.x),Math.round(q.y+n.y),Math.round(q.z+n.z),'g')}};
-let last=performance.now();function loop(t){requestAnimationFrame(loop);let d=(t-last)/1000;last=t;let f=moveY,q=moveX,speed=5;
-// FIXED: pushing the joystick UP now moves in the direction you are looking.
-p.x+=(-Math.sin(yaw)*f+Math.cos(yaw)*q)*speed*d;
-p.z+=(-Math.cos(yaw)*f-Math.sin(yaw)*q)*speed*d;
-p.x=Math.max(-11,Math.min(11,p.x));p.z=Math.max(-11,Math.min(11,p.z));p.y=2;cam();r.render(s,c)}requestAnimationFrame(loop);
+let last=performance.now();function loop(t){
+ requestAnimationFrame(loop);
+ let d=Math.min((t-last)/1000,.05);last=t;
+ if(gameStarted){
+  let f=moveY,q=moveX,speed=5;
+  // Correct Roblox-style joystick direction: up moves forward relative to the camera.
+  p.x+=(-Math.sin(yaw)*f+Math.cos(yaw)*q)*speed*d;
+  p.z+=(-Math.cos(yaw)*f-Math.sin(yaw)*q)*speed*d;
+  p.x=Math.max(-11,Math.min(11,p.x));p.z=Math.max(-11,Math.min(11,p.z));
+  if(jumpQueued && grounded){verticalVelocity=7.2;grounded=false;jumpQueued=false;}
+  if(!grounded){verticalVelocity-=18*d;p.y+=verticalVelocity*d;}
+  const floor=groundEyeHeight(p.x,p.z);
+  if(p.y<=floor){p.y=floor;verticalVelocity=0;grounded=true;}
+ }
+ cam();r.render(s,c);
+}
+requestAnimationFrame(loop);
 onresize=()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight)};
 </script></body></html>
