@@ -56,6 +56,7 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
 /* V8.2 Leaderboard */
 #menuName{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #ffffff44;background:#08121bd9;color:white;font-size:18px;font-weight:800;text-align:center;outline:none;margin:8px 0 12px}
 #menuName:focus{border-color:#ffd95a;box-shadow:0 0 0 3px #ffd95a33}
+#skinBadge{position:fixed;right:12px;top:102px;z-index:21;background:#17222ccc;border:1px solid #fff7;border-radius:12px;color:white;padding:6px 9px;font-weight:900;font-size:12px;display:none}
 #leaderboard{position:fixed;top:12px;left:12px;width:min(310px,72vw);z-index:30;color:white;background:linear-gradient(135deg,#132235ed,#0a101be8);border:2px solid #ffffff35;border-radius:16px;box-shadow:0 10px 30px #0008;overflow:hidden;pointer-events:auto;transition:width .25s ease,opacity .2s ease}
 #leaderHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#ffffff0c;font-weight:1000;letter-spacing:.5px;font-size:14px}
 #leaderToggle{margin-left:auto;width:34px;height:30px;border:0;border-radius:9px;background:#ffffff18;color:white;font-size:17px;font-weight:900}
@@ -85,8 +86,8 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
  </div>
 </div>
 
-<div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div><div id="hud" class="hidden">
- <div id="logo">TEVCRAFT V8.1 🌍</div>
+<div id="skinBadge">🧑‍🚀 YOU</div><div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div><div id="hud" class="hidden">
+ <div id="logo">TEVCRAFT V9.1 🌍</div>
  <div id="cross">+</div>
  <div class="hand"></div>
  <div id="joystick"><div id="stick"></div></div>
@@ -102,17 +103,33 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
 import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 
-// ---------- Player username and leaderboard ----------
+// ---------- Player username and playtime leaderboard ----------
 let playerName = localStorage.getItem("tevcraftName") || "Player";
 const menuName = document.getElementById("menuName");
 menuName.value = playerName === "Player" ? "" : playerName;
 const leaderboard = document.getElementById("leaderboard");
 const leaderBody = document.getElementById("leaderBody");
 const leaderToggle = document.getElementById("leaderToggle");
+const playtimeKey = "tevcraftPlaytimes";
+let playtimes = JSON.parse(localStorage.getItem(playtimeKey) || "{}");
+function formatPlaytime(seconds){
+  seconds = Math.floor(seconds || 0);
+  const h = Math.floor(seconds/3600), m = Math.floor((seconds%3600)/60), sec = seconds%60;
+  return h ? `${h}h ${m}m` : (m ? `${m}m ${sec}s` : `${sec}s`);
+}
+function savePlaytimes(){ localStorage.setItem(playtimeKey, JSON.stringify(playtimes)); }
 function renderLeaderboard(){
  leaderBody.innerHTML = "";
- const rows=[{name:playerName,score:"You"},{name:"Steve",score:"Coming soon"},{name:"Alex",score:"Coming soon"}];
- rows.forEach((row,i)=>{const el=document.createElement("div");el.className="leader-you";el.innerHTML=`<span class="leader-rank">#${i+1}</span><span class="leader-name"></span><span class="leader-score"></span>`;el.querySelector(".leader-name").textContent=row.name;el.querySelector(".leader-score").textContent=row.score;leaderBody.appendChild(el);});
+ const rows = Object.entries(playtimes).map(([name,time])=>({name,time:Number(time)||0}));
+ if(playerName && playerName !== "Player" && !rows.some(r=>r.name===playerName)) rows.push({name:playerName,time:0});
+ rows.sort((a,b)=>b.time-a.time);
+ rows.slice(0,20).forEach((row,i)=>{
+   const el=document.createElement("div"); el.className="leader-you";
+   el.innerHTML=`<span class="leader-rank">#${i+1}</span><span class="leader-name"></span><span class="leader-score"></span>`;
+   el.querySelector(".leader-name").textContent=row.name;
+   el.querySelector(".leader-score").textContent=formatPlaytime(row.time);
+   leaderBody.appendChild(el);
+ });
 }
 leaderToggle.addEventListener("click",()=>{const closed=leaderboard.classList.toggle("collapsed");leaderToggle.textContent=closed?"⌄":"⌃";leaderToggle.setAttribute("aria-label",closed?"Expand leaderboard":"Shrink leaderboard");});
 renderLeaderboard();
@@ -320,7 +337,10 @@ document.getElementById("singleplayer").addEventListener("click", () => {
   const typed = menuName.value.trim();
   if (!typed) { menuName.focus(); menuName.style.outline="3px solid #ff4d4d"; return; }
   playerName = typed.slice(0,16); localStorage.setItem("tevcraftName", playerName);
-  renderLeaderboard();
+  if (!(playerName in playtimes)) playtimes[playerName] = 0;
+  savePlaytimes(); renderLeaderboard();
+  document.getElementById("skinBadge").textContent = selectedSkin + " " + playerName;
+  document.getElementById("skinBadge").style.display = "block";
   gameStarted = true;
   menu.style.display = "none";
   hud.classList.remove("hidden");
@@ -345,7 +365,7 @@ renderer.domElement.addEventListener("pointermove", e => {
   if (!looking) return;
   if (Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY) > 3) lookMoved = true;
   yaw -= (e.clientX - lastX) * 0.006;
-  pitch = Math.max(-1.2, Math.min(1.2, pitch - (e.clientY - lastY) * 0.006));
+  pitch = Math.max(-1.55, Math.min(1.55, pitch - (e.clientY - lastY) * 0.006));
   lastX = e.clientX; lastY = e.clientY;
 });
 renderer.domElement.addEventListener("pointerup", () => looking = false);
@@ -383,8 +403,8 @@ joystick.addEventListener("pointercancel", resetJoystick);
 joystick.addEventListener("lostpointercapture", resetJoystick);
 
 // ---------- Hotbar, inventory, mining, and placing ----------
-const hotbarItems = ["fist","grass","dirt","wood","leaves","stone",null,null,null];
-const inventory = { grass:64, dirt:64, wood:32, leaves:32, stone:0 };
+const hotbarItems = ["fist",null,null,null,null,null,null,null,null];
+const inventory = { grass:0, dirt:0, wood:0, leaves:0, stone:0 };
 let selectedSlot = 0;
 const hotbarElement = document.getElementById("hotbar");
 function renderHotbar() {
@@ -433,6 +453,10 @@ function removeBlock(hit) {
   group.mesh.setMatrixAt(i,tempObject.matrix);
   group.mesh.instanceMatrix.needsUpdate = true;
   inventory[hit.kind] = (inventory[hit.kind] || 0) + 1;
+  if (!hotbarItems.includes(hit.kind)) {
+    const empty = hotbarItems.findIndex((item, idx) => idx > 0 && item === null);
+    if (empty !== -1) hotbarItems[empty] = hit.kind;
+  }
   renderHotbar();
   return true;
 }
@@ -506,14 +530,14 @@ updateStats();
 // Username is required
 document.getElementById("singleplayer").addEventListener("click",()=>{}, {once:true});
 const oldStart = document.getElementById("singleplayer").onclick;
-let selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);}));
+let selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);document.getElementById("skinBadge").textContent=selectedSkin+" "+playerName;}));
 // Extra guard catches blank names before play
 menuName.addEventListener("input",()=>menuName.style.outline="");
 const profanity=["fuck","shit","bitch","asshole","damn"];function cleanChat(t){let out=t;for(const w of profanity)out=out.replace(new RegExp(w,"gi"),"****");return out;}
 const chatLog=document.getElementById("chatLog"),chatInput=document.getElementById("chatInput");function sendChat(){const t=chatInput.value.trim();if(!t)return;const d=document.createElement("div");d.textContent=playerName+": "+cleanChat(t);chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight;chatInput.value="";}document.getElementById("chatSend").onclick=sendChat;chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
 let crouching=false;document.getElementById("crouchBtn").onclick=()=>{crouching=!crouching;document.getElementById("crouchBtn").textContent=crouching?"⬆ STAND":"⬇ CROUCH";};
 // Menu button
-document.getElementById("backMenu").onclick=()=>{gameStarted=false;menu.style.display="flex";hud.classList.add("hidden");document.getElementById("chatBox").style.display="none";};
+document.getElementById("backMenu").onclick=()=>{gameStarted=false;savePlaytimes();renderLeaderboard();menu.style.display="flex";hud.classList.add("hidden");document.getElementById("chatBox").style.display="none";document.getElementById("skinBadge").style.display="none";};
 // Simple procedural music (tap to start/stop)
 let audioCtx=null,musicTimer=null,musicOn=false;document.getElementById("musicBtn").onclick=()=>{musicOn=!musicOn;const b=document.getElementById("musicBtn");b.textContent=musicOn?"🔇 MUSIC":"🎵 MUSIC";if(!musicOn){clearInterval(musicTimer);return;}audioCtx=audioCtx||new AudioContext();const notes=[261.6,329.6,392,329.6];let n=0;musicTimer=setInterval(()=>{if(!musicOn)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=notes[n++%notes.length];g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.32);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.34);},380);};
 // Day clock, sun and clouds
@@ -557,6 +581,10 @@ function animate(now) {
       player.y = floorY;
     }
 
+    if (playerName && playerName !== "Player") {
+      playtimes[playerName] = (Number(playtimes[playerName]) || 0) + dt;
+      if (Math.floor((playtimes[playerName] || 0) * 2) % 10 === 0) { savePlaytimes(); renderLeaderboard(); }
+    }
     hungerElapsed += dt;
     if (hungerElapsed >= 45) {
       hungerElapsed -= 45;
@@ -581,6 +609,7 @@ function animate(now) {
   renderer.render(scene,camera);
 }
 requestAnimationFrame(animate);
+window.addEventListener("beforeunload", savePlaytimes);
 window.addEventListener("resize", () => {
   camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
