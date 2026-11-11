@@ -567,7 +567,18 @@ function animate(now) {
       grounded = false;
       jumpQueued = false;
     }
-    const floorY = terrainHeightAt(player.x,player.z) + 2.1;
+    // Find the highest remaining ground block under the player.
+    // This means mined blocks create REAL holes you can walk or fall into.
+    const px = Math.round(player.x), pz = Math.round(player.z);
+    let highestGround = BASE_Y;
+    for (let y = 20; y >= BASE_Y; y--) {
+      const block = occupied.get(keyOf(px,y,pz));
+      if (block && (block.kind === "grass" || block.kind === "dirt" || block.kind === "stone")) {
+        highestGround = y;
+        break;
+      }
+    }
+    const floorY = highestGround + 2.1;
     if (!grounded) {
       verticalVelocity -= 18 * dt;
       player.y += verticalVelocity * dt;
