@@ -1,117 +1,528 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TevCraft V7</title>
+<title>TevCraft V8 — Survival World</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;overflow:hidden;font-family:Arial;background:#87ceeb;touch-action:none}
-canvas{display:block}
-#logo{position:fixed;top:12px;left:12px;background:#c62828;color:white;padding:9px 14px;border-radius:12px;font-weight:bold;z-index:2}
-#cross{position:fixed;left:50%;top:50%;color:white;font-size:25px;transform:translate(-50%,-50%);z-index:2;text-shadow:1px 1px #000;pointer-events:none}
-#joystick{position:fixed;left:24px;bottom:24px;width:138px;height:138px;border-radius:50%;background:#17354c66;border:3px solid #ffffffaa;z-index:4;touch-action:none;display:flex;align-items:center;justify-content:center}
-#stick{width:62px;height:62px;border-radius:50%;background:#dceaf2dd;border:3px solid #ffffff;box-shadow:0 3px 10px #0006;transform:translate(0,0);pointer-events:none}
-.actions{position:fixed;bottom:25px;right:15px;z-index:3;display:flex;flex-direction:column;gap:8px}
-button{background:#17354cdd;color:white;border:2px solid #ffffff88;border-radius:13px;font-weight:bold;font-size:16px;padding:13px 15px;touch-action:none}
-.hand{position:fixed;right:0;bottom:55px;width:95px;height:120px;background:#d49a6a;border:4px solid #754b31;border-radius:20px 0 0 0;transform:rotate(-15deg);z-index:1;pointer-events:none}
-
-/* V7 start menu + Roblox-style jump button */
-canvas{position:fixed;inset:0;z-index:0}
-#menu{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,rgba(5,18,35,.78),rgba(9,41,54,.72));}
-.menu-card{width:min(440px,94vw);padding:30px 24px 26px;border:2px solid #ffffff55;border-radius:26px;background:linear-gradient(160deg,#244d68f2,#102b42f5);box-shadow:0 18px 60px #0008;text-align:center;color:white}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#82c9f2;font-family:Arial,Helvetica,sans-serif;touch-action:none}
+canvas{position:fixed;inset:0;z-index:0;display:block}
+button{font-family:inherit;touch-action:none;cursor:pointer}
+#menu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,rgba(5,18,35,.76),rgba(9,41,54,.66))}
+.menu-card{width:min(450px,94vw);padding:30px 24px 26px;border:2px solid #ffffff66;border-radius:26px;background:linear-gradient(160deg,#244d68f2,#102b42f5);box-shadow:0 18px 60px #0008;text-align:center;color:white}
 .menu-kicker{font-size:12px;letter-spacing:4px;font-weight:900;color:#ffcf70;margin-bottom:10px}
-.menu-title{font-size:clamp(34px,9vw,54px);font-weight:1000;letter-spacing:1px;text-shadow:0 4px 0 #7c241d,0 8px 18px #0008;line-height:1;margin:0 0 10px}
-.menu-subtitle{color:#d8eaf2;font-size:15px;margin:0 0 25px}
-.menu-button{display:block;width:100%;padding:17px 14px;border-radius:15px;font-size:19px;font-weight:900;letter-spacing:.5px;margin-top:12px;box-shadow:0 5px 0 #0005}
+.menu-title{font-size:clamp(36px,9vw,56px);font-weight:1000;letter-spacing:1px;text-shadow:0 4px 0 #7c241d,0 8px 18px #0008;line-height:1;margin:0 0 10px}
+.menu-subtitle{color:#d8eaf2;font-size:15px;margin:0 0 24px}
+.menu-button{display:block;width:100%;padding:17px 14px;border:2px solid #ffffff88;border-radius:15px;font-size:19px;font-weight:900;letter-spacing:.5px;margin-top:12px;color:white;box-shadow:0 5px 0 #0005}
 #singleplayer{background:linear-gradient(#69c94e,#328e2b);border-color:#b6f09f}
-#multiplayer{background:#536879;color:#d4dce2;border-color:#9aabb8;opacity:.82}
+#multiplayer{background:#536879;color:#d4dce2;opacity:.82}
 .menu-note{font-size:12px;color:#bdd0dc;margin-top:18px}
-.hud.hidden{display:none}
-.hud{position:fixed;inset:0;z-index:5;pointer-events:none}
-.hud>*{pointer-events:auto}
-#cross{pointer-events:none}
-#joystick{z-index:7}
-.actions{z-index:7}
-#jump{position:fixed;right:26px;bottom:150px;width:78px;height:78px;border-radius:50%;padding:0;background:linear-gradient(#72c9ff,#2676c3);border:3px solid #eaf8ff;font-size:16px;font-weight:1000;box-shadow:0 5px 0 #124875,0 6px 16px #0007;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center}
+#hud{position:fixed;inset:0;z-index:5;pointer-events:none}
+#hud.hidden{display:none}
+#hud>*{pointer-events:auto}
+#logo{position:fixed;top:12px;left:12px;background:#c62828;color:white;padding:9px 14px;border-radius:12px;font-weight:900;z-index:6;box-shadow:0 3px 10px #0004}
+#cross{position:fixed;left:50%;top:50%;color:white;font-size:25px;transform:translate(-50%,-50%);z-index:6;text-shadow:1px 1px #000;pointer-events:none}
+#joystick{position:fixed;left:19px;bottom:18px;width:132px;height:132px;border-radius:50%;background:#17354c66;border:3px solid #ffffffaa;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px #0003}
+#stick{width:60px;height:60px;border-radius:50%;background:#e6f2f8e8;border:3px solid #ffffff;box-shadow:0 3px 10px #0006;transform:translate(0,0);pointer-events:none}
+.actions{position:fixed;bottom:22px;right:13px;z-index:8;display:flex;flex-direction:column;gap:7px}
+.action-button{background:#17354cdd;color:white;border:2px solid #ffffff99;border-radius:13px;font-weight:900;font-size:14px;padding:12px 13px;min-width:82px;box-shadow:0 3px 8px #0004}
+#jump{position:fixed;right:20px;bottom:137px;width:75px;height:75px;border-radius:50%;padding:0;background:linear-gradient(#72c9ff,#2676c3);border:3px solid #eaf8ff;color:white;font-size:15px;font-weight:1000;box-shadow:0 5px 0 #124875,0 6px 16px #0007;z-index:8;touch-action:none;display:flex;align-items:center;justify-content:center}
 #jump:active{transform:translateY(3px);box-shadow:0 2px 0 #124875,0 3px 10px #0007}
-@media(max-width:500px){#jump{right:24px;bottom:145px;width:72px;height:72px}.menu-card{padding:26px 20px 22px}}
-
+.hand{position:fixed;right:0;bottom:62px;width:74px;height:92px;background:linear-gradient(120deg,#e2b084,#bd8052);border:4px solid #754b31;border-right:0;border-radius:22px 0 0 0;transform:rotate(-13deg);z-index:4;pointer-events:none;opacity:.92}
+#stats{position:fixed;left:50%;bottom:69px;transform:translateX(-50%);display:flex;flex-direction:column;gap:3px;align-items:center;padding:5px 9px;background:#1018209c;border:1px solid #ffffff35;border-radius:9px;white-space:nowrap;pointer-events:none}
+.stat-row{height:19px;display:flex;gap:1px;align-items:center;justify-content:center}
+.stat-icon{font-size:17px;line-height:18px;width:19px;text-align:center;text-shadow:1px 2px 2px #0009}
+.heart-full{color:#ff3b48}.heart-empty{color:#7d8790}
+.food-full{filter:drop-shadow(0 1px 1px #000)}.food-empty{filter:grayscale(1);opacity:.38}
+#hotbar{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);width:min(390px,88vw);height:48px;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;padding:3px;background:#101820bb;border:2px solid #dceaf2aa;border-radius:8px;pointer-events:auto}
+.hot-slot{position:relative;min-width:0;border:2px solid #8d9aa4;background:linear-gradient(#52616b,#29343d);border-radius:4px;color:white;padding:0;display:flex;align-items:center;justify-content:center}
+.hot-slot.selected{border:3px solid #ffe27a;background:linear-gradient(#6e7d88,#3c4b55);box-shadow:0 0 8px #ffd95a99}
+.slot-num{position:absolute;left:2px;top:0;font-size:8px;color:#e5e5e5}
+.slot-icon{font-size:20px;line-height:1}
+.slot-count{position:absolute;right:2px;bottom:0;font-size:10px;font-weight:900;color:white;text-shadow:1px 1px 2px #000}
+@media(max-width:500px){
+ #joystick{left:12px;bottom:13px;width:116px;height:116px}
+ #stick{width:54px;height:54px}
+ #jump{right:13px;bottom:132px;width:68px;height:68px;font-size:13px}
+ .actions{right:8px;bottom:16px}
+ .action-button{min-width:72px;padding:10px 8px;font-size:12px}
+ #hotbar{width:min(350px,91vw);height:43px;bottom:8px;gap:2px}
+ .slot-icon{font-size:17px}.slot-count{font-size:9px}
+ #stats{bottom:58px;padding:3px 6px}
+ .stat-icon{font-size:15px;width:17px}
+ #logo{font-size:12px;padding:7px 10px}
+ .hand{width:55px;height:72px;bottom:55px}
+}
 </style>
 </head>
 <body>
 <div id="menu">
-  <div class="menu-card">
-    <div class="menu-kicker">WELCOME TO</div>
-    <h1 class="menu-title">TEVCRAFT</h1>
-    <p class="menu-subtitle">Build, explore, and make your own world.</p>
-    <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
-    <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
-    <div class="menu-note">V7 · FIRST-PERSON BLOCK ADVENTURE</div>
-  </div>
+ <div class="menu-card">
+  <div class="menu-kicker">WELCOME TO</div>
+  <h1 class="menu-title">TEVCRAFT</h1>
+  <p class="menu-subtitle">Explore a bigger world. Build your own adventure.</p>
+  <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
+  <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
+  <div class="menu-note">V8 · SURVIVAL WORLD</div>
+ </div>
 </div>
-<div id="hud" class="hud hidden">
-  <div id="logo">TEVCRAFT V7 🕹️</div>
-  <div id="cross">+</div><div class="hand"></div>
-  <div id="joystick"><div id="stick"></div></div>
-  <div class="actions"><button id="mine">MINE ⛏️</button><button id="place">PLACE 🧱</button></div>
-  <button id="jump">JUMP ⬆️</button>
+<div id="hud" class="hidden">
+ <div id="logo">TEVCRAFT V8 🌍</div>
+ <div id="cross">+</div>
+ <div class="hand"></div>
+ <div id="joystick"><div id="stick"></div></div>
+ <div class="actions">
+  <button class="action-button" id="mine">MINE ⛏️</button>
+  <button class="action-button" id="place">PLACE 🧱</button>
+ </div>
+ <button id="jump">JUMP ⬆️</button>
+ <div id="stats">
+  <div class="stat-row" id="healthRow" aria-label="10 hearts"></div>
+  <div class="stat-row" id="hungerRow" aria-label="10 hunger"></div>
+ </div>
+ <div id="hotbar" aria-label="Hotbar"></div>
 </div>
+
 <script type="module">
 import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-const s=new T.Scene();s.background=new T.Color(0x87ceeb);s.fog=new T.Fog(0x87ceeb,18,45);
-const c=new T.PerspectiveCamera(75,innerWidth/innerHeight,.1,100);
-const r=new T.WebGLRenderer({antialias:true});r.setSize(innerWidth,innerHeight);r.setPixelRatio(Math.min(devicePixelRatio,1.5));document.body.prepend(r.domElement);
-s.add(new T.HemisphereLight(0xffffff,0x506040,2));let sun=new T.DirectionalLight(0xffffff,2);sun.position.set(8,15,8);s.add(sun);
-const mat={g:new T.MeshLambertMaterial({color:0x4fa83b}),d:new T.MeshLambertMaterial({color:0x81502e}),w:new T.MeshLambertMaterial({color:0x8b5a32}),leaf:new T.MeshLambertMaterial({color:0x287c35})};
-const geo=new T.BoxGeometry(1,1,1),grp=new T.Group(),blocks=[];s.add(grp);
-function add(x,y,z,m){let q=new T.Mesh(geo,mat[m]);q.position.set(x,y,z);grp.add(q);blocks.push(q)}
-for(let x=-12;x<=12;x++)for(let z=-12;z<=12;z++){let h=Math.floor(Math.sin(x*.3)+Math.cos(z*.25));for(let y=-2;y<=h;y++)add(x,y,z,y==h?'g':'d');if(Math.random()<.025&&Math.abs(x)+Math.abs(z)>8){for(let y=1;y<4;y++)add(x,h+y,z,'w');for(let dx=-1;dx<2;dx++)for(let dz=-1;dz<2;dz++)add(x+dx,h+4,z+dz,'leaf')}}
-let p=new T.Vector3(0,2.1,5),yaw=0,pitch=0,down=false,lx,ly,moveX=0,moveY=0;
-let gameStarted=false, verticalVelocity=0, grounded=true, jumpQueued=false;
-const menu=document.getElementById('menu'),hud=document.getElementById('hud');
-document.getElementById('singleplayer').addEventListener('click',()=>{
-  gameStarted=true; menu.style.display='none'; hud.classList.remove('hidden');
-});
-function groundEyeHeight(x,z){
-  const bx=Math.round(x),bz=Math.round(z);
-  const surface=Math.floor(Math.sin(bx*.3)+Math.cos(bz*.25))+.5;
-  return surface+1.6;
+
+// ---------- Scene and lighting ----------
+const scene = new T.Scene();
+scene.background = new T.Color(0x8bcdf2);
+scene.fog = new T.Fog(0x8bcdf2, 72, 190);
+const camera = new T.PerspectiveCamera(74, innerWidth / innerHeight, 0.1, 230);
+const renderer = new T.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.25));
+renderer.outputColorSpace = T.SRGBColorSpace;
+document.body.prepend(renderer.domElement);
+
+scene.add(new T.HemisphereLight(0xffffff, 0x596a48, 1.9));
+const sunlight = new T.DirectionalLight(0xfff2d7, 1.65);
+sunlight.position.set(45, 80, 30);
+scene.add(sunlight);
+
+// ---------- Pixel-style procedural block textures ----------
+function makeTexture(kind, seed) {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  let state = seed >>> 0;
+  const rand = () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+  const pixel = (x, y, w, h, colors) => {
+    ctx.fillStyle = colors[Math.floor(rand() * colors.length)];
+    ctx.fillRect(x, y, w, h);
+  };
+  const fillNoise = (base, palette, amount = 190) => {
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < amount; i++) {
+      const x = Math.floor(rand() * 16) * 4;
+      const y = Math.floor(rand() * 16) * 4;
+      pixel(x, y, 4 + (rand() > .75 ? 4 : 0), 4 + (rand() > .8 ? 4 : 0), palette);
+    }
+  };
+
+  if (kind === "grassTop") {
+    fillNoise("#4f9e38", ["#438c31","#5eaa42","#70b94a","#397e2d","#80bf55"], 250);
+    for (let i = 0; i < 22; i++) {
+      const x = Math.floor(rand() * 16) * 4, y = Math.floor(rand() * 16) * 4;
+      pixel(x, y, 4, 8, ["#367b2b","#75b84a","#2f7028"]);
+    }
+  } else if (kind === "grassSide") {
+    fillNoise("#8a5a35", ["#76502f","#9b693d","#a97845","#71472b","#bd8650"], 210);
+    ctx.fillStyle = "#4b9636"; ctx.fillRect(0,0,64,11);
+    for (let x = 0; x < 64; x += 4) {
+      const h = 7 + Math.floor(rand() * 8);
+      ctx.fillStyle = ["#367e2d","#5ba542","#73b74b"][Math.floor(rand()*3)];
+      ctx.fillRect(x, 7, 4, h);
+    }
+    for (let i = 0; i < 12; i++) pixel(Math.floor(rand()*16)*4, 12+Math.floor(rand()*12)*4, 4,4,["#a16e3f","#79502f"]);
+  } else if (kind === "dirt") {
+    fillNoise("#865832", ["#704a2b","#9b693d","#a97848","#774b2b","#b17a47"], 250);
+    for(let i=0;i<9;i++){ctx.fillStyle="#65452c";ctx.fillRect(Math.floor(rand()*56),Math.floor(rand()*56),4,4);}
+  } else if (kind === "stone") {
+    fillNoise("#777d80", ["#62696d","#8d9497","#a1a5a5","#555e63","#70777b"], 230);
+    for(let i=0;i<12;i++){ctx.fillStyle="#4f585c";ctx.fillRect(Math.floor(rand()*56),Math.floor(rand()*56),8,4);}
+  } else if (kind === "wood") {
+    fillNoise("#976332", ["#744722","#b27b40","#855329","#c18a4b"], 125);
+    for(let x=5;x<64;x+=13){ctx.fillStyle="#5f3c21";ctx.fillRect(x,0,3,64);ctx.fillStyle="#c08b4b";ctx.fillRect(x+4,0,2,64);}
+    ctx.fillStyle="#58381f";ctx.fillRect(26,18,8,3);ctx.fillRect(29,14,3,11);
+  } else if (kind === "leaves") {
+    fillNoise("#337d35", ["#246b2b","#438f3d","#5aa447","#1e5a28","#6aaa4c"], 250);
+    for(let i=0;i<20;i++){ctx.fillStyle=["#1e6229","#69ad4c","#2c7430"][Math.floor(rand()*3)];ctx.fillRect(Math.floor(rand()*15)*4,Math.floor(rand()*15)*4,4,4);}
+  }
+  const texture = new T.CanvasTexture(canvas);
+  texture.colorSpace = T.SRGBColorSpace;
+  texture.magFilter = T.NearestFilter;
+  texture.minFilter = T.NearestMipmapNearestFilter;
+  texture.generateMipmaps = true;
+  return texture;
 }
-p.y=groundEyeHeight(p.x,p.z);
-document.getElementById('jump').addEventListener('pointerdown',e=>{
-  e.preventDefault();e.stopPropagation();
-  if(gameStarted && grounded) jumpQueued=true;
-});
-function cam(){c.position.copy(p);c.rotation.order='YXZ';c.rotation.y=yaw;c.rotation.x=pitch}
-r.domElement.addEventListener('pointerdown',e=>{if(!gameStarted)return;down=true;lx=e.clientX;ly=e.clientY;r.domElement.setPointerCapture(e.pointerId)});
-r.domElement.addEventListener('pointermove',e=>{if(!down)return;yaw-=(e.clientX-lx)*.006;pitch=Math.max(-1.2,Math.min(1.2,pitch-(e.clientY-ly)*.006));lx=e.clientX;ly=e.clientY});
-r.domElement.addEventListener('pointerup',()=>down=false);r.domElement.addEventListener('pointercancel',()=>down=false);
-const joy=document.getElementById('joystick'),stick=document.getElementById('stick'),radius=43;let joyPointer=null;
-function updateJoystick(e){const rect=joy.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;let dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy);if(len>radius){dx=dx/len*radius;dy=dy/len*radius}moveX=dx/radius;moveY=-dy/radius;stick.style.transform=`translate(${dx}px,${dy}px)`}
-function resetJoystick(){joyPointer=null;moveX=0;moveY=0;stick.style.transform='translate(0px,0px)'}
-joy.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();joyPointer=e.pointerId;joy.setPointerCapture(e.pointerId);updateJoystick(e)});
-joy.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer){e.preventDefault();updateJoystick(e)}});
-joy.addEventListener('pointerup',e=>{if(e.pointerId===joyPointer)resetJoystick()});joy.addEventListener('pointercancel',resetJoystick);joy.addEventListener('lostpointercapture',resetJoystick);
-let ray=new T.Raycaster();function target(){ray.setFromCamera(new T.Vector2(0,0),c);return ray.intersectObjects(blocks,false)[0]}
-document.getElementById('mine').onclick=()=>{let h=target();if(h){grp.remove(h.object);blocks.splice(blocks.indexOf(h.object),1)}};
-document.getElementById('place').onclick=()=>{let h=target();if(h){let q=h.object.position,n=h.face.normal;add(Math.round(q.x+n.x),Math.round(q.y+n.y),Math.round(q.z+n.z),'g')}};
-let last=performance.now();function loop(t){
- requestAnimationFrame(loop);
- let d=Math.min((t-last)/1000,.05);last=t;
- if(gameStarted){
-  let f=moveY,q=moveX,speed=5;
-  // Correct Roblox-style joystick direction: up moves forward relative to the camera.
-  p.x+=(-Math.sin(yaw)*f+Math.cos(yaw)*q)*speed*d;
-  p.z+=(-Math.cos(yaw)*f-Math.sin(yaw)*q)*speed*d;
-  p.x=Math.max(-11,Math.min(11,p.x));p.z=Math.max(-11,Math.min(11,p.z));
-  if(jumpQueued && grounded){verticalVelocity=7.2;grounded=false;jumpQueued=false;}
-  if(!grounded){verticalVelocity-=18*d;p.y+=verticalVelocity*d;}
-  const floor=groundEyeHeight(p.x,p.z);
-  if(p.y<=floor){p.y=floor;verticalVelocity=0;grounded=true;}
- }
- cam();r.render(s,c);
+const grassTopMat = new T.MeshLambertMaterial({ map: makeTexture("grassTop", 1) });
+const grassSideMat = new T.MeshLambertMaterial({ map: makeTexture("grassSide", 2) });
+const dirtMat = new T.MeshLambertMaterial({ map: makeTexture("dirt", 3) });
+const stoneMat = new T.MeshLambertMaterial({ map: makeTexture("stone", 4) });
+const woodMat = new T.MeshLambertMaterial({ map: makeTexture("wood", 5) });
+const leavesMat = new T.MeshLambertMaterial({ map: makeTexture("leaves", 6) });
+const grassBlockMaterials = [grassSideMat, grassSideMat, grassTopMat, dirtMat, grassSideMat, grassSideMat];
+const cube = new T.BoxGeometry(1, 1, 1);
+
+// ---------- Instanced block world (large map, low draw-call count) ----------
+const WORLD_RADIUS = 60;
+const WORLD_SIZE = WORLD_RADIUS * 2 + 1;
+const BASE_Y = -5;
+const terrainHeights = new Int8Array(WORLD_SIZE * WORLD_SIZE);
+const blockGroups = {};
+const occupied = new Map();
+const tempObject = new T.Object3D();
+const definitions = {
+ grass: { material: grassBlockMaterials, emoji: "🌿", label: "Grass" },
+ dirt: { material: dirtMat, emoji: "🟫", label: "Dirt" },
+ stone: { material: stoneMat, emoji: "🪨", label: "Stone" },
+ wood: { material: woodMat, emoji: "🪵", label: "Wood" },
+ leaves: { material: leavesMat, emoji: "🍃", label: "Leaves" }
+};
+for (const [kind, def] of Object.entries(definitions)) {
+  blockGroups[kind] = { material: def.material, records: [], mesh: null, alive: [], items: [], count: 0, capacity: 0 };
 }
-requestAnimationFrame(loop);
-onresize=()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight)};
-</script></body></html>
+const keyOf = (x,y,z) => `${x},${y},${z}`;
+function addRecord(kind,x,y,z) {
+  const key = keyOf(x,y,z);
+  if (occupied.has(key)) return false;
+  const record = { kind, x, y, z };
+  blockGroups[kind].records.push(record);
+  occupied.set(key, record);
+  return true;
+}
+function terrainHeightAt(x,z) {
+  const ix = Math.max(-WORLD_RADIUS, Math.min(WORLD_RADIUS, Math.round(x)));
+  const iz = Math.max(-WORLD_RADIUS, Math.min(WORLD_RADIUS, Math.round(z)));
+  return terrainHeights[(ix + WORLD_RADIUS) * WORLD_SIZE + (iz + WORLD_RADIUS)];
+}
+function smoothHeight(x,z) {
+  const broad = 2.0
+    + 2.0 * Math.sin(x * 0.050)
+    + 1.7 * Math.cos(z * 0.058)
+    + 1.25 * Math.sin((x + z) * 0.083)
+    + 0.65 * Math.cos((x - z) * 0.13)
+    + 0.35 * Math.sin(z * 0.24) * Math.cos(x * 0.19);
+  return Math.max(-2, Math.min(8, Math.round(broad)));
+}
+let seed = 20261111;
+function randomWorld() {
+  seed = (seed * 1664525 + 1013904223) >>> 0;
+  return seed / 4294967296;
+}
+for (let x = -WORLD_RADIUS; x <= WORLD_RADIUS; x++) {
+  for (let z = -WORLD_RADIUS; z <= WORLD_RADIUS; z++) {
+    const h = smoothHeight(x,z);
+    terrainHeights[(x + WORLD_RADIUS) * WORLD_SIZE + (z + WORLD_RADIUS)] = h;
+    for (let y = BASE_Y; y <= h; y++) {
+      const kind = y === h ? "grass" : (y >= h - 3 ? "dirt" : "stone");
+      addRecord(kind,x,y,z);
+    }
+  }
+}
+// Forests and scattered trees. Each tree is assembled from textured cube blocks.
+for (let x = -WORLD_RADIUS + 3; x <= WORLD_RADIUS - 3; x++) {
+  for (let z = -WORLD_RADIUS + 3; z <= WORLD_RADIUS - 3; z++) {
+    if (Math.abs(x) < 8 && Math.abs(z) < 8) continue;
+    if (randomWorld() < 0.021) {
+      const ground = terrainHeightAt(x,z);
+      const trunkHeight = 3 + Math.floor(randomWorld() * 3);
+      for (let y = 1; y <= trunkHeight; y++) addRecord("wood",x,ground+y,z);
+      const crownY = ground + trunkHeight;
+      for (let dy = 0; dy <= 2; dy++) {
+        const radius = dy === 2 ? 1 : 2;
+        for (let dx = -radius; dx <= radius; dx++) {
+          for (let dz = -radius; dz <= radius; dz++) {
+            if (Math.abs(dx) + Math.abs(dz) <= radius + 1 && randomWorld() > 0.10) {
+              addRecord("leaves",x+dx,crownY+dy,z+dz);
+            }
+          }
+        }
+      }
+      addRecord("leaves",x,crownY+3,z);
+    }
+  }
+}
+for (const [kind, group] of Object.entries(blockGroups)) {
+  const initialCount = group.records.length;
+  group.capacity = initialCount + 2500;
+  group.mesh = new T.InstancedMesh(cube, group.material, group.capacity);
+  group.mesh.name = kind;
+  group.mesh.count = initialCount;
+  group.mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
+  group.mesh.frustumCulled = true;
+  group.items = new Array(group.capacity);
+  group.alive = new Array(group.capacity).fill(false);
+  group.count = initialCount;
+  for (let i = 0; i < initialCount; i++) {
+    const b = group.records[i];
+    tempObject.position.set(b.x,b.y,b.z);
+    tempObject.scale.set(1,1,1);
+    tempObject.rotation.set(0,0,0);
+    tempObject.updateMatrix();
+    group.mesh.setMatrixAt(i,tempObject.matrix);
+    group.items[i] = b;
+    group.alive[i] = true;
+  }
+  group.mesh.instanceMatrix.needsUpdate = true;
+  group.mesh.computeBoundingSphere();
+  scene.add(group.mesh);
+}
+
+// ---------- Player, menu, and controls ----------
+const player = new T.Vector3(0, 0, 7);
+let yaw = 0, pitch = 0, looking = false, lastX = 0, lastY = 0;
+let moveX = 0, moveY = 0;
+let gameStarted = false, verticalVelocity = 0, grounded = true, jumpQueued = false;
+player.y = terrainHeightAt(player.x,player.z) + 2.1;
+const menu = document.getElementById("menu");
+const hud = document.getElementById("hud");
+document.getElementById("singleplayer").addEventListener("click", () => {
+  gameStarted = true;
+  menu.style.display = "none";
+  hud.classList.remove("hidden");
+});
+const jumpButton = document.getElementById("jump");
+jumpButton.addEventListener("pointerdown", e => {
+  e.preventDefault(); e.stopPropagation();
+  if (gameStarted && grounded) jumpQueued = true;
+});
+function updateCamera() {
+  camera.position.copy(player);
+  camera.rotation.order = "YXZ";
+  camera.rotation.y = yaw;
+  camera.rotation.x = pitch;
+}
+renderer.domElement.addEventListener("pointerdown", e => {
+  if (!gameStarted) return;
+  looking = true; lastX = e.clientX; lastY = e.clientY;
+  renderer.domElement.setPointerCapture(e.pointerId);
+});
+renderer.domElement.addEventListener("pointermove", e => {
+  if (!looking) return;
+  yaw -= (e.clientX - lastX) * 0.006;
+  pitch = Math.max(-1.2, Math.min(1.2, pitch - (e.clientY - lastY) * 0.006));
+  lastX = e.clientX; lastY = e.clientY;
+});
+renderer.domElement.addEventListener("pointerup", () => looking = false);
+renderer.domElement.addEventListener("pointercancel", () => looking = false);
+
+// Virtual joystick (up = forward, relative to camera facing)
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
+const joystickRadius = 42;
+let joystickPointer = null;
+function updateJoystick(e) {
+  const rect = joystick.getBoundingClientRect();
+  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+  let dx = e.clientX-cx, dy = e.clientY-cy;
+  const length = Math.hypot(dx,dy);
+  if (length > joystickRadius) { dx = dx/length*joystickRadius; dy = dy/length*joystickRadius; }
+  moveX = dx/joystickRadius; moveY = -dy/joystickRadius;
+  stick.style.transform = `translate(${dx}px,${dy}px)`;
+}
+function resetJoystick() {
+  joystickPointer = null; moveX = 0; moveY = 0;
+  stick.style.transform = "translate(0px,0px)";
+}
+joystick.addEventListener("pointerdown", e => {
+  e.preventDefault(); e.stopPropagation();
+  joystickPointer = e.pointerId;
+  joystick.setPointerCapture(e.pointerId);
+  updateJoystick(e);
+});
+joystick.addEventListener("pointermove", e => {
+  if (e.pointerId === joystickPointer) { e.preventDefault(); updateJoystick(e); }
+});
+joystick.addEventListener("pointerup", e => { if (e.pointerId === joystickPointer) resetJoystick(); });
+joystick.addEventListener("pointercancel", resetJoystick);
+joystick.addEventListener("lostpointercapture", resetJoystick);
+
+// ---------- Hotbar, inventory, mining, and placing ----------
+const hotbarItems = ["grass","dirt","wood","leaves","stone",null,null,null,null];
+const inventory = { grass:64, dirt:64, wood:32, leaves:32, stone:0 };
+let selectedSlot = 0;
+const hotbarElement = document.getElementById("hotbar");
+function renderHotbar() {
+  hotbarElement.innerHTML = "";
+  hotbarItems.forEach((kind,index) => {
+    const slot = document.createElement("button");
+    slot.className = "hot-slot" + (index === selectedSlot ? " selected" : "");
+    slot.type = "button";
+    slot.setAttribute("aria-label", kind ? `${index+1}: ${definitions[kind].label}, ${inventory[kind]} blocks` : `${index+1}: empty`);
+    const number = document.createElement("span"); number.className = "slot-num"; number.textContent = index+1; slot.appendChild(number);
+    if (kind) {
+      const icon = document.createElement("span"); icon.className = "slot-icon"; icon.textContent = definitions[kind].emoji; slot.appendChild(icon);
+      const count = document.createElement("span"); count.className = "slot-count"; count.textContent = inventory[kind]; slot.appendChild(count);
+    }
+    slot.addEventListener("click", () => { selectedSlot = index; renderHotbar(); });
+    hotbarElement.appendChild(slot);
+  });
+}
+renderHotbar();
+
+function createBlockInstance(kind,x,y,z) {
+  const group = blockGroups[kind];
+  if (group.count >= group.capacity) return false;
+  const key = keyOf(x,y,z);
+  if (occupied.has(key)) return false;
+  const i = group.count++;
+  group.items[i] = {kind,x,y,z};
+  group.alive[i] = true;
+  tempObject.position.set(x,y,z); tempObject.scale.set(1,1,1); tempObject.rotation.set(0,0,0); tempObject.updateMatrix();
+  group.mesh.setMatrixAt(i,tempObject.matrix);
+  group.mesh.count = group.count;
+  group.mesh.instanceMatrix.needsUpdate = true;
+  occupied.set(key,group.items[i]);
+  return true;
+}
+function removeBlock(hit) {
+  const group = blockGroups[hit.kind];
+  const i = hit.instanceId;
+  if (!group || !group.alive[i]) return false;
+  const block = group.items[i];
+  group.alive[i] = false;
+  occupied.delete(keyOf(block.x,block.y,block.z));
+  tempObject.position.set(0,0,0); tempObject.scale.set(0,0,0); tempObject.updateMatrix();
+  group.mesh.setMatrixAt(i,tempObject.matrix);
+  group.mesh.instanceMatrix.needsUpdate = true;
+  inventory[hit.kind] = (inventory[hit.kind] || 0) + 1;
+  renderHotbar();
+  return true;
+}
+const raycaster = new T.Raycaster();
+raycaster.far = 7;
+function findTarget() {
+  raycaster.setFromCamera(new T.Vector2(0,0),camera);
+  const meshes = Object.values(blockGroups).map(g => g.mesh);
+  const hits = raycaster.intersectObjects(meshes,false);
+  for (const hit of hits) {
+    const group = blockGroups[hit.object.name];
+    if (group && group.alive[hit.instanceId]) {
+      return {kind:hit.object.name,instanceId:hit.instanceId,face:hit.face,point:hit.point};
+    }
+  }
+  return null;
+}
+document.getElementById("mine").addEventListener("click", () => {
+  if (!gameStarted) return;
+  const hit = findTarget();
+  if (hit) removeBlock(hit);
+});
+document.getElementById("place").addEventListener("click", () => {
+  if (!gameStarted) return;
+  const hit = findTarget();
+  const kind = hotbarItems[selectedSlot];
+  if (!hit || !kind || inventory[kind] < 1) return;
+  const group = blockGroups[hit.kind];
+  const block = group.items[hit.instanceId];
+  const n = hit.face.normal;
+  const x = Math.round(block.x + n.x), y = Math.round(block.y + n.y), z = Math.round(block.z + n.z);
+  // Do not place a block inside the player's body.
+  if (Math.hypot(player.x-x,player.z-z) < 0.72 && Math.abs(player.y-y) < 1.8) return;
+  if (createBlockInstance(kind,x,y,z)) {
+    inventory[kind]--;
+    renderHotbar();
+  }
+});
+
+// ---------- Health and hunger survival HUD ----------
+let health = 10, hunger = 10;
+let hungerElapsed = 0, starvationElapsed = 0;
+const healthRow = document.getElementById("healthRow");
+const hungerRow = document.getElementById("hungerRow");
+function updateStats() {
+  healthRow.innerHTML = "";
+  hungerRow.innerHTML = "";
+  for (let i=0;i<10;i++) {
+    const heart = document.createElement("span");
+    heart.className = "stat-icon " + (i < health ? "heart-full" : "heart-empty");
+    heart.textContent = i < health ? "♥" : "♡";
+    healthRow.appendChild(heart);
+    const food = document.createElement("span");
+    food.className = "stat-icon " + (i < hunger ? "food-full" : "food-empty");
+    food.textContent = i < hunger ? "🍗" : "·";
+    hungerRow.appendChild(food);
+  }
+  healthRow.setAttribute("aria-label", `${health} of 10 hearts`);
+  hungerRow.setAttribute("aria-label", `${hunger} of 10 hunger`);
+}
+updateStats();
+
+// ---------- Main loop ----------
+let previousTime = performance.now();
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = Math.min((now-previousTime)/1000,0.05);
+  previousTime = now;
+
+  if (gameStarted) {
+    let forward = moveY, strafe = moveX;
+    const length = Math.hypot(forward,strafe);
+    if (length > 1) { forward /= length; strafe /= length; }
+    const speed = 5.4;
+    player.x += (-Math.sin(yaw)*forward + Math.cos(yaw)*strafe) * speed * dt;
+    player.z += (-Math.cos(yaw)*forward - Math.sin(yaw)*strafe) * speed * dt;
+    player.x = Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x));
+    player.z = Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z));
+
+    if (jumpQueued && grounded) {
+      verticalVelocity = 7.4;
+      grounded = false;
+      jumpQueued = false;
+    }
+    const floorY = terrainHeightAt(player.x,player.z) + 2.1;
+    if (!grounded) {
+      verticalVelocity -= 18 * dt;
+      player.y += verticalVelocity * dt;
+      if (player.y <= floorY) {
+        player.y = floorY;
+        verticalVelocity = 0;
+        grounded = true;
+      }
+    } else {
+      // Stay grounded while walking downhill as well as uphill.
+      player.y = floorY;
+    }
+
+    hungerElapsed += dt;
+    if (hungerElapsed >= 45) {
+      hungerElapsed -= 45;
+      if (hunger > 0) { hunger--; updateStats(); }
+    }
+    if (hunger === 0 && health > 0) {
+      starvationElapsed += dt;
+      if (starvationElapsed >= 18) {
+        starvationElapsed = 0;
+        health = Math.max(0,health-1);
+        updateStats();
+      }
+    } else {
+      starvationElapsed = 0;
+    }
+  }
+
+  camera.position.copy(player);
+  camera.rotation.order = "YXZ";
+  camera.rotation.y = yaw;
+  camera.rotation.x = pitch;
+  renderer.render(scene,camera);
+}
+requestAnimationFrame(animate);
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
