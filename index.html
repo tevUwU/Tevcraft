@@ -70,9 +70,9 @@ function renderLeaderboard(){
 leaderToggle.addEventListener("click",()=>{const closed=leaderboard.classList.toggle("collapsed");leaderToggle.textContent=closed?"⌄":"⌃";leaderToggle.setAttribute("aria-label",closed?"Expand leaderboard":"Shrink leaderboard");});renderLeaderboard();
 
 // Scene and lighting.
-const scene=new T.Scene();scene.background=new T.Color(0x8bcdf2);scene.fog=new T.Fog(0x8bcdf2,72,190);
-const camera=new T.PerspectiveCamera(74,innerWidth/innerHeight,0.1,260);
-const renderer=new T.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.outputColorSpace=T.SRGBColorSpace;document.body.prepend(renderer.domElement);
+const scene=new T.Scene();scene.background=new T.Color(0x8bcdf2);scene.fog=new T.Fog(0x8bcdf2,55,135);
+const camera=new T.PerspectiveCamera(74,innerWidth/innerHeight,0.1,180);
+const mobileDevice=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);const renderer=new T.WebGLRenderer({antialias:!mobileDevice,powerPreference:"high-performance"});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(mobileDevice?1:Math.min(devicePixelRatio||1,1.25));renderer.outputColorSpace=T.SRGBColorSpace;document.body.prepend(renderer.domElement);
 scene.add(new T.HemisphereLight(0xffffff,0x596a48,1.9));const sunlight=new T.DirectionalLight(0xfff2d7,1.65);sunlight.position.set(45,80,30);scene.add(sunlight);
 
 // Pixel-art canvas textures. Ore seams are drawn as blocky mineral clusters over rock,
@@ -143,7 +143,8 @@ const grassBlockMaterials=[grassSideMat,grassSideMat,grassTopMat,dirtMat,grassSi
 const cube=new T.BoxGeometry(1,1,1);
 
 // Large voxel terrain with stone, deepslate, coal, iron and diamond layers.
-const WORLD_RADIUS=100,WORLD_SIZE=WORLD_RADIUS*2+1,BASE_Y=-32;
+// Performance-balanced large world: still huge to explore, but much lighter on phones.
+const WORLD_RADIUS=75,WORLD_SIZE=WORLD_RADIUS*2+1,BASE_Y=-24;
 const terrainHeights=new Int8Array(WORLD_SIZE*WORLD_SIZE),blockGroups={},occupied=new Map(),blockLookup=new Map(),tempObject=new T.Object3D();
 const definitions={grass:{material:grassBlockMaterials,emoji:"🌿",label:"Grass"},dirt:{material:dirtMat,emoji:"🟫",label:"Dirt"},stone:{material:stoneMat,emoji:"🪨",label:"Stone"},deepslate:{material:deepslateMat,emoji:"⬛",label:"Deepslate"},coal:{material:coalOreMat,emoji:"⚫",label:"Coal Ore"},iron:{material:ironOreMat,emoji:"🟠",label:"Iron Ore"},diamond:{material:diamondOreMat,emoji:"💎",label:"Diamond Ore"},deepCoal:{material:deepCoalOreMat,emoji:"⚫",label:"Deepslate Coal Ore"},deepIron:{material:deepIronOreMat,emoji:"🟠",label:"Deepslate Iron Ore"},deepDiamond:{material:deepDiamondOreMat,emoji:"💎",label:"Deepslate Diamond Ore"},wood:{material:woodMat,emoji:"🪵",label:"Wood"},leaves:{material:leavesMat,emoji:"🍃",label:"Leaves"}};
 for(const [kind,def] of Object.entries(definitions))blockGroups[kind]={material:def.material,records:[],mesh:null,alive:[],items:[],count:0,capacity:0};
@@ -162,8 +163,8 @@ for(let x=-WORLD_RADIUS+3;x<=WORLD_RADIUS-3;x++)for(let z=-WORLD_RADIUS+3;z<=WOR
   if(Math.abs(x)<8&&Math.abs(z)<8)continue;if(randomWorld()<.021){const ground=terrainHeightAt(x,z),trunk=3+Math.floor(randomWorld()*3);for(let y=1;y<=trunk;y++)addRecord("wood",x,ground+y,z);const crown=ground+trunk;for(let dy=0;dy<=2;dy++){const radius=dy===2?1:2;for(let dx=-radius;dx<=radius;dx++)for(let dz=-radius;dz<=radius;dz++)if(Math.abs(dx)+Math.abs(dz)<=radius+1&&randomWorld()>.1)addRecord("leaves",x+dx,crown+dy,z+dz);}addRecord("leaves",x,crown+3,z);}
 }
 for(const [kind,group] of Object.entries(blockGroups)){
-  const n=group.records.length;group.capacity=n+2500;group.mesh=new T.InstancedMesh(cube,group.material,group.capacity);group.mesh.name=kind;group.mesh.count=n;group.mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);group.items=new Array(group.capacity);group.alive=new Array(group.capacity).fill(false);group.count=n;
-  for(let i=0;i<n;i++){const b=group.records[i];tempObject.position.set(b.x,b.y,b.z);tempObject.scale.set(1,1,1);tempObject.rotation.set(0,0,0);tempObject.updateMatrix();group.mesh.setMatrixAt(i,tempObject.matrix);group.items[i]=b;group.alive[i]=true;blockLookup.set(keyOf(b.x,b.y,b.z),{kind,index:i});}group.mesh.instanceMatrix.needsUpdate=true;group.mesh.computeBoundingSphere();scene.add(group.mesh);
+  const n=group.records.length;group.capacity=n+2500;group.mesh=new T.InstancedMesh(cube,group.material,group.capacity);group.mesh.name=kind;group.mesh.count=n;group.mesh.instanceMatrix.setUsage(T.StaticDrawUsage);group.items=new Array(group.capacity);group.alive=new Array(group.capacity).fill(false);group.count=n;
+  for(let i=0;i<n;i++){const b=group.records[i];tempObject.position.set(b.x,b.y,b.z);tempObject.scale.set(1,1,1);tempObject.rotation.set(0,0,0);tempObject.updateMatrix();group.mesh.setMatrixAt(i,tempObject.matrix);group.items[i]=b;group.alive[i]=true;blockLookup.set(keyOf(b.x,b.y,b.z),{kind,index:i});}group.mesh.instanceMatrix.needsUpdate=true;group.mesh.computeBoundingSphere();group.mesh.frustumCulled=true;scene.add(group.mesh);
 }
 
 // Player, menu and movement controls.
