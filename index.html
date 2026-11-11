@@ -52,14 +52,32 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
  #logo{font-size:12px;padding:7px 10px}
  .hand{width:55px;height:72px;bottom:55px}
 }
+
+/* V8.2 Leaderboard */
+#menuName{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #ffffff44;background:#08121bd9;color:white;font-size:18px;font-weight:800;text-align:center;outline:none;margin:8px 0 12px}
+#menuName:focus{border-color:#ffd95a;box-shadow:0 0 0 3px #ffd95a33}
+#leaderboard{position:fixed;top:12px;left:12px;width:min(310px,72vw);z-index:30;color:white;background:linear-gradient(135deg,#132235ed,#0a101be8);border:2px solid #ffffff35;border-radius:16px;box-shadow:0 10px 30px #0008;overflow:hidden;pointer-events:auto;transition:width .25s ease,opacity .2s ease}
+#leaderHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#ffffff0c;font-weight:1000;letter-spacing:.5px;font-size:14px}
+#leaderToggle{margin-left:auto;width:34px;height:30px;border:0;border-radius:9px;background:#ffffff18;color:white;font-size:17px;font-weight:900}
+#leaderBody{padding:4px 10px 10px;max-height:45vh;overflow:auto}
+#leaderboard.collapsed{width:46px}
+#leaderboard.collapsed #leaderTitle,#leaderboard.collapsed #leaderBody{display:none}
+.leader-you{display:flex;align-items:center;gap:9px;padding:9px 6px;border-bottom:1px solid #ffffff16;font-size:14px}.leader-you:last-child{border-bottom:0}.leader-rank{color:#ffd95a;font-weight:1000;min-width:22px}.leader-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:900}.leader-score{margin-left:auto;color:#b8e8ff;font-size:12px}
+@media(max-width:500px){#leaderboard{top:8px;left:8px;width:min(280px,76vw)}#leaderHead{padding:8px 10px}}
 </style>
 </head>
 <body>
+
+<div id="leaderboard" class="collapsed">
+ <div id="leaderHead"><span>🏆</span><span id="leaderTitle">LEADERBOARD</span><button id="leaderToggle" aria-label="Expand leaderboard">⌄</button></div>
+ <div id="leaderBody"></div>
+</div>
 <div id="menu">
  <div class="menu-card">
   <div class="menu-kicker">WELCOME TO</div>
   <h1 class="menu-title">TEVCRAFT</h1>
   <p class="menu-subtitle">Explore a bigger world. Build your own adventure.</p>
+  <input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME" autocomplete="off">
   <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
   <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
   <div class="menu-note">V8 · SURVIVAL WORLD</div>
@@ -80,6 +98,22 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
 
 <script type="module">
 import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+
+// ---------- Player username and leaderboard ----------
+let playerName = localStorage.getItem("tevcraftName") || "Player";
+const menuName = document.getElementById("menuName");
+menuName.value = playerName === "Player" ? "" : playerName;
+const leaderboard = document.getElementById("leaderboard");
+const leaderBody = document.getElementById("leaderBody");
+const leaderToggle = document.getElementById("leaderToggle");
+function renderLeaderboard(){
+ leaderBody.innerHTML = "";
+ const rows=[{name:playerName,score:"You"},{name:"Steve",score:"Coming soon"},{name:"Alex",score:"Coming soon"}];
+ rows.forEach((row,i)=>{const el=document.createElement("div");el.className="leader-you";el.innerHTML=`<span class="leader-rank">#${i+1}</span><span class="leader-name"></span><span class="leader-score"></span>`;el.querySelector(".leader-name").textContent=row.name;el.querySelector(".leader-score").textContent=row.score;leaderBody.appendChild(el);});
+}
+leaderToggle.addEventListener("click",()=>{const closed=leaderboard.classList.toggle("collapsed");leaderToggle.textContent=closed?"⌄":"⌃";leaderToggle.setAttribute("aria-label",closed?"Expand leaderboard":"Shrink leaderboard");});
+renderLeaderboard();
 
 // ---------- Scene and lighting ----------
 const scene = new T.Scene();
@@ -281,6 +315,9 @@ player.y = terrainHeightAt(player.x,player.z) + 2.1;
 const menu = document.getElementById("menu");
 const hud = document.getElementById("hud");
 document.getElementById("singleplayer").addEventListener("click", () => {
+  const typed = menuName.value.trim();
+  if (typed) { playerName = typed.slice(0,16); localStorage.setItem("tevcraftName", playerName); }
+  renderLeaderboard();
   gameStarted = true;
   menu.style.display = "none";
   hud.classList.remove("hidden");
