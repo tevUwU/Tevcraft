@@ -87,7 +87,7 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
 </div>
 
 <div id="skinBadge">🧑‍🚀 YOU</div><div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div><div id="hud" class="hidden">
- <div id="logo">TEVCRAFT V9.1 🌍</div>
+ <div id="logo">TEVCRAFT V9.3 ⛏️</div>
  <div id="cross">+</div>
  <div class="hand"></div>
  <div id="joystick"><div id="stick"></div></div>
@@ -215,15 +215,19 @@ const grassTopMat = new T.MeshLambertMaterial({ map: makeTexture("grassTop", 1) 
 const grassSideMat = new T.MeshLambertMaterial({ map: makeTexture("grassSide", 2) });
 const dirtMat = new T.MeshLambertMaterial({ map: makeTexture("dirt", 3) });
 const stoneMat = new T.MeshLambertMaterial({ map: makeTexture("stone", 4) });
+const deepslateMat = new T.MeshLambertMaterial({ color: 0x2f343d });
+const coalOreMat = new T.MeshLambertMaterial({ color: 0x353535 });
+const ironOreMat = new T.MeshLambertMaterial({ color: 0xb69b7d });
+const diamondOreMat = new T.MeshLambertMaterial({ color: 0x38e6e0 });
 const woodMat = new T.MeshLambertMaterial({ map: makeTexture("wood", 5) });
 const leavesMat = new T.MeshLambertMaterial({ map: makeTexture("leaves", 6) });
 const grassBlockMaterials = [grassSideMat, grassSideMat, grassTopMat, dirtMat, grassSideMat, grassSideMat];
 const cube = new T.BoxGeometry(1, 1, 1);
 
 // ---------- Instanced block world (large map, low draw-call count) ----------
-const WORLD_RADIUS = 60;
+const WORLD_RADIUS = 100;
 const WORLD_SIZE = WORLD_RADIUS * 2 + 1;
-const BASE_Y = -5;
+const BASE_Y = -32;
 const terrainHeights = new Int8Array(WORLD_SIZE * WORLD_SIZE);
 const blockGroups = {};
 const occupied = new Map();
@@ -232,6 +236,10 @@ const definitions = {
  grass: { material: grassBlockMaterials, emoji: "🌿", label: "Grass" },
  dirt: { material: dirtMat, emoji: "🟫", label: "Dirt" },
  stone: { material: stoneMat, emoji: "🪨", label: "Stone" },
+ deepslate: { material: deepslateMat, emoji: "⬛", label: "Deepslate" },
+ coal: { material: coalOreMat, emoji: "⚫", label: "Coal Ore" },
+ iron: { material: ironOreMat, emoji: "🟤", label: "Iron Ore" },
+ diamond: { material: diamondOreMat, emoji: "💎", label: "Diamond Ore" },
  wood: { material: woodMat, emoji: "🪵", label: "Wood" },
  leaves: { material: leavesMat, emoji: "🍃", label: "Leaves" }
 };
@@ -271,7 +279,17 @@ for (let x = -WORLD_RADIUS; x <= WORLD_RADIUS; x++) {
     const h = smoothHeight(x,z);
     terrainHeights[(x + WORLD_RADIUS) * WORLD_SIZE + (z + WORLD_RADIUS)] = h;
     for (let y = BASE_Y; y <= h; y++) {
-      const kind = y === h ? "grass" : (y >= h - 3 ? "dirt" : "stone");
+      let kind;
+      if (y === h) kind = "grass";
+      else if (y >= h - 3) kind = "dirt";
+      else if (y <= -8) {
+        // Deep underground: mostly deepslate, with rare ores.
+        const r = Math.abs(Math.sin(x*12.9898 + y*78.233 + z*37.719));
+        kind = r > 0.996 ? "diamond" : (r > 0.988 ? "iron" : (r > 0.976 ? "coal" : "deepslate"));
+      } else {
+        const r = Math.abs(Math.sin(x*9.31 + y*41.7 + z*17.2));
+        kind = r > 0.993 ? "iron" : (r > 0.982 ? "coal" : "stone");
+      }
       addRecord(kind,x,y,z);
     }
   }
@@ -571,9 +589,9 @@ function animate(now) {
     // This means mined blocks create REAL holes you can walk or fall into.
     const px = Math.round(player.x), pz = Math.round(player.z);
     let highestGround = BASE_Y;
-    for (let y = 20; y >= BASE_Y; y--) {
+    for (let y = 24; y >= BASE_Y; y--) {
       const block = occupied.get(keyOf(px,y,pz));
-      if (block && (block.kind === "grass" || block.kind === "dirt" || block.kind === "stone")) {
+      if (block && !["wood","leaves"].includes(block.kind)) {
         highestGround = y;
         break;
       }
