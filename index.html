@@ -64,7 +64,8 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
 #leaderboard.collapsed #leaderTitle,#leaderboard.collapsed #leaderBody{display:none}
 .leader-you{display:flex;align-items:center;gap:9px;padding:9px 6px;border-bottom:1px solid #ffffff16;font-size:14px}.leader-you:last-child{border-bottom:0}.leader-rank{color:#ffd95a;font-weight:1000;min-width:22px}.leader-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:900}.leader-score{margin-left:auto;color:#b8e8ff;font-size:12px}
 @media(max-width:500px){#leaderboard{top:8px;left:8px;width:min(280px,76vw)}#leaderHead{padding:8px 10px}}
-</style>
+
+/* V9 BIG UPDATE */#topRight{position:fixed;top:12px;right:12px;z-index:20;display:flex;gap:8px}#backMenu,#crouchBtn,#musicBtn{border:1px solid #fff8;background:#17222ccc;color:white;border-radius:12px;padding:9px;font-weight:900}#chatBox{position:fixed;left:12px;bottom:145px;z-index:25;width:min(330px,70vw);display:none}.chat-log{max-height:120px;overflow:auto;background:#0008;padding:7px;border-radius:10px;color:white;font-size:12px}.chat-row{display:flex;gap:5px;margin-top:5px}.chat-row input{flex:1;padding:8px;border-radius:9px;border:0}.chat-row button{padding:8px 10px}.achievement{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:50;background:#222e;color:white;border:1px solid #fff8;border-radius:14px;padding:10px 16px;font-weight:900;display:none}.skin-pick{display:flex;justify-content:center;gap:8px;margin:8px}.skin-pick button{font-size:24px;padding:7px}.world-clock{position:fixed;top:58px;right:12px;color:white;background:#0008;padding:7px 10px;border-radius:10px;font-weight:800;z-index:20}</style>
 </head>
 <body>
 
@@ -77,13 +78,14 @@ button{font-family:inherit;touch-action:none;cursor:pointer}
   <div class="menu-kicker">WELCOME TO</div>
   <h1 class="menu-title">TEVCRAFT</h1>
   <p class="menu-subtitle">Explore a bigger world. Build your own adventure.</p>
-  <input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME" autocomplete="off">
+  <input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME (REQUIRED)" autocomplete="off"><div class="skin-pick"><button type="button" class="skin" data-skin="🧑‍🚀">🧑‍🚀</button><button type="button" class="skin" data-skin="🧙">🧙</button><button type="button" class="skin" data-skin="🥷">🥷</button></div>
   <button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button>
   <button class="menu-button" id="multiplayer" disabled>MULTIPLAYER · COMING SOON</button>
   <div class="menu-note">V8 · SURVIVAL WORLD</div>
  </div>
 </div>
-<div id="hud" class="hidden">
+
+<div id="topRight"><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 12:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div><div id="hud" class="hidden">
  <div id="logo">TEVCRAFT V8.1 🌍</div>
  <div id="cross">+</div>
  <div class="hand"></div>
@@ -101,9 +103,9 @@ import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.modul
 
 
 // ---------- Player username and leaderboard ----------
-let playerName = "Player";
+let playerName = localStorage.getItem("tevcraftName") || "Player";
 const menuName = document.getElementById("menuName");
-menuName.value = "";
+menuName.value = playerName === "Player" ? "" : playerName;
 const leaderboard = document.getElementById("leaderboard");
 const leaderBody = document.getElementById("leaderBody");
 const leaderToggle = document.getElementById("leaderToggle");
@@ -316,13 +318,8 @@ const menu = document.getElementById("menu");
 const hud = document.getElementById("hud");
 document.getElementById("singleplayer").addEventListener("click", () => {
   const typed = menuName.value.trim();
-  if (!typed) {
-    alert("Enter a username before starting TevCraft!");
-    menuName.focus();
-    return;
-  }
-  playerName = typed.slice(0,16);
-  localStorage.setItem("tevcraftName", playerName);
+  if (!typed) { menuName.focus(); menuName.style.outline="3px solid #ff4d4d"; return; }
+  playerName = typed.slice(0,16); localStorage.setItem("tevcraftName", playerName);
   renderLeaderboard();
   gameStarted = true;
   menu.style.display = "none";
@@ -334,7 +331,7 @@ jumpButton.addEventListener("pointerdown", e => {
   if (gameStarted && grounded) jumpQueued = true;
 });
 function updateCamera() {
-  camera.position.copy(player);
+  camera.position.copy(player); if (crouching && gameStarted) camera.position.y -= .55;
   camera.rotation.order = "YXZ";
   camera.rotation.y = yaw;
   camera.rotation.x = pitch;
@@ -504,6 +501,25 @@ function updateStats() {
 }
 updateStats();
 
+
+// ---------- V9 BIG UPDATE FEATURES ----------
+// Username is required
+document.getElementById("singleplayer").addEventListener("click",()=>{}, {once:true});
+const oldStart = document.getElementById("singleplayer").onclick;
+let selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);}));
+// Extra guard catches blank names before play
+menuName.addEventListener("input",()=>menuName.style.outline="");
+const profanity=["fuck","shit","bitch","asshole","damn"];function cleanChat(t){let out=t;for(const w of profanity)out=out.replace(new RegExp(w,"gi"),"****");return out;}
+const chatLog=document.getElementById("chatLog"),chatInput=document.getElementById("chatInput");function sendChat(){const t=chatInput.value.trim();if(!t)return;const d=document.createElement("div");d.textContent=playerName+": "+cleanChat(t);chatLog.appendChild(d);chatLog.scrollTop=chatLog.scrollHeight;chatInput.value="";}document.getElementById("chatSend").onclick=sendChat;chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
+let crouching=false;document.getElementById("crouchBtn").onclick=()=>{crouching=!crouching;document.getElementById("crouchBtn").textContent=crouching?"⬆ STAND":"⬇ CROUCH";};
+// Menu button
+document.getElementById("backMenu").onclick=()=>{gameStarted=false;menu.style.display="flex";hud.classList.add("hidden");document.getElementById("chatBox").style.display="none";};
+// Simple procedural music (tap to start/stop)
+let audioCtx=null,musicTimer=null,musicOn=false;document.getElementById("musicBtn").onclick=()=>{musicOn=!musicOn;const b=document.getElementById("musicBtn");b.textContent=musicOn?"🔇 MUSIC":"🎵 MUSIC";if(!musicOn){clearInterval(musicTimer);return;}audioCtx=audioCtx||new AudioContext();const notes=[261.6,329.6,392,329.6];let n=0;musicTimer=setInterval(()=>{if(!musicOn)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=notes[n++%notes.length];g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.32);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.34);},380);};
+// Day clock, sun and clouds
+let gameMinutes=720,achShown=false;const clock=document.getElementById("worldClock");function v9Tick(dt){if(!gameStarted)return;gameMinutes=(gameMinutes+dt*5)%1440;let h=Math.floor(gameMinutes/60),m=Math.floor(gameMinutes%60);clock.textContent="🕒 "+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");document.getElementById("chatBox").style.display="block";if(!achShown&&gameMinutes>721){achShown=true;const a=document.getElementById("achievement");a.textContent="🏆 Achievement: Welcome, "+playerName+"!";a.style.display="block";setTimeout(()=>a.style.display="none",3000);}}
+// Multiplayer stays menu-ready until a server is added
+
 // ---------- Main loop ----------
 let previousTime = performance.now();
 function animate(now) {
@@ -512,6 +528,7 @@ function animate(now) {
   previousTime = now;
 
   if (gameStarted) {
+    v9Tick(dt);
     let forward = moveY, strafe = moveX;
     const length = Math.hypot(forward,strafe);
     if (length > 1) { forward /= length; strafe /= length; }
