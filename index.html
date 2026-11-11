@@ -101,9 +101,9 @@ import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.modul
 
 
 // ---------- Player username and leaderboard ----------
-let playerName = localStorage.getItem("tevcraftName") || "Player";
+let playerName = "Player";
 const menuName = document.getElementById("menuName");
-menuName.value = playerName === "Player" ? "" : playerName;
+menuName.value = "";
 const leaderboard = document.getElementById("leaderboard");
 const leaderBody = document.getElementById("leaderBody");
 const leaderToggle = document.getElementById("leaderToggle");
@@ -316,7 +316,13 @@ const menu = document.getElementById("menu");
 const hud = document.getElementById("hud");
 document.getElementById("singleplayer").addEventListener("click", () => {
   const typed = menuName.value.trim();
-  if (typed) { playerName = typed.slice(0,16); localStorage.setItem("tevcraftName", playerName); }
+  if (!typed) {
+    alert("Enter a username before starting TevCraft!");
+    menuName.focus();
+    return;
+  }
+  playerName = typed.slice(0,16);
+  localStorage.setItem("tevcraftName", playerName);
   renderLeaderboard();
   gameStarted = true;
   menu.style.display = "none";
