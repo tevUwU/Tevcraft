@@ -178,7 +178,31 @@ async function saveBlock(x,y,z,type){if(!supabase||!dbReady)return;try{const {er
 async function loadSavedBlocks(){if(!supabase)return;try{const {data,error}=await supabase.from('tc_world_blocks').select('x,y,z,block_type').limit(10000);if(error)throw error;(data||[]).forEach(r=>{const k=key(r.x,r.y,r.z);if(r.block_type==='__air__')blocks.delete(k);else blocks.set(k,{x:r.x,y:r.y,z:r.z,type:r.block_type})});dbReady=true;rebuildWorld();say('Saved world loaded')}catch(e){dbReady=false;console.warn('World load:',e.message);say('Multiplayer is live; run the Supabase setup SQL to save the world')}}
 function addChatLine(name,msg,rank=''){const line=document.createElement('div');const shownRank=rank||rankFor(name);const owner=shownRank==='OWNER';const b=document.createElement('b');b.className=owner?'rainbow-owner':'';b.style.color=owner?'':shownRank==='VIP'?'#f6d36b':shownRank==='OG'?'#ffad55':shownRank==='BETA TESTER'?'#c5a4ff':'#a9d5ff';b.textContent=(shownRank?`[${shownRank}] `:'')+String(name||'Player')+': ';const m=document.createElement('span');m.className=owner?'rainbow-owner':'';m.textContent=String(msg||'');line.append(b,m);$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
 async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(msg.startsWith('/')){handleCommand(msg);return}localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||localRank||'');addChatLine(playerName,msg,localRank);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank}});if(supabase&&dbReady){try{await supabase.from('tc_chat_messages').insert({player_name:playerName,message:msg})}catch(e){console.warn(e)}}playSound('chat')}
-function handleCommand(raw){const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /fly, /rank <player> <VIP|OG|BETA|NONE>');return}if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;onGround=true;say('Returned to spawn');return}if(!['/fly','/rank'].includes(cmd)){addChatLine('SERVER','Unknown command. Try /help');return}if(!isOwnerAccount()){say('Only TevCraft Owner can use that command');return}if(cmd==='/fly'){flyMode=!flyMode;velY=0;onGround=!flyMode;say(flyMode?'🪽 FLY ON — JUMP/SPACE rises, CROUCH/SHIFT descends':'🪽 FLY OFF');return}if(cmd==='/rank'){let rankToken=a[a.length-1].toUpperCase();if(a.length>=4&&a[a.length-2].toUpperCase()==='BETA')rankToken='BETA';const allowed={VIP:'VIP',OG:'OG',BETA:'BETA TESTER',BETA_TESTER:'BETA TESTER',NONE:'',PLAYER:''};if(!(rankToken in allowed)||a.length<3){say('Use /rank PlayerName VIP, OG, BETA, or NONE');return}const target=a.slice(1,rankToken==='BETA'? -2:-1).join(' ').trim();if(!target){say('Enter a player name');return}const rank=allowed[rankToken];playerRanks[target.toLowerCase()]=rank;localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));if(channel)channel.send({type:'broadcast',event:'rank_update',payload:{name:target,rank}});addChatLine('SERVER',`${target} rank set to ${rank||'PLAYER'} on this device`);say('Rank updated. Note: this starter does not yet save ranks securely across devices.')}}
+function handleCommand(raw){
+  const a=raw.trim().split(/\s+/),cmd=(a.shift()||'').toLowerCase();
+  if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /fly, /rank <player name> <any rank words>, /rank <player name> NONE');return}
+  if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}
+  if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;onGround=true;say('Returned to spawn');return}
+  if(!['/fly','/rank'].includes(cmd)){addChatLine('SERVER','Unknown command. Try /help');return}
+  if(!isOwnerAccount()){say('Only TevCraft Owner can use that command');return}
+  if(cmd==='/fly'){flyMode=!flyMode;velY=0;onGround=!flyMode;say(flyMode?'🪽 FLY ON — hold JUMP/SPACE to rise, CROUCH/SHIFT to descend':'🪽 FLY OFF');return}
+  if(cmd==='/rank'){
+    if(a.length<2){say('Use /rank PlayerName Your Custom Rank');return}
+    let target='',rank='';
+    const quoted=raw.match(/^\/rank\s+"([^"]+)"\s+(.+)$/i);
+    if(quoted){target=quoted[1].trim();rank=quoted[2].trim();}
+    else {target=a[0].trim();rank=a.slice(1).join(' ').trim();}
+    if(!target||!rank){say('Use /rank PlayerName Custom Rank — example: /rank Alex SUPER BUILDER');return}
+    const clear=/^(NONE|PLAYER)$/i.test(rank);
+    const cleanRank=clear?'':rank.replace(/\s+/g,' ').slice(0,24).toUpperCase();
+    playerRanks[target.toLowerCase()]=cleanRank;
+    localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));
+    if(target.toLowerCase()===playerName.toLowerCase())localRank=cleanRank||(isOwnerAccount()?'OWNER':'');
+    if(channel)channel.send({type:'broadcast',event:'rank_update',payload:{name:target,rank:cleanRank}});
+    addChatLine('SERVER',`${target} rank set to ${cleanRank||'PLAYER'}`);
+    say('Rank updated: '+(cleanRank||'PLAYER'));
+  }
+}
 function createRemote(id,p){let r=remotePlayers.get(id);if(!r){r=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.55,1,.35),new THREE.MeshLambertMaterial({color:p.skin||0xc8794e}));body.position.y=.75;r.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe6b895}));head.position.y=1.5;r.add(head);const tag=document.createElement('div');tag.style.cssText='position:absolute;color:white;background:#0009;padding:2px 5px;border-radius:5px;font-size:10px;white-space:nowrap;pointer-events:none';tag.textContent=p.name||'Player';r.userData.tag=tag;r.userData.body=body;remoteGroup.add(r);remotePlayers.set(id,r)}r.position.set(p.x,p.y-1.7,p.z);r.rotation.y=p.yaw||0;if(r.userData.body&&p.skin)r.userData.body.material.color.set(p.skin);r.userData.tag.textContent=(p.rank?`[${p.rank}] `:'')+(p.name||'Player')}
 function syncRemoteTags(){/* tags are represented by the online list to keep mobile rendering light */}
 function countOnline(){let n=1;if(channel){const state=channel.presenceState();n=Object.keys(state).length||1} $('online').textContent=`Online: ${n}`}
@@ -190,7 +214,7 @@ async function connectSupabase(){
     channel.on('presence',{event:'sync'},countOnline);
     channel.on('broadcast',{event:'player_move'},({payload})=>{if(payload&&payload.id!==playerId)createRemote(payload.id,payload)});
     channel.on('broadcast',{event:'chat'},({payload})=>{if(payload&&payload.id!==playerId)addChatLine(payload.name||'Player',payload.msg||'',payload.rank||'')});
-    channel.on('broadcast',{event:'rank_update'},({payload})=>{if(payload?.name){playerRanks[String(payload.name).toLowerCase()]=payload.rank||'';localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));}});
+    channel.on('broadcast',{event:'rank_update'},({payload})=>{if(payload?.name){const k=String(payload.name).trim().toLowerCase();playerRanks[k]=payload.rank||'';localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));if(k===playerName.toLowerCase())localRank=payload.rank|| (isOwnerAccount()?'OWNER':'');}});
     channel.on('broadcast',{event:'block_edit'},({payload})=>{if(!payload||payload.by===playerId)return;const k=key(payload.x,payload.y,payload.z);if(payload.type==='__air__')blocks.delete(k);else blocks.set(k,{x:payload.x,y:payload.y,z:payload.z,type:payload.type});rebuildWorld()});
     channel.on('broadcast',{event:'player_leave'},({payload})=>{const r=remotePlayers.get(payload?.id);if(r){remoteGroup.remove(r);remotePlayers.delete(payload.id)}});
     await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
@@ -201,28 +225,47 @@ async function connectSupabase(){
 }
 function updateClock(dt){dayTime=(dayTime+dt*.18)%(24*60);const h=Math.floor(dayTime/60),m=Math.floor(dayTime%60);const day=Math.floor(playSeconds/600)+1;$('clock').textContent=`Day ${day} · ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;const daylight=Math.max(0,Math.sin((dayTime/1440)*Math.PI*2-Math.PI/2)*.5+.5);const night=1-daylight;const c=new THREE.Color().setRGB(.05+.5*daylight,.08+.65*daylight,.16+.75*daylight);scene.background.copy(c);scene.fog.color.copy(c);scene.fog.near=18;scene.fog.far=60;scene.children.forEach(o=>{if(o.isDirectionalLight)o.intensity=.18+daylight*1.1});if(daylight<.22&&mobs.length<5&&Math.random()<.002)addMob();if(daylight>.3&&mobs.length){mobs.forEach(m=>mobGroup.remove(m));mobs.length=0}}
 function collidesAt(x,z,feetY){
-  const radius=.29,bodyTop=feetY+(crouching?1.15:1.62),bodyBottom=feetY+.08;
+  // Player collision box: narrow enough to pass through door-sized gaps, tall enough to stop block clipping.
+  const radius=.28,bodyBottom=feetY+.06,bodyTop=feetY+(crouching?1.12:1.58);
   const minX=Math.floor(x-radius),maxX=Math.floor(x+radius),minZ=Math.floor(z-radius),maxZ=Math.floor(z+radius);
   for(let bx=minX;bx<=maxX;bx++)for(let bz=minZ;bz<=maxZ;bz++)for(let by=Math.floor(bodyBottom);by<=Math.floor(bodyTop);by++){
     if(blocks.has(key(bx,by,bz)) && by+1>bodyBottom && by<bodyTop)return true;
   }
   return false;
 }
+function tryMoveAxis(axis,amount){
+  if(Math.abs(amount)<0.00001)return;
+  const nextX=axis==='x'?Math.max(worldMin+.35,Math.min(worldMax-.35,player.x+amount)):player.x;
+  const nextZ=axis==='z'?Math.max(worldMin+.35,Math.min(worldMax-.35,player.z+amount)):player.z;
+  const feet=player.y-1.72;
+  // While grounded, allow a small step only; taller blocks require a jump.
+  const currentFloor=surfaceY(player.x,player.z),nextFloor=surfaceY(nextX,nextZ);
+  const canStep=onGround && nextFloor-currentFloor<=.55;
+  if(!collidesAt(nextX,nextZ,feet) && (canStep || nextFloor<=currentFloor+.55)){
+    if(axis==='x')player.x=nextX;else player.z=nextZ;
+  }
+}
 function updatePlayer(dt){
-  let ix=moveInput.x,iz=moveInput.y;if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
+  let ix=moveInput.x,iz=moveInput.y;
+  if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;
+  if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
   const len=Math.hypot(ix,iz);if(len>1){ix/=len;iz/=len}
-  const speed=crouching?2.2:4.4,dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt,dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
-  const oldFloor=surfaceY(player.x,player.z),feet=player.y-1.72;
-  const nx=Math.max(worldMin+1,Math.min(worldMax-1,player.x+dx));
-  if(!collidesAt(nx,player.z,feet) && surfaceY(nx,player.z)<=Math.max(player.y,oldFloor)+.55)player.x=nx;
-  const nz=Math.max(worldMin+1,Math.min(worldMax-1,player.z+dz));
-  if(!collidesAt(player.x,nz,feet) && surfaceY(player.x,nz)<=Math.max(player.y,oldFloor)+.55)player.z=nz;
+  const speed=crouching?2.2:4.6;
+  // Forward on the joystick is negative Y; yaw rotates the movement direction.
+  const dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt;
+  const dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
+  tryMoveAxis('x',dx);tryMoveAxis('z',dz);
   const floor=surfaceY(player.x,player.z);
-  if(flyMode){if(jumpQueued)player.y+=1.0;if(keys.ShiftLeft||keys.ShiftRight)player.y-=5*dt;velY=0;onGround=false;jumpQueued=false;}
-  else{
-    if(player.y<=floor+.08 && floor<=player.y+.55){player.y=floor;velY=0;onGround=true}else onGround=false;
+  if(flyMode){
+    if(jumpQueued)player.y+=1.0;
+    if(keys.ShiftLeft||keys.ShiftRight)player.y-=5*dt;
+    velY=0;onGround=false;jumpQueued=false;
+  }else{
+    if(player.y<=floor+.10){player.y=floor;velY=0;onGround=true}else onGround=false;
     if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}
-    velY-=18*dt;player.y+=velY*dt;if(player.y<floor){player.y=floor;velY=0;onGround=true}jumpQueued=false;
+    velY-=18*dt;player.y+=velY*dt;
+    if(player.y<floor){player.y=floor;velY=0;onGround=true}
+    jumpQueued=false;
   }
   localAvatar.position.set(player.x,player.y-1.72,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
   if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.45:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
@@ -235,7 +278,7 @@ function openInventory(){const entries=Object.entries(inventory).filter(([k,v])=
 function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Owner commands: type /help in chat. This starter's Owner-name check and ranks are a prototype, not secure cross-device admin permissions.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
 function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localStorage.setItem('tc_player_name',playerName);localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||'');$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say('Welcome to TevCraft, '+playerName+'!');}
 // Input: touch joystick
-const pad=$('leftPad'),stick=$('stick');let padTouch=null;pad.addEventListener('pointerdown',e=>{padTouch=e.pointerId;pad.setPointerCapture(e.pointerId);moveStick(e)});pad.addEventListener('pointermove',e=>{if(e.pointerId===padTouch)moveStick(e)});function moveStick(e){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,lim=38,len=Math.hypot(dx,dy)||1;const x=dx/Math.max(len,lim),y=dy/Math.max(len,lim);stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
+const pad=$('leftPad'),stick=$('stick');let padTouch=null;pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();padTouch=e.pointerId;pad.setPointerCapture(e.pointerId);moveStick(e)});pad.addEventListener('pointermove',e=>{if(e.pointerId===padTouch){e.preventDefault();moveStick(e)}});function moveStick(e){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,lim=38,len=Math.hypot(dx,dy)||1;const scale=Math.min(1,lim/len),x=(dx*scale)/lim,y=(dy*scale)/lim;stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
 function resetStick(){padTouch=null;stick.style.left='34px';stick.style.top='34px';moveInput={x:0,y:0}}pad.addEventListener('pointerup',resetStick);pad.addEventListener('pointercancel',resetStick);
 let lookTouch=null,lastLook={x:0,y:0};$('game').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){if(document.pointerLockElement!==$('game'))$('game').requestPointerLock?.();return}if(e.clientX>innerWidth*.34){lookTouch=e.pointerId;lastLook={x:e.clientX,y:e.clientY};$('game').setPointerCapture(e.pointerId)}});
 $('game').addEventListener('pointermove',e=>{if(lookTouch===e.pointerId){const dx=e.clientX-lastLook.x,dy=e.clientY-lastLook.y;yaw-=dx*.006;pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.006));lastLook={x:e.clientX,y:e.clientY}}});$('game').addEventListener('pointerup',e=>{if(lookTouch===e.pointerId)lookTouch=null});$('game').addEventListener('pointercancel',e=>{if(lookTouch===e.pointerId)lookTouch=null});document.addEventListener('mousemove',e=>{if(document.pointerLockElement===$('game')){yaw-=e.movementX*.0025;pitch=Math.max(-1.35,Math.min(1.35,pitch-e.movementY*.0025))}});
