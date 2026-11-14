@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#17212b">
-<title>TevCraft — Global Survival</title>
-<style>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="theme-color" content="#17212b"><title>TevCraft — Global Survival</title><style>
   :root{--red:#e04444;--panel:rgba(16,23,31,.91);--line:rgba(255,255,255,.18);--txt:#f3f6f8;--muted:#b8c3ce}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101820;color:var(--txt);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
@@ -58,37 +51,7 @@
   @media (max-width:460px){.slot{width:34px;height:42px;font-size:8px}.slot .glyph{font-size:16px}.slot .count{font-size:9px}#hotbar{gap:3px;padding:4px}}
   @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{transform:scale(.92);transform-origin:bottom right}}
   @media (max-width:460px){#actions{right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 76px);transform:scale(.92);transform-origin:bottom right}#jumpBtn{width:84px;height:84px}#hotbar{bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}}
-</style>
-</head>
-<body>
-<canvas id="game"></canvas>
-<div id="topbar"><div class="pill" id="brand">TEVCRAFT <span style="color:white">GLOBAL</span></div><div class="pill" id="clock">Day 1 · 08:00</div><div class="pill" id="online">Online: 1</div><div class="pill" id="status">Connecting…</div></div>
-<div id="chatBox"><div id="chatLines"></div><form id="chatForm"><input id="chatInput" maxlength="180" placeholder="Chat, /help, /chatcolor red"><button id="chatSend" type="submit">SEND</button></form></div>
-<div id="crosshair"></div>
-<div id="lookHint">Drag the right side to look around</div>
-<div id="leftPad"><div id="stick"></div></div>
-<div id="actions">
- <button class="action" id="mineBtn"><strong>⛏️</strong>MINE</button>
- <button class="action" id="placeBtn"><strong>🧱</strong>PLACE</button>
- <button class="action" id="jumpBtn"><strong>⬆️</strong>JUMP</button>
- <button class="action" id="crouchBtn"><strong>🧎</strong>CROUCH</button>
- <button class="action" id="invBtn"><strong>🎒</strong>BAG</button>
- <button class="action" id="menuBtn"><strong>☰</strong>MENU</button>
-</div>
-<div id="hotbar"></div>
-<div id="toast"></div>
-<div id="modalLayer"><div id="modal"></div></div>
-<div id="startScreen"><div id="startCard">
-  <h1>TEV<span>CRAFT</span></h1><div class="sub">GLOBAL SURVIVAL · ONE SHARED WORLD</div>
-  <div class="row"><input id="playerName" maxlength="16" placeholder="Your player name" value="Tev"></div>
-  <div class="row"><button class="primary" id="playBtn" style="width:100%;padding:14px">JOIN THE GLOBAL WORLD</button></div>
-  <div id="connectStatus">Supabase global server · join to connect live.</div>
-  <p class="small">Mobile: left joystick moves · drag right side to look · use the buttons to mine, place, jump and crouch. Desktop: WASD + mouse.</p>
-</div></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+</style></head><body><canvas id="game"></canvas><div id="topbar"><div class="pill" id="brand">TEVCRAFT <span style="color:white">GLOBAL</span></div><div class="pill" id="clock">Day 1 · 08:00</div><div class="pill" id="online">Online: 1</div><div class="pill" id="status">Connecting…</div></div><div id="chatBox"><div id="chatLines"></div><form id="chatForm"><input id="chatInput" maxlength="180" placeholder="Chat, /help, /chatcolor red"><button id="chatSend" type="submit">SEND</button></form></div><div id="crosshair"></div><div id="lookHint">Drag the right side to look around</div><div id="leftPad"><div id="stick"></div></div><div id="actions"><button class="action" id="mineBtn"><strong>⛏️</strong>MINE</button><button class="action" id="placeBtn"><strong>🧱</strong>PLACE</button><button class="action" id="jumpBtn"><strong>⬆️</strong>JUMP</button><button class="action" id="crouchBtn"><strong>🧎</strong>CROUCH</button><button class="action" id="invBtn"><strong>🎒</strong>BAG</button><button class="action" id="menuBtn"><strong>☰</strong>MENU</button></div><div id="hotbar"></div><div id="toast"></div><div id="modalLayer"><div id="modal"></div></div><div id="startScreen"><div id="startCard"><h1>TEV<span>CRAFT</span></h1><div class="sub">GLOBAL SURVIVAL · ONE SHARED WORLD</div><div class="row"><input id="playerName" maxlength="16" placeholder="Your player name" value="Tev"></div><div class="row"><button class="primary" id="playBtn" style="width:100%;padding:14px">JOIN THE GLOBAL WORLD</button></div><div id="connectStatus">Supabase global server · join to connect live.</div><p class="small">Mobile: left joystick moves · drag right side to look · use the buttons to mine, place, jump and crouch. Desktop: WASD + mouse.</p></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 (() => {
 'use strict';
 // This is a browser-safe Supabase publishable key, never a service-role/secret key.
@@ -231,6 +194,7 @@ try{Object.assign(cosmeticRanks,JSON.parse(localStorage.getItem('tc_cosmetic_ran
 const OWNER_NAME='tev';
 const commandPermissions=JSON.parse(localStorage.getItem('tc_command_permissions')||'{}');
 const bannedPlayers=JSON.parse(localStorage.getItem('tc_banned_players')||'[]');
+const banDetails=JSON.parse(localStorage.getItem('tc_ban_details')||'{}');
 let flying=false;
 function isOwner(){return playerName.toLowerCase()===OWNER_NAME;}
 function hasCommandPermission(command){return isOwner()||((commandPermissions[playerName.toLowerCase()]||[]).includes(command)|| (commandPermissions[playerName.toLowerCase()]||[]).includes('all'));}
@@ -238,7 +202,7 @@ function saveCommandPermissions(){localStorage.setItem('tc_command_permissions',
 function handleCommand(raw){
   const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();
   if(cmd==='/help'){
-    addChatLine('SERVER','/time /spawn /chatcolor /rank /avatar /fly /give player fly|rank|ban|all /take player command|all /ban player');
+    addChatLine('SERVER','/time /spawn /chatcolor /rank /avatar /fly /give player fly|rank|ban|all /take player command|all /ban player reason | personal message /unban player');
     return;
   }
   if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return;}
@@ -268,12 +232,27 @@ function handleCommand(raw){
   }
   if(cmd==='/ban'){
     if(!hasCommandPermission('ban'))return say('You do not have /ban permission');
-    const target=(a[1]||'').toLowerCase();if(!target)return say('Use /ban player');
+    const target=(a[1]||'').toLowerCase();if(!target)return say('Use: /ban player message');
     if(target===OWNER_NAME)return say('You cannot ban the OWNER');
+    const message=raw.trim().split(/\\s+/).slice(2).join(' ').trim()||'You were banned by the server owner.';
+    const detail={reason:message,personal:'',by:playerName};
+    banDetails[target]=detail;
+    localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
     if(!bannedPlayers.includes(target))bannedPlayers.push(target);
     localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
-    if(channel)channel.send({type:'broadcast',event:'player_banned',payload:{target,by:playerName}});
-    addChatLine('SERVER',`${target} was banned (prototype/local moderation).`);return;
+    if(channel)channel.send({type:'broadcast',event:'player_banned',payload:{target,...detail}});
+    addChatLine('SERVER',`${target} was banned: ${message}`);
+    return;
+  }
+  if(cmd==='/unban'){
+    if(!hasCommandPermission('ban'))return say('You do not have /unban permission');
+    const target=(a[1]||'').toLowerCase();if(!target)return say('Use /unban player');
+    const index=bannedPlayers.indexOf(target);
+    if(index===-1)return say(target+' is not on the local ban list');
+    bannedPlayers.splice(index,1);
+    localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+    if(channel)channel.send({type:'broadcast',event:'player_unbanned',payload:{target,by:playerName}});
+    addChatLine('SERVER',`${target} was unbanned (prototype/local moderation).`);return;
   }
   if(cmd==='/chatcolor'||cmd==='/color'){
     const target=a.length>2?a[1]:'',value=(a.length>2?a[2]:a[1]||'').toLowerCase();
@@ -320,7 +299,26 @@ async function connectSupabase(){
     channel.on('broadcast',{event:'rank_cosmetic'},({payload})=>{if(payload?.target&&payload?.rank){cosmeticRanks[String(payload.target).toLowerCase()]=payload.rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));addChatLine('SERVER',`${payload.target} received cosmetic rank: ${payload.rank}`)}});
     channel.on('broadcast',{event:'player_avatar'},({payload})=>{if(payload?.id&&payload.id!==playerId){const r=remotePlayers.get(payload.id);if(r){buildAvatar(r,payload.skin||0xc8794e,payload.avatar||'classic');const tag=makeNameTag(payload.name||'Player');r.add(tag);r.userData.tag=tag;}}});
     channel.on('broadcast',{event:'command_permission'},({payload})=>{if(payload?.target&&payload?.permissions){commandPermissions[String(payload.target).toLowerCase()]=payload.permissions;saveCommandPermissions();}});
-    channel.on('broadcast',{event:'player_banned'},({payload})=>{if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){say('You were banned by '+(payload.by||'OWNER')+' (this prototype can only block locally).');bannedPlayers.push(playerName.toLowerCase());localStorage.setItem('tc_banned_players',JSON.stringify([...new Set(bannedPlayers)]));}});
+    channel.on('broadcast',{event:'player_banned'},({payload})=>{
+      if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){
+        const detail={reason:payload.reason||'Breaking the server rules',personal:payload.personal||'',by:payload.by||'OWNER'};
+        banDetails[playerName.toLowerCase()]=detail;
+        localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
+        bannedPlayers.push(playerName.toLowerCase());
+        localStorage.setItem('tc_banned_players',JSON.stringify([...new Set(bannedPlayers)]));
+        say('You are banned. Message: '+detail.reason);
+        addChatLine('SERVER','You are banned. Message: '+detail.reason);
+      }
+    });
+    channel.on('broadcast',{event:'player_unbanned'},({payload})=>{
+      if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){
+        const i=bannedPlayers.indexOf(playerName.toLowerCase());if(i!==-1)bannedPlayers.splice(i,1);
+        delete banDetails[playerName.toLowerCase()];
+        localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+        localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
+        say('You have been unbanned by '+(payload.by||'OWNER')+'!');
+      }
+    });
     channel.on('broadcast',{event:'chat_color'},({payload})=>{if(payload?.target&&payload?.color){playerChatColors[String(payload.target).toLowerCase()]=payload.color;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));addChatLine('SERVER',`${payload.target}'s chat color changed`)}});
     channel.on('broadcast',{event:'block_edit'},({payload})=>{if(!payload||payload.by===playerId)return;const k=key(payload.x,payload.y,payload.z);if(payload.type==='__air__')blocks.delete(k);else blocks.set(k,{x:payload.x,y:payload.y,z:payload.z,type:payload.type});rebuildWorld()});
     channel.on('broadcast',{event:'player_leave'},({payload})=>{const r=remotePlayers.get(payload?.id);if(r){remoteGroup.remove(r);remotePlayers.delete(payload.id)}});
@@ -354,7 +352,7 @@ function openModal(title,html){$('modal').innerHTML=`<h2>${title}</h2>${html}<di
 function openInventory(){const entries=Object.entries(inventory).filter(([k,v])=>v>0);const inv=entries.length?entries.map(([k,v])=>`<div class="item"><span>${esc(blockInfo[k]?.glyph||'🎒')} ${esc(blockInfo[k]?.name||k.replaceAll('_',' '))}</span><b>${v}</b></div>`).join(''):'<p>Your inventory is empty. Punch a tree to collect wood!</p>';const recipes=[['4 Planks','wood',1,'planks',4],['4 Sticks','planks',2,'stick',4],['Crafting Table','planks',4,'crafting_table',1],['Wood Pickaxe','planks',3,'wood_pickaxe',1],['Stone Pickaxe','cobblestone',3,'stone_pickaxe',1]];const rec=recipes.map(r=>`<div class="item"><span>${r[0]}<br><small class="small">Needs ${r[2]} ${r[1]}</small></span><button data-recipe="${r[3]}" data-cost="${r[1]}" data-amount="${r[2]}" data-out="${r[4]}">CRAFT</button></div>`).join('');openModal('🎒 Inventory & Crafting',`<h3>Inventory</h3><div class="grid">${inv}</div><h3>Recipes</h3><div class="grid">${rec}</div><p class="small">Tip: collect wood by mining tree trunks. Craft planks, then a crafting table and tools.</p>`);$('modal').querySelectorAll('[data-recipe]').forEach(b=>b.onclick=()=>{const cost=b.dataset.cost,amount=Number(b.dataset.amount),out=b.dataset.recipe,n=Number(b.dataset.out);if((inventory[cost]||0)<amount){say(`Need ${amount} ${cost}`);return}inventory[cost]-=amount;inventory[out]=(inventory[out]||0)+n;playSound('craft');openInventory();updateHotbar();say('Crafted '+out.replaceAll('_',' '))})}
 function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Command grants and bans in this starter are client-side prototype controls. True global anti-cheat, permanent bans, and tamper-proof OWNER access require server-side authenticated authorization.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
 function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localRank=cosmeticRanks[playerName.toLowerCase()]||localRank;localStorage.setItem('tc_player_name',playerName);
-const av=localStorage.getItem('tc_avatar')||'classic';buildAvatar(localAvatar,skinColor,av);localAvatar.add(makeNameTag(playerName));$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say(bannedPlayers.includes(playerName.toLowerCase())?'This name is locally banned in this prototype.':'Welcome to TevCraft, '+playerName+'!');}
+const av=localStorage.getItem('tc_avatar')||'classic';buildAvatar(localAvatar,skinColor,av);localAvatar.add(makeNameTag(playerName));$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();const myBan=banDetails[playerName.toLowerCase()];say(bannedPlayers.includes(playerName.toLowerCase())?'You are banned. Message: '+(myBan?.reason||'You were banned by the server owner.'):'Welcome to TevCraft, '+playerName+'!');}
 // Mobile joystick: pointer events plus touch fallback for iOS Safari.
 const pad=$('leftPad'),stick=$('stick');let padTouch=null;
 function setStick(clientX,clientY){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=clientX-cx,dy=clientY-cy,lim=38,len=Math.hypot(dx,dy)||1,scale=Math.min(1,len/lim);const x=(dx/len)*scale,y=(dy/len)*scale;stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
@@ -372,6 +370,4 @@ window.addEventListener('pagehide',()=>{if(channel){channel.send({type:'broadcas
 // Build the game world before the player joins. Supabase starts only after pressing Join.
 generateWorld();makeScene();updateHotbar();requestAnimationFrame(frame);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
