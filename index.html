@@ -21,12 +21,19 @@
   .slot{width:42px;height:44px;border:1px solid #ffffff40;border-radius:7px;background:#202b36;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:10px;color:#fff;flex:0 0 auto}
   .slot.selected{outline:3px solid #ff6868;border-color:#fff}
   .slot .glyph{font-size:19px;line-height:20px}.slot .count{position:absolute;right:4px;bottom:2px;font-size:10px;text-shadow:0 1px 3px #000}
-  #actions{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);display:grid;grid-template-columns:repeat(2,64px);gap:8px;z-index:7}
+  #actions{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);width:190px;height:190px;display:block;z-index:7;pointer-events:none}
   button{font:inherit;color:#fff;background:#2a3744;border:1px solid #ffffff35;border-radius:11px;padding:10px 12px;font-weight:700;box-shadow:0 3px 9px #0005;touch-action:manipulation}
   button:active{transform:translateY(1px);filter:brightness(1.2)}
-  .action{height:52px;font-size:11px;padding:5px;background:#18232edb}
-  .action strong{display:block;font-size:18px}
-  #leftPad{position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 82px);width:116px;height:116px;border-radius:50%;border:1px solid #ffffff45;background:#10182070;z-index:7;touch-action:none}
+  .action{position:absolute;height:48px;min-width:66px;font-size:10px;padding:4px;background:rgba(20,30,40,.48);border:1px solid #ffffff65;backdrop-filter:blur(3px);box-shadow:0 2px 8px #0004;pointer-events:auto;opacity:.78}
+  .action strong{display:block;font-size:17px}
+  #jumpBtn{right:0;bottom:0;width:88px;height:88px;border-radius:50%;font-size:12px;background:rgba(224,68,68,.40);opacity:.82}
+  #jumpBtn strong{font-size:29px}
+  #crouchBtn{right:94px;bottom:12px;width:76px;height:58px;border-radius:18px}
+  #mineBtn{right:104px;bottom:112px;width:78px}
+  #placeBtn{right:12px;bottom:112px;width:78px}
+  #invBtn{right:104px;bottom:58px;width:78px}
+  #menuBtn{right:12px;bottom:58px;width:78px}
+  #leftPad{position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 82px);width:116px;height:116px;border-radius:50%;border:1px solid #ffffff45;background:#10182070;z-index:7;touch-action:none;user-select:none;-webkit-user-select:none}
   #stick{position:absolute;width:48px;height:48px;border-radius:50%;background:#f5f5f5aa;border:2px solid white;left:34px;top:34px;box-shadow:0 2px 8px #0008}
   #lookHint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 80px);transform:translateX(-50%);font-size:10px;color:#fff9;text-shadow:0 1px 3px #000;z-index:2;pointer-events:none;white-space:nowrap}
   #modalLayer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#0009;z-index:20;padding:14px}
@@ -40,24 +47,23 @@
   .primary{background:#bd3434;border-color:#ff8b8b}
   .small{font-size:12px;color:var(--muted)}
   #chatBox{position:fixed;left:10px;top:56px;width:min(310px,72vw);z-index:8;background:#111a22b8;border:1px solid var(--line);border-radius:12px;padding:8px;pointer-events:none}
-  #chatLines{height:112px;overflow:hidden;font-size:11px;line-height:1.45;text-shadow:0 1px 2px black;display:flex;flex-direction:column;justify-content:flex-end}
-  .rainbow-owner{font-weight:1000;background:linear-gradient(90deg,#ff4545,#ffb52e,#fff34a,#42e66b,#35cfff,#a56bff,#ff55bd,#ff4545);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ownerRainbow 2s linear infinite}
-  @keyframes ownerRainbow{to{background-position:250% 0}}
+  #chatLines{height:112px;overflow:hidden;font-size:11px;line-height:1.45;text-shadow:0 1px 2px black;display:flex;flex-direction:column;justify-content:flex-end}.rainbowText{background:linear-gradient(90deg,#ff5555,#ffb347,#fff45c,#62e879,#55cfff,#b77bff,#ff72c8);background-size:200% auto;color:transparent!important;background-clip:text;-webkit-background-clip:text;animation:rainbowFlow 2s linear infinite}.sparkleText{display:inline-block;color:#fff3a6;text-shadow:0 0 5px #fff,0 0 10px #ffd34d;animation:sparklePulse 1s ease-in-out infinite alternate}.purpleSparkleText{display:inline-block;color:#e3a5ff;text-shadow:0 0 5px #fff,0 0 10px #b45cff,0 0 16px #8b35ff;animation:sparklePulse 1s ease-in-out infinite alternate}.rankPurpleText{display:inline-block;color:#d9a0ff;text-shadow:0 0 5px #fff,0 0 10px #b45cff,0 0 16px #8b35ff;animation:sparklePulse 1s ease-in-out infinite alternate}@keyframes rainbowFlow{to{background-position:200% center}}@keyframes sparklePulse{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.15)}}
   #chatForm{display:flex;gap:5px;margin-top:6px;pointer-events:auto}#chatInput{font-size:12px;padding:8px}#chatSend{padding:7px 9px;font-size:11px}
   #startScreen{position:fixed;inset:0;z-index:30;background:linear-gradient(#101820d9,#101820f2),radial-gradient(circle at 50% 35%,#557d8a,#14212d);display:flex;align-items:center;justify-content:center;padding:18px}
   #startCard{width:min(460px,100%);background:#101923ee;border:1px solid #ffffff30;border-radius:20px;padding:22px;box-shadow:0 16px 60px #0009}
   #startCard h1{font-size:34px;margin:0;color:#ff6969;letter-spacing:1px}#startCard h1 span{color:#f4f6f7}
   #startCard .sub{margin:5px 0 18px;color:#bfccd5;font-size:13px}
   #connectStatus{font-size:12px;margin-top:10px;color:#ffd27b;min-height:18px}
-  #toast{position:fixed;left:50%;top:45px;transform:translateX(-50%);z-index:15;background:#111e;border:1px solid #ffffff45;border-radius:10px;padding:9px 13px;font-size:12px;display:none;max-width:90vw;text-align:center}
+  .playerTag{background:#101820dd;border:1px solid #ffffff88;border-radius:6px;padding:2px 6px;color:#fff;font:700 11px system-ui;white-space:nowrap;text-shadow:0 1px 2px #000;pointer-events:none}\n  #toast{position:fixed;left:50%;top:45px;transform:translateX(-50%);z-index:15;background:#111e;border:1px solid #ffffff45;border-radius:10px;padding:9px 13px;font-size:12px;display:none;max-width:90vw;text-align:center}
   @media (max-width:460px){.slot{width:34px;height:42px;font-size:8px}.slot .glyph{font-size:16px}.slot .count{font-size:9px}#hotbar{gap:3px;padding:4px}}
-  @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{grid-template-columns:repeat(2,70px)}}
+  @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{transform:scale(.92);transform-origin:bottom right}}
+  @media (max-width:460px){#actions{right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 76px);transform:scale(.92);transform-origin:bottom right}#jumpBtn{width:84px;height:84px}#hotbar{bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
 <div id="topbar"><div class="pill" id="brand">TEVCRAFT <span style="color:white">GLOBAL</span></div><div class="pill" id="clock">Day 1 · 08:00</div><div class="pill" id="online">Online: 1</div><div class="pill" id="status">Connecting…</div></div>
-<div id="chatBox"><div id="chatLines"></div><form id="chatForm"><input id="chatInput" maxlength="180" placeholder="Global chat or /help"><button id="chatSend" type="submit">SEND</button></form></div>
+<div id="chatBox"><div id="chatLines"></div><form id="chatForm"><input id="chatInput" maxlength="180" placeholder="Chat, /help, /chatcolor red"><button id="chatSend" type="submit">SEND</button></form></div>
 <div id="crosshair"></div>
 <div id="lookHint">Drag the right side to look around</div>
 <div id="leftPad"><div id="stick"></div></div>
@@ -76,7 +82,7 @@
   <h1>TEV<span>CRAFT</span></h1><div class="sub">GLOBAL SURVIVAL · ONE SHARED WORLD</div>
   <div class="row"><input id="playerName" maxlength="16" placeholder="Your player name" value="Tev"></div>
   <div class="row"><button class="primary" id="playBtn" style="width:100%;padding:14px">JOIN THE GLOBAL WORLD</button></div>
-  <div id="connectStatus">Supabase connection will start when you join.</div>
+  <div id="connectStatus">Supabase global server · join to connect live.</div>
   <p class="small">Mobile: left joystick moves · drag right side to look · use the buttons to mine, place, jump and crouch. Desktop: WASD + mouse.</p>
 </div></div>
 
@@ -99,11 +105,7 @@ const blockInfo = {
  grass:{name:'Grass',color:0x68a94a,glyph:'🟩',drop:'dirt'},dirt:{name:'Dirt',color:0x805232,glyph:'🟫',drop:'dirt'},stone:{name:'Stone',color:0x828990,glyph:'⬜',drop:'cobblestone'},wood:{name:'Wood',color:0x80552e,glyph:'🪵',drop:'wood'},leaves:{name:'Leaves',color:0x347b42,glyph:'🌿',drop:'leaves'},planks:{name:'Planks',color:0xb7824d,glyph:'🪵',drop:'planks'},crafting_table:{name:'Crafting Table',color:0x9a6334,glyph:'🛠️',drop:'crafting_table'},sand:{name:'Sand',color:0xd8c27b,glyph:'🟨',drop:'sand'},bedrock:{name:'Bedrock',color:0x292d32,glyph:'⬛',drop:null},coal_ore:{name:'Coal Ore',color:0x44484c,glyph:'⚫',drop:'coal'},iron_ore:{name:'Iron Ore',color:0xb58c72,glyph:'🟤',drop:'iron_ore'},diamond_ore:{name:'Diamond Ore',color:0x45cbd0,glyph:'💎',drop:'diamond'},deepslate:{name:'Deepslate',color:0x414750,glyph:'◼️',drop:'cobblestone'},glass:{name:'Glass',color:0x9bd9e8,glyph:'🔹',drop:'glass'}};
 const hotbarItems=['wood_pickaxe','stone_pickaxe','dirt','grass','stone','wood','planks','crafting_table','sand']; let selectedSlot=0;
 let scene,camera,renderer,raycaster,worldGroup,remoteGroup,animalGroup,mobGroup,localAvatar; let thirdPerson=false; let channel=null,supabase=null,joined=false,dbReady=false;
-let playerName='Tev',skinColor=0xc8794e,yaw=0,pitch=0,velY=0,onGround=false,crouching=false,alive=true,flyMode=false;
-const playerRanks=JSON.parse(localStorage.getItem('tc_player_ranks')||'{}');
-const isOwnerAccount=()=>['tev','tevuwu'].includes(String(playerName||'').trim().toLowerCase());
-let localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||'');
-const rankFor=name=>String(name||'').trim().toLowerCase()==='tev'||String(name||'').trim().toLowerCase()==='tevuwu'?'OWNER':(playerRanks[String(name||'').trim().toLowerCase()]||'');
+let playerName='Tev',skinColor=0xc8794e,yaw=0,pitch=0,velY=0,onGround=false,crouching=false,alive=true;
 const player={x:0,y:4,z:0}; const remotePlayers=new Map(); const animals=[],mobs=[];
 let moveInput={x:0,y:0},jumpQueued=false,lastFrame=0,lastBroadcast=0,lastPresence=0,dayTime=8*60,playSeconds=Number(localStorage.getItem('tc_play_seconds')||0),lastSave=Date.now();
 let keys={},audioCtx=null,muted=false;
@@ -137,16 +139,56 @@ function generateWorld(){
   // A small sandy pond/shore patch.
   for(let x=-4;x<=-1;x++)for(let z=5;z<=8;z++){const h=terrainHeight(x,z);blocks.set(key(x,h,z),{x,y:h,z,type:'sand',base:true});}
 }
+
+function makeNameTag(label){
+  const c=document.createElement('canvas');c.width=512;c.height=96;const g=c.getContext('2d');
+  g.fillStyle='#101820dd';g.strokeStyle='#ffffffaa';g.lineWidth=5;
+  g.beginPath();g.roundRect(8,8,496,80,18);g.fill();g.stroke();
+  g.font='bold 42px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff';g.fillText(String(label||'Player').slice(0,24),256,48);
+  const tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;
+  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  sprite.scale.set(2.2,.42,1);sprite.position.y=2.35;return sprite;
+}
+function buildAvatar(group,skin=0xc8794e,style='classic'){
+  while(group.children.length){const o=group.children.pop();if(o.geometry)o.geometry.dispose();if(o.material?.dispose)o.material.dispose();}
+  const mat=(color)=>new THREE.MeshLambertMaterial({color});
+  const add=(w,h,d,color,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=true;group.add(m);return m;};
+  const outfits={classic:0x3979b8,red:0xb93636,purple:0x713ca8,green:0x39834b,robot:0x9aa7b2,cat:0x34343c};
+  const shirt=outfits[style]||outfits.classic;
+  add(.62,1.08,.36,shirt,0,.93,0);
+  add(.48,.48,.48,skin,0,1.72,0);
+  add(.18,.78,.2,skin,-.42,1.03,0);add(.18,.78,.2,skin,.42,1.03,0);
+  add(.24,.72,.25,0x263342,-.17,.36,0);add(.24,.72,.25,0x263342,.17,.36,0);
+  if(style==='cat'){add(.13,.2,.13,0x34343c,-.16,2.06,0);add(.13,.2,.13,0x34343c,.16,2.06,0);}
+  if(style==='robot'){add(.52,.12,.5,0x4de1e8,0,1.98,0);}
+  if(style==='red'||style==='purple'||style==='green'){add(.5,.13,.5,shirt,0,2.02,0);}
+}
+
 function makeScene(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0x8dc9ed);scene.fog=new THREE.Fog(0x8dc9ed,22,68);
   camera=new THREE.PerspectiveCamera(76,innerWidth/innerHeight,.1,150);
-  renderer=new THREE.WebGLRenderer({canvas:$('game'),antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;
-  scene.add(new THREE.HemisphereLight(0xdcefff,0x536044,1.5));const sun=new THREE.DirectionalLight(0xffefcf,1.2);sun.position.set(-20,35,15);scene.add(sun);
+  renderer=new THREE.WebGLRenderer({canvas:$('game'),antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+  scene.add(new THREE.HemisphereLight(0xdcefff,0x536044,1.65));const sun=new THREE.DirectionalLight(0xffefcf,1.55);sun.position.set(-20,35,15);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-32;sun.shadow.camera.right=32;sun.shadow.camera.top=32;sun.shadow.camera.bottom=-32;sun.shadow.bias=-0.0004;scene.add(sun);
   worldGroup=new THREE.Group();scene.add(worldGroup);remoteGroup=new THREE.Group();scene.add(remoteGroup);animalGroup=new THREE.Group();scene.add(animalGroup);mobGroup=new THREE.Group();scene.add(mobGroup);
-  localAvatar=new THREE.Group();const localBody=new THREE.Mesh(new THREE.BoxGeometry(.58,1,.38),new THREE.MeshLambertMaterial({color:skinColor}));localBody.position.y=.72;localAvatar.add(localBody);const localHead=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe3b28f}));localHead.position.y=1.48;localAvatar.add(localHead);localAvatar.visible=false;scene.add(localAvatar);
+  localAvatar=new THREE.Group();buildAvatar(localAvatar,skinColor,'classic');localAvatar.add(makeNameTag('Tev'));localAvatar.visible=false;scene.add(localAvatar);
   raycaster=new THREE.Raycaster();raycaster.far=6;
   rebuildWorld();addCreatures();
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+}
+const textureCache={};
+function voxelTexture(type){
+  if(textureCache[type])return textureCache[type];
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=32;const c=canvas.getContext('2d');
+  const base={grass:'#6fae42',dirt:'#805334',stone:'#858b91',wood:'#936037',leaves:'#347b42',planks:'#bd8b53',crafting_table:'#a66d38',sand:'#ddc98a',bedrock:'#30343a',coal_ore:'#74787b',iron_ore:'#a88b78',diamond_ore:'#579fa5',deepslate:'#444c58',glass:'#a9dce8'}[type]||'#888888';
+  c.fillStyle=base;c.fillRect(0,0,32,32);
+  let seed=Array.from(type).reduce((a,ch)=>a+ch.charCodeAt(0),0)+91;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  const palettes={grass:['#4f8e35','#82bd50','#a0c96a'],dirt:['#684128','#986641','#b17a4d'],stone:['#6c737b','#a2a7aa','#555d66'],wood:['#603d24','#bd8950','#7d4e2c'],leaves:['#205d32','#4e9843','#78ad4d'],deepslate:['#303945','#59616c','#737b83'],sand:['#c4ae6e','#eee0a7','#d3bf80']};
+  const colors=palettes[type]||[base,'#ffffff','#222222'];
+  for(let i=0;i<95;i++){c.globalAlpha=.18+rand()*.35;c.fillStyle=colors[Math.floor(rand()*colors.length)];const x=Math.floor(rand()*32),y=Math.floor(rand()*32),w=1+Math.floor(rand()*5);c.fillRect(x,y,w,1+Math.floor(rand()*4));}
+  if(type==='grass'){c.fillStyle='#397b32';c.fillRect(0,0,32,7);c.fillStyle='#795034';c.fillRect(0,8,32,24);}
+  if(type==='wood'||type==='planks'){c.globalAlpha=.55;c.fillStyle='#4d301d';for(let x=5;x<32;x+=9)c.fillRect(x,0,2,32)}
+  if(type.includes('ore')){c.globalAlpha=1;const ore=type==='diamond_ore'?'#50e3df':type==='iron_ore'?'#d7b49c':'#24272b';for(let i=0;i<9;i++){c.fillStyle=ore;c.fillRect(Math.floor(rand()*28),Math.floor(rand()*28),3,3)}}
+  c.globalAlpha=1;const tex=new THREE.CanvasTexture(canvas);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestMipmapNearestFilter;tex.colorSpace=THREE.SRGBColorSpace;textureCache[type]=tex;return tex;
 }
 function rebuildWorld(){
   while(worldGroup.children.length){const o=worldGroup.children.pop();if(o.geometry)o.geometry.dispose();if(o.material&&o.material.dispose)o.material.dispose();}
@@ -155,20 +197,20 @@ function rebuildWorld(){
   }
   const geo=new THREE.BoxGeometry(1,1,1);
   for(const [type,list] of Object.entries(groups)){
-    const mat=new THREE.MeshLambertMaterial({color:blockInfo[type]?.color||0x888888});
-    const mesh=new THREE.InstancedMesh(geo,mat,list.length);mesh.userData.blockType=type;mesh.userData.blocks=list;
+    const mat=new THREE.MeshLambertMaterial({map:voxelTexture(type),color:0xffffff});
+    const mesh=new THREE.InstancedMesh(geo,mat,list.length);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.blockType=type;mesh.userData.blocks=list;
     const dummy=new THREE.Object3D();list.forEach((b,i)=>{dummy.position.set(b.x+.5,b.y+.5,b.z+.5);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)});
     mesh.instanceMatrix.needsUpdate=true;worldGroup.add(mesh);
   }
 }
-function surfaceY(x,z){let top=0;for(let y=worldDepth;y<10;y++)if(blocks.has(key(Math.floor(x),y,Math.floor(z))))top=y;return top+2.72;}
+function surfaceY(x,z){let top=0;for(let y=worldDepth;y<10;y++){const b=blocks.get(key(Math.floor(x),y,Math.floor(z)));if(b&&b.type!=='leaves'&&b.type!=='wood')top=y;}return top+3;}
 function playSound(kind){if(muted)return;try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);const t=audioCtx.currentTime;const f={mine:170,place:260,step:90,craft:520,hit:70,chat:600}[kind]||220;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(Math.max(35,f*.55),t+.09);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.11);o.start(t);o.stop(t+.12)}catch(e){}}
 let musicTimer=null;function startAmbientMusic(){try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const notes=[261.63,329.63,392,329.63,293.66,349.23,440,349.23];let i=0;const tick=()=>{if(!muted&&audioCtx){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=notes[i++%notes.length];g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.012,audioCtx.currentTime+.08);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.55);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.58)}musicTimer=setTimeout(tick,720)};if(!musicTimer)tick()}catch(e){console.warn('Music unavailable',e)}}
 function addCreatures(){
   // Simple voxel-style passive animals, deterministic placement.
-  for(let i=0;i<9;i++){const x=-16+Math.floor(seeded(i,11)*32),z=-16+Math.floor(seeded(i,29)*32),y=surfaceY(x,z);const group=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.8,.55,1.1),new THREE.MeshLambertMaterial({color:i%3===0?0xf1eee4:i%3===1?0x9a7654:0xd4c17b}));body.position.y=.45;group.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.42,.42,.42),new THREE.MeshLambertMaterial({color:0xe7d9c4}));head.position.set(0,.62,.62);group.add(head);group.position.set(x,y-1.35,z);group.userData={x,z,phase:seeded(i,72)*6};animalGroup.add(group);animals.push(group)}
+  for(let i=0;i<9;i++){const x=-16+Math.floor(seeded(i,11)*32),z=-16+Math.floor(seeded(i,29)*32),y=surfaceY(x,z);const group=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.8,.55,1.1),new THREE.MeshLambertMaterial({color:i%3===0?0xf1eee4:i%3===1?0x9a7654:0xd4c17b}));body.position.y=.45;group.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.42,.42,.42),new THREE.MeshLambertMaterial({color:0xe7d9c4}));head.position.set(0,.62,.62);group.add(head);group.position.set(x,y-2.35,z);group.userData={x,z,phase:seeded(i,72)*6};animalGroup.add(group);animals.push(group)}
 }
-function addMob(){const group=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.72,1.35,.48),new THREE.MeshLambertMaterial({color:0x3e9d55}));body.position.y=.68;group.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.72,.65,.72),new THREE.MeshLambertMaterial({color:0x58b967}));head.position.y=1.62;group.add(head);const eyeMat=new THREE.MeshBasicMaterial({color:0xffffff});for(const x of [-.18,.18]){const eye=new THREE.Mesh(new THREE.BoxGeometry(.1,.1,.03),eyeMat);eye.position.set(x,1.72,.37);group.add(eye)}const a=Math.random()*Math.PI*2,r=8+Math.random()*10;group.position.set(player.x+Math.cos(a)*r,surfaceY(player.x+Math.cos(a)*r,player.z+Math.sin(a)*r)-1.7,player.z+Math.sin(a)*r);group.userData={hp:3};mobGroup.add(group);mobs.push(group)}
+function addMob(){const group=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.72,1.35,.48),new THREE.MeshLambertMaterial({color:0x3e9d55}));body.position.y=.68;group.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.72,.65,.72),new THREE.MeshLambertMaterial({color:0x58b967}));head.position.y=1.62;group.add(head);const eyeMat=new THREE.MeshBasicMaterial({color:0xffffff});for(const x of [-.18,.18]){const eye=new THREE.Mesh(new THREE.BoxGeometry(.1,.1,.03),eyeMat);eye.position.set(x,1.72,.37);group.add(eye)}const a=Math.random()*Math.PI*2,r=8+Math.random()*10;group.position.set(player.x+Math.cos(a)*r,surfaceY(player.x+Math.cos(a)*r,player.z+Math.sin(a)*r)-2.7,player.z+Math.sin(a)*r);group.userData={hp:3};mobGroup.add(group);mobs.push(group)}
 function getTarget(){raycaster.setFromCamera(new THREE.Vector2(0,0),camera);const hits=raycaster.intersectObjects(worldGroup.children,false);if(!hits.length)return null;const h=hits[0],b=h.object.userData.blocks[h.instanceId];return b?{block:b,normal:h.face.normal.clone()}:null}
 function updateHotbar(){const root=$('hotbar');root.innerHTML='';hotbarItems.forEach((it,i)=>{const def=blockInfo[it]||{glyph:it.includes('pickaxe')?'⛏️':'📦',name:it.replace('_',' ')};const count=inventory[it]||0;const s=document.createElement('div');s.className='slot'+(selectedSlot===i?' selected':'');s.innerHTML=`<span class="glyph">${def.glyph||'📦'}</span><span>${esc(def.name||it)}</span><span class="count">${count||''}</span>`;s.onclick=()=>{selectedSlot=i;updateHotbar()};root.appendChild(s)})}
 function currentItem(){return hotbarItems[selectedSlot]}
@@ -176,34 +218,111 @@ function mineBlock(){const target=getTarget();if(!target){say('Look at a block f
 function placeBlock(){const target=getTarget();if(!target){say('Look at a block face first');return}const item=currentItem();if(!blockInfo[item]||!(inventory[item]>0)){say('You do not have that block');return}const n=target.normal;const x=target.block.x+Math.round(n.x),y=target.block.y+Math.round(n.y),z=target.block.z+Math.round(n.z);if(blocks.has(key(x,y,z))){say('That space is occupied');return}if(Math.abs(x-player.x)<.8&&Math.abs(z-player.z)<.8&&y>player.y-2&&y<player.y+1){say('Too close to place there');return}blocks.set(key(x,y,z),{x,y,z,type:item});inventory[item]--;changedBlocks.set(key(x,y,z),item);if(channel)channel.send({type:'broadcast',event:'block_edit',payload:{x,y,z,type:item,by:playerId}});saveBlock(x,y,z,item);rebuildWorld();updateHotbar();playSound('place')}
 async function saveBlock(x,y,z,type){if(!supabase||!dbReady)return;try{const {error}=await supabase.from('tc_world_blocks').upsert({x,y,z,block_type:type,updated_at:new Date().toISOString()},{onConflict:'x,y,z'});if(error)throw error}catch(e){console.warn('Block save:',e.message);dbReady=false;say('Live multiplayer works, but world saving needs the SQL setup.')}}
 async function loadSavedBlocks(){if(!supabase)return;try{const {data,error}=await supabase.from('tc_world_blocks').select('x,y,z,block_type').limit(10000);if(error)throw error;(data||[]).forEach(r=>{const k=key(r.x,r.y,r.z);if(r.block_type==='__air__')blocks.delete(k);else blocks.set(k,{x:r.x,y:r.y,z:r.z,type:r.block_type})});dbReady=true;rebuildWorld();say('Saved world loaded')}catch(e){dbReady=false;console.warn('World load:',e.message);say('Multiplayer is live; run the Supabase setup SQL to save the world')}}
-function addChatLine(name,msg,rank=''){const line=document.createElement('div');const shownRank=rank||rankFor(name);const owner=shownRank==='OWNER';const b=document.createElement('b');b.className=owner?'rainbow-owner':'';b.style.color=owner?'':shownRank==='VIP'?'#f6d36b':shownRank==='OG'?'#ffad55':shownRank==='BETA TESTER'?'#c5a4ff':'#a9d5ff';b.textContent=(shownRank?`[${shownRank}] `:'')+String(name||'Player')+': ';const m=document.createElement('span');m.className=owner?'rainbow-owner':'';m.textContent=String(msg||'');line.append(b,m);$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
-async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(msg.startsWith('/')){handleCommand(msg);return}localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||localRank||'');addChatLine(playerName,msg,localRank);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank}});if(supabase&&dbReady){try{await supabase.from('tc_chat_messages').insert({player_name:playerName,message:msg})}catch(e){console.warn(e)}}playSound('chat')}
+async function saveMyProfile(){if(!supabase||!dbReady)return;const rank=localRank||'';const color=myChatColor||'blue';try{const {error}=await supabase.from('tc_player_profiles').upsert({player_id:playerId,player_name:playerName,rank,chat_color:color,updated_at:new Date().toISOString()},{onConflict:'player_id'});if(error)throw error}catch(e){console.warn('Profile save:',e.message);say('Profile save needs the TevCraft profile SQL')}}
+async function loadMyProfile(){if(!supabase)return;try{const {data,error}=await supabase.from('tc_player_profiles').select('rank,chat_color').eq('player_id',playerId).maybeSingle();if(error)throw error;if(data){localRank=data.rank||'';if(data.chat_color){myChatColor=data.chat_color;localStorage.setItem('tc_chat_color',myChatColor)}if(localRank){cosmeticRanks[playerName.toLowerCase()]=localRank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks))}}}catch(e){console.warn('Profile load:',e.message)}}
+const chatColors={blue:'#a9d5ff',red:'#ff7777',green:'#8ff0a4',purple:'#d7a6ff',pink:'#ff9ed4',yellow:'#ffe27a',white:'#ffffff',orange:'#ffb36b',cyan:'#79e8ef'};
+const playerChatColors={};const cosmeticRanks={};let myChatColor=localStorage.getItem('tc_chat_color')||'blue';
+function rankParts(value){const bits=String(value||'').split('|');return {label:bits[0]||'',rainbow:bits.includes('rainbow'),purple:bits.includes('purple'),sparkle:bits.includes('sparkle')}}
+function colorFor(name,rank){return playerChatColors[name]||chatColors[myChatColor]||'#a9d5ff'}
+function addChatLine(name,msg,rank='',color=''){const line=document.createElement('div');rank=rank||cosmeticRanks[String(name).toLowerCase()]||'';const style=rankParts(rank);const rainbow=style.rainbow;const sparkle=style.sparkle;const chatRainbow=String(color).toLowerCase()==='rainbow';const safeColor=/^#[0-9a-f]{6}$/i.test(color)?color:colorFor(name,rank);const rankClass=style.rainbow?'rainbowText':(style.purple?'rankPurpleText':(style.sparkle?'sparkleText':''));const rankHtml=style.label?`<span class="${rankClass}">[${esc(style.label)}]</span> `:'';line.innerHTML=`<b style="color:${safeColor}">${rankHtml}${esc(name)}:</b> <span class="${chatRainbow?'rainbowText':''}" style="color:${safeColor}">${esc(msg)}</span>${sparkle?' <span class="'+(style.purple?'purpleSparkleText':'sparkleText')+'">✦</span>':''}`;$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
+async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(bannedPlayers.includes(playerName.toLowerCase()))return say('You are banned from this local prototype session.');if(msg.startsWith('/')){handleCommand(msg);return}const chosenColor=playerChatColors[playerName.toLowerCase()]||myChatColor;const color=chosenColor==='rainbow'?'rainbow':(chatColors[chosenColor]||'#a9d5ff');addChatLine(playerName,msg,localRank,color);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank,color}});if(supabase&&dbReady){try{const {error}=await supabase.from('tc_chat_messages').insert({player_id:playerId,player_name:playerName,message:msg,rank:localRank||'',chat_color:color});if(error)throw error}catch(e){console.warn('Chat save:',e.message)}}playSound('chat')}
+let localRank='';
+try{Object.assign(cosmeticRanks,JSON.parse(localStorage.getItem('tc_cosmetic_ranks')||'{}'));Object.assign(playerChatColors,JSON.parse(localStorage.getItem('tc_player_chat_colors')||'{}'))}catch(e){}
+const OWNER_NAME='tev';
+const commandPermissions=JSON.parse(localStorage.getItem('tc_command_permissions')||'{}');
+const bannedPlayers=JSON.parse(localStorage.getItem('tc_banned_players')||'[]');
+const banDetails=JSON.parse(localStorage.getItem('tc_ban_details')||'{}');
+let flying=false;
+function isOwner(){return playerName.toLowerCase()===OWNER_NAME;}
+function hasCommandPermission(command){return isOwner()||((commandPermissions[playerName.toLowerCase()]||[]).includes(command)|| (commandPermissions[playerName.toLowerCase()]||[]).includes('all'));}
+function saveCommandPermissions(){localStorage.setItem('tc_command_permissions',JSON.stringify(commandPermissions));}
 function handleCommand(raw){
-  const a=raw.trim().split(/\s+/),cmd=(a.shift()||'').toLowerCase();
-  if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /fly, /rank <player name> <any rank words>, /rank <player name> NONE');return}
-  if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}
-  if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;onGround=true;say('Returned to spawn');return}
-  if(!['/fly','/rank'].includes(cmd)){addChatLine('SERVER','Unknown command. Try /help');return}
-  if(!isOwnerAccount()){say('Only TevCraft Owner can use that command');return}
-  if(cmd==='/fly'){flyMode=!flyMode;velY=0;onGround=!flyMode;say(flyMode?'🪽 FLY ON — hold JUMP/SPACE to rise, CROUCH/SHIFT to descend':'🪽 FLY OFF');return}
-  if(cmd==='/rank'){
-    if(a.length<2){say('Use /rank PlayerName Your Custom Rank');return}
-    let target='',rank='';
-    const quoted=raw.match(/^\/rank\s+"([^"]+)"\s+(.+)$/i);
-    if(quoted){target=quoted[1].trim();rank=quoted[2].trim();}
-    else {target=a[0].trim();rank=a.slice(1).join(' ').trim();}
-    if(!target||!rank){say('Use /rank PlayerName Custom Rank — example: /rank Alex SUPER BUILDER');return}
-    const clear=/^(NONE|PLAYER)$/i.test(rank);
-    const cleanRank=clear?'':rank.replace(/\s+/g,' ').slice(0,24).toUpperCase();
-    playerRanks[target.toLowerCase()]=cleanRank;
-    localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));
-    if(target.toLowerCase()===playerName.toLowerCase())localRank=cleanRank||(isOwnerAccount()?'OWNER':'');
-    if(channel)channel.send({type:'broadcast',event:'rank_update',payload:{name:target,rank:cleanRank}});
-    addChatLine('SERVER',`${target} rank set to ${cleanRank||'PLAYER'}`);
-    say('Rank updated: '+(cleanRank||'PLAYER'));
+  const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();
+  if(cmd==='/help'){
+    addChatLine('SERVER','/time /spawn /chatcolor /rank /avatar /fly /give player fly|rank|ban|all /take player command|all /ban player reason | personal message /unban player');
+    return;
   }
+  if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return;}
+  if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;return say('Returned to spawn');}
+  if(cmd==='/avatar'){
+    const styles=['classic','red','purple','green','robot','cat'];const style=(a[1]||'classic').toLowerCase();
+    if(!styles.includes(style))return say('Use /avatar classic, red, purple, green, robot, or cat');
+    localStorage.setItem('tc_avatar',style);buildAvatar(localAvatar,skinColor,style);localAvatar.add(makeNameTag(playerName));
+    if(channel)channel.send({type:'broadcast',event:'player_avatar',payload:{id:playerId,name:playerName,avatar:style,skin:skinColor}});
+    return say('Avatar changed to '+style);
+  }
+  if(cmd==='/fly'){
+    if(!hasCommandPermission('fly'))return say('You do not have /fly permission');
+    flying=!flying;return say('Fly '+(flying?'enabled':'disabled'));
+  }
+  if(cmd==='/give'||cmd==='/take'){
+    if(!isOwner())return say('Only the OWNER can give or take command permissions');
+    const target=(a[1]||'').toLowerCase(),permission=(a[2]||'').toLowerCase();
+    const allowed=['fly','rank','ban','all'];
+    if(!target||!allowed.includes(permission))return say(`Use ${cmd} player fly|rank|ban|all`);
+    const list=commandPermissions[target]||[];
+    if(cmd==='/give'){if(!list.includes(permission))list.push(permission);commandPermissions[target]=list;}
+    else {commandPermissions[target]=permission==='all'?[]:list.filter(x=>x!==permission);}
+    saveCommandPermissions();
+    if(channel)channel.send({type:'broadcast',event:'command_permission',payload:{target,permissions:commandPermissions[target]}});
+    return say(`${permission} ${cmd==='/give'?'given to':'taken from'} ${target}`);
+  }
+  if(cmd==='/ban'){
+    if(!hasCommandPermission('ban'))return say('You do not have /ban permission');
+    const target=(a[1]||'').toLowerCase();if(!target)return say('Use: /ban player message');
+    if(target===OWNER_NAME)return say('You cannot ban the OWNER');
+    const message=raw.trim().split(/\\s+/).slice(2).join(' ').trim()||'You were banned by the server owner.';
+    const detail={reason:message,personal:'',by:playerName};
+    banDetails[target]=detail;
+    localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
+    if(!bannedPlayers.includes(target))bannedPlayers.push(target);
+    localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+    if(channel)channel.send({type:'broadcast',event:'player_banned',payload:{target,...detail}});
+    addChatLine('SERVER',`${target} was banned: ${message}`);
+    return;
+  }
+  if(cmd==='/unban'){
+    if(!hasCommandPermission('ban'))return say('You do not have /unban permission');
+    const target=(a[1]||'').toLowerCase();if(!target)return say('Use /unban player');
+    const index=bannedPlayers.indexOf(target);
+    if(index===-1)return say(target+' is not on the local ban list');
+    bannedPlayers.splice(index,1);
+    localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+    if(channel)channel.send({type:'broadcast',event:'player_unbanned',payload:{target,by:playerName}});
+    addChatLine('SERVER',`${target} was unbanned (prototype/local moderation).`);return;
+  }
+  if(cmd==='/chatcolor'||cmd==='/color'){
+    const target=a.length>2?a[1]:'',value=(a.length>2?a[2]:a[1]||'').toLowerCase();
+    if(value==='rainbow'||chatColors[value]){
+      if(target){playerChatColors[target.toLowerCase()]=value;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));if(channel)channel.send({type:'broadcast',event:'chat_color',payload:{target,color:value}});say(target+' chat color changed to '+value);}
+      else{myChatColor=value;localStorage.setItem('tc_chat_color',value);saveMyProfile();say('Your chat color is '+value);}
+    }else addChatLine('SERVER','Use /chatcolor rainbow OR /chatcolor player red.');return;
+  }
+  if(cmd==='/rank'){
+    if(!hasCommandPermission('rank'))return say('You do not have /rank permission');
+    const target=a[1],parts=a.slice(2),styles=parts.map(x=>x.toLowerCase()).filter(x=>['rainbow','purple','sparkle'].includes(x));
+    const label=parts.filter(x=>!['rainbow','purple','sparkle'].includes(x)).join(' ').trim();
+    if(!target||(!label&&!styles.length))return say('Use /rank player VIP RAINBOW SPARKLE');
+    const previous=rankParts(cosmeticRanks[target.toLowerCase()]||(target.toLowerCase()===playerName.toLowerCase()?localRank:''));
+    const finalLabel=label||previous.label||'PLAYER',rank=[finalLabel,...styles].join('|');
+    cosmeticRanks[target.toLowerCase()]=rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));
+    if(target.toLowerCase()===playerName.toLowerCase()){localRank=rank;saveMyProfile();}
+    addChatLine('SERVER',`Cosmetic rank set for ${target}: ${finalLabel}`);
+    if(channel)channel.send({type:'broadcast',event:'rank_cosmetic',payload:{target,rank,by:playerName}});return;
+  }
+  addChatLine('SERVER','Unknown command. Try /help');
 }
-function createRemote(id,p){let r=remotePlayers.get(id);if(!r){r=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.55,1,.35),new THREE.MeshLambertMaterial({color:p.skin||0xc8794e}));body.position.y=.75;r.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe6b895}));head.position.y=1.5;r.add(head);const tag=document.createElement('div');tag.style.cssText='position:absolute;color:white;background:#0009;padding:2px 5px;border-radius:5px;font-size:10px;white-space:nowrap;pointer-events:none';tag.textContent=p.name||'Player';r.userData.tag=tag;r.userData.body=body;remoteGroup.add(r);remotePlayers.set(id,r)}r.position.set(p.x,p.y-1.72,p.z);r.rotation.y=p.yaw||0;if(r.userData.body&&p.skin)r.userData.body.material.color.set(p.skin);r.userData.tag.textContent=(p.rank?`[${p.rank}] `:'')+(p.name||'Player')}
+function createRemote(id,p){
+  let r=remotePlayers.get(id);
+  if(!r){
+    r=new THREE.Group();buildAvatar(r,p.skin||0xc8794e,p.avatar||'classic');
+    const tag=makeNameTag(p.name||'Player');r.add(tag);r.userData.tag=tag;
+    remoteGroup.add(r);remotePlayers.set(id,r);
+  }
+  r.position.set(p.x,p.y-2,p.z);r.rotation.y=p.yaw||0;
+  if(r.userData.tag){r.userData.tag.position.y=2.35;}
+  r.userData.name=p.name||'Player';
+}
 function syncRemoteTags(){/* tags are represented by the online list to keep mobile rendering light */}
 function countOnline(){let n=1;if(channel){const state=channel.presenceState();n=Object.keys(state).length||1} $('online').textContent=`Online: ${n}`}
 async function connectSupabase(){
@@ -211,79 +330,77 @@ async function connectSupabase(){
   try{
     supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{realtime:{params:{eventsPerSecond:25}}});
     channel=supabase.channel(WORLD_TOPIC,{config:{private:false,broadcast:{self:false},presence:{key:playerId}}});
-    channel.on('presence',{event:'sync'},countOnline);
+    channel.on('presence',{event:'sync'},()=>{countOnline();const state=channel.presenceState();Object.values(state).flat().forEach(p=>{if(p.id&&p.id!==playerId&&Number.isFinite(p.x))createRemote(p.id,p)});});
     channel.on('broadcast',{event:'player_move'},({payload})=>{if(payload&&payload.id!==playerId)createRemote(payload.id,payload)});
-    channel.on('broadcast',{event:'chat'},({payload})=>{if(payload&&payload.id!==playerId)addChatLine(payload.name||'Player',payload.msg||'',payload.rank||'')});
-    channel.on('broadcast',{event:'rank_update'},({payload})=>{if(payload?.name){const k=String(payload.name).trim().toLowerCase();playerRanks[k]=payload.rank||'';localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));if(k===playerName.toLowerCase())localRank=payload.rank|| (isOwnerAccount()?'OWNER':'');}});
+    channel.on('broadcast',{event:'chat'},({payload})=>{if(payload&&payload.id!==playerId)addChatLine(payload.name||'Player',payload.msg||'',payload.rank||cosmeticRanks[String(payload.name||'').toLowerCase()]||'',payload.color||playerChatColors[String(payload.name||'').toLowerCase()]||'')});
+    channel.on('broadcast',{event:'rank_cosmetic'},({payload})=>{if(payload?.target&&payload?.rank){cosmeticRanks[String(payload.target).toLowerCase()]=payload.rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));addChatLine('SERVER',`${payload.target} received cosmetic rank: ${payload.rank}`)}});
+    channel.on('broadcast',{event:'player_avatar'},({payload})=>{if(payload?.id&&payload.id!==playerId){const r=remotePlayers.get(payload.id);if(r){buildAvatar(r,payload.skin||0xc8794e,payload.avatar||'classic');const tag=makeNameTag(payload.name||'Player');r.add(tag);r.userData.tag=tag;}}});
+    channel.on('broadcast',{event:'command_permission'},({payload})=>{if(payload?.target&&payload?.permissions){commandPermissions[String(payload.target).toLowerCase()]=payload.permissions;saveCommandPermissions();}});
+    channel.on('broadcast',{event:'player_banned'},({payload})=>{
+      if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){
+        const detail={reason:payload.reason||'Breaking the server rules',personal:payload.personal||'',by:payload.by||'OWNER'};
+        banDetails[playerName.toLowerCase()]=detail;
+        localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
+        bannedPlayers.push(playerName.toLowerCase());
+        localStorage.setItem('tc_banned_players',JSON.stringify([...new Set(bannedPlayers)]));
+        say('You are banned. Message: '+detail.reason);
+        addChatLine('SERVER','You are banned. Message: '+detail.reason);
+      }
+    });
+    channel.on('broadcast',{event:'player_unbanned'},({payload})=>{
+      if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){
+        const i=bannedPlayers.indexOf(playerName.toLowerCase());if(i!==-1)bannedPlayers.splice(i,1);
+        delete banDetails[playerName.toLowerCase()];
+        localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+        localStorage.setItem('tc_ban_details',JSON.stringify(banDetails));
+        say('You have been unbanned by '+(payload.by||'OWNER')+'!');
+      }
+    });
+    channel.on('broadcast',{event:'chat_color'},({payload})=>{if(payload?.target&&payload?.color){playerChatColors[String(payload.target).toLowerCase()]=payload.color;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));addChatLine('SERVER',`${payload.target}'s chat color changed`)}});
     channel.on('broadcast',{event:'block_edit'},({payload})=>{if(!payload||payload.by===playerId)return;const k=key(payload.x,payload.y,payload.z);if(payload.type==='__air__')blocks.delete(k);else blocks.set(k,{x:payload.x,y:payload.y,z:payload.z,type:payload.type});rebuildWorld()});
     channel.on('broadcast',{event:'player_leave'},({payload})=>{const r=remotePlayers.get(payload?.id);if(r){remoteGroup.remove(r);remotePlayers.delete(payload.id)}});
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,playSeconds:Math.floor(playSeconds),x:player.x,y:player.y,z:player.z,yaw,online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
     $('connectStatus').textContent='🟢 Connected to the shared Supabase world.';
     await loadSavedBlocks();
-    try{const {data,error}=await supabase.from('tc_chat_messages').select('player_name,message').order('created_at',{ascending:false}).limit(6);if(!error)(data||[]).reverse().forEach(r=>addChatLine(r.player_name,r.message))}catch(e){}
+    await loadMyProfile();await saveMyProfile();try{const {data,error}=await supabase.from('tc_chat_messages').select('player_name,message,rank,chat_color').order('created_at',{ascending:false}).limit(12);if(!error)(data||[]).reverse().forEach(r=>addChatLine(r.player_name,r.message,r.rank||'',r.chat_color||''))}catch(e){console.warn('Chat history:',e.message)}
   }catch(e){console.error(e);$('status').textContent='⚠️ OFFLINE';$('status').style.color='#ff9c72';$('connectStatus').textContent='Could not connect: '+e.message+'. Check your Supabase project settings.';say('Could not connect to Supabase')}
 }
 function updateClock(dt){dayTime=(dayTime+dt*.18)%(24*60);const h=Math.floor(dayTime/60),m=Math.floor(dayTime%60);const day=Math.floor(playSeconds/600)+1;$('clock').textContent=`Day ${day} · ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;const daylight=Math.max(0,Math.sin((dayTime/1440)*Math.PI*2-Math.PI/2)*.5+.5);const night=1-daylight;const c=new THREE.Color().setRGB(.05+.5*daylight,.08+.65*daylight,.16+.75*daylight);scene.background.copy(c);scene.fog.color.copy(c);scene.fog.near=18;scene.fog.far=60;scene.children.forEach(o=>{if(o.isDirectionalLight)o.intensity=.18+daylight*1.1});if(daylight<.22&&mobs.length<5&&Math.random()<.002)addMob();if(daylight>.3&&mobs.length){mobs.forEach(m=>mobGroup.remove(m));mobs.length=0}}
-function collidesAt(x,z,feetY){
-  // Player collision box: narrow enough to pass through door-sized gaps, tall enough to stop block clipping.
-  const radius=.28,bodyBottom=feetY+.06,bodyTop=feetY+(crouching?1.12:1.58);
-  const minX=Math.floor(x-radius),maxX=Math.floor(x+radius),minZ=Math.floor(z-radius),maxZ=Math.floor(z+radius);
-  for(let bx=minX;bx<=maxX;bx++)for(let bz=minZ;bz<=maxZ;bz++)for(let by=Math.floor(bodyBottom);by<=Math.floor(bodyTop);by++){
-    if(blocks.has(key(bx,by,bz)) && by+1>bodyBottom && by<bodyTop)return true;
-  }
-  return false;
-}
-function tryMoveAxis(axis,amount){
-  if(Math.abs(amount)<0.00001)return;
-  const nextX=axis==='x'?Math.max(worldMin+.35,Math.min(worldMax-.35,player.x+amount)):player.x;
-  const nextZ=axis==='z'?Math.max(worldMin+.35,Math.min(worldMax-.35,player.z+amount)):player.z;
-  const feet=player.y-1.72;
-  // While grounded, allow a small step only; taller blocks require a jump.
-  const currentFloor=surfaceY(player.x,player.z),nextFloor=surfaceY(nextX,nextZ);
-  const canStep=onGround && nextFloor-currentFloor<=.55;
-  if(!collidesAt(nextX,nextZ,feet) && (canStep || nextFloor<=currentFloor+.55)){
-    if(axis==='x')player.x=nextX;else player.z=nextZ;
-  }
-}
 function updatePlayer(dt){
-  let ix=moveInput.x,iz=moveInput.y;
-  if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;
-  if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
+  let ix=moveInput.x,iz=moveInput.y;if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
   const len=Math.hypot(ix,iz);if(len>1){ix/=len;iz/=len}
-  const speed=crouching?2.2:4.6;
-  // Forward on the joystick is negative Y; yaw rotates the movement direction.
-  const dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt;
-  const dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
-  tryMoveAxis('x',dx);tryMoveAxis('z',dz);
+  const speed=crouching?2.4:5.2;const dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt;const dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
+  const currentFeet=player.y-2;
+  const canStep=(x,z)=>{const floor=surfaceY(x,z)-2;return floor<=currentFeet+.62};
+  const nx=Math.max(worldMin+1,Math.min(worldMax-1,player.x+dx));if(canStep(nx,player.z))player.x=nx;
+  const nz=Math.max(worldMin+1,Math.min(worldMax-1,player.z+dz));if(canStep(player.x,nz))player.z=nz;
   const floor=surfaceY(player.x,player.z);
-  if(flyMode){
-    if(jumpQueued)player.y+=1.0;
-    if(keys.ShiftLeft||keys.ShiftRight)player.y-=5*dt;
-    velY=0;onGround=false;jumpQueued=false;
-  }else{
-    if(player.y<=floor+.10){player.y=floor;velY=0;onGround=true}else onGround=false;
-    if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}
-    velY-=18*dt;player.y+=velY*dt;
-    if(player.y<floor){player.y=floor;velY=0;onGround=true}
-    jumpQueued=false;
-  }
-  localAvatar.position.set(player.x,player.y-1.72,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
-  if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.45:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
+  if(player.y<=floor+.10){player.y=floor;velY=0;onGround=true}else onGround=false;
+  if(flying){if(jumpQueued||keys.Space)player.y+=Math.max(0,dt*5);if(keys.ShiftLeft||keys.ShiftRight)player.y-=dt*5;velY=0;onGround=false;}
+  else if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}jumpQueued=false;
+  velY-=18*dt;player.y+=velY*dt;if(player.y<floor){player.y=floor;velY=0;onGround=true}
+  localAvatar.position.set(player.x,player.y-2,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
+  if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.5:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
 }
-function updateCreatures(dt){animals.forEach((a,i)=>{a.userData.phase+=dt*.8;if(Math.random()<.001){a.userData.x+=(Math.random()-.5)*2;a.userData.z+=(Math.random()-.5)*2}a.position.x+=(a.userData.x-a.position.x)*dt*.25;a.position.z+=(a.userData.z-a.position.z)*dt*.25;a.position.y=surfaceY(a.position.x,a.position.z)-1.35+Math.sin(a.userData.phase)*.025});mobs.forEach(m=>{const dx=player.x-m.position.x,dz=player.z-m.position.z,d=Math.hypot(dx,dz);if(d>1.4){m.position.x+=dx/d*dt*.8;m.position.z+=dz/d*dt*.8;m.position.y=surfaceY(m.position.x,m.position.z)-1.7}else if(Math.random()<.006){say('A monster hit you!');playSound('hit')}})}
-function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-lastFrame)/1000||0);lastFrame=now;if(joined){playSeconds+=dt;if(Date.now()-lastSave>5000){localStorage.setItem('tc_play_seconds',Math.floor(playSeconds));lastSave=Date.now()}if(Date.now()-lastBroadcast>120){channel.send({type:'broadcast',event:'player_move',payload:{id:playerId,name:playerName,x:player.x,y:player.y,z:player.z,yaw,pitch,skin:skinColor,crouching}});lastBroadcast=Date.now()}if(Date.now()-lastPresence>15000){channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});lastPresence=Date.now()}}
+function updateCreatures(dt){animals.forEach((a,i)=>{a.userData.phase+=dt*.8;if(Math.random()<.001){a.userData.x+=(Math.random()-.5)*2;a.userData.z+=(Math.random()-.5)*2}a.position.x+=(a.userData.x-a.position.x)*dt*.25;a.position.z+=(a.userData.z-a.position.z)*dt*.25;a.position.y=surfaceY(a.position.x,a.position.z)-2.35+Math.sin(a.userData.phase)*.025});mobs.forEach(m=>{const dx=player.x-m.position.x,dz=player.z-m.position.z,d=Math.hypot(dx,dz);if(d>1.4){m.position.x+=dx/d*dt*.8;m.position.z+=dz/d*dt*.8;m.position.y=surfaceY(m.position.x,m.position.z)-2.7}else if(Math.random()<.006){say('A monster hit you!');playSound('hit')}})}
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-lastFrame)/1000||0);lastFrame=now;if(joined){playSeconds+=dt;if(Date.now()-lastSave>5000){localStorage.setItem('tc_play_seconds',Math.floor(playSeconds));lastSave=Date.now()}if(Date.now()-lastBroadcast>120){channel.send({type:'broadcast',event:'player_move',payload:{id:playerId,name:playerName,x:player.x,y:player.y,z:player.z,yaw,pitch,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,crouching}});lastBroadcast=Date.now()}if(Date.now()-lastPresence>15000){channel.track({id:playerId,name:playerName,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});lastPresence=Date.now()}}
  if(scene){updatePlayer(dt);updateClock(dt);updateCreatures(dt);renderer.render(scene,camera)}}
 function openModal(title,html){$('modal').innerHTML=`<h2>${title}</h2>${html}<div class="row"><button id="closeModal" style="width:100%">CLOSE</button></div>`;$('modalLayer').style.display='flex';$('closeModal').onclick=()=>$('modalLayer').style.display='none'}
 function openInventory(){const entries=Object.entries(inventory).filter(([k,v])=>v>0);const inv=entries.length?entries.map(([k,v])=>`<div class="item"><span>${esc(blockInfo[k]?.glyph||'🎒')} ${esc(blockInfo[k]?.name||k.replaceAll('_',' '))}</span><b>${v}</b></div>`).join(''):'<p>Your inventory is empty. Punch a tree to collect wood!</p>';const recipes=[['4 Planks','wood',1,'planks',4],['4 Sticks','planks',2,'stick',4],['Crafting Table','planks',4,'crafting_table',1],['Wood Pickaxe','planks',3,'wood_pickaxe',1],['Stone Pickaxe','cobblestone',3,'stone_pickaxe',1]];const rec=recipes.map(r=>`<div class="item"><span>${r[0]}<br><small class="small">Needs ${r[2]} ${r[1]}</small></span><button data-recipe="${r[3]}" data-cost="${r[1]}" data-amount="${r[2]}" data-out="${r[4]}">CRAFT</button></div>`).join('');openModal('🎒 Inventory & Crafting',`<h3>Inventory</h3><div class="grid">${inv}</div><h3>Recipes</h3><div class="grid">${rec}</div><p class="small">Tip: collect wood by mining tree trunks. Craft planks, then a crafting table and tools.</p>`);$('modal').querySelectorAll('[data-recipe]').forEach(b=>b.onclick=()=>{const cost=b.dataset.cost,amount=Number(b.dataset.amount),out=b.dataset.recipe,n=Number(b.dataset.out);if((inventory[cost]||0)<amount){say(`Need ${amount} ${cost}`);return}inventory[cost]-=amount;inventory[out]=(inventory[out]||0)+n;playSound('craft');openInventory();updateHotbar();say('Crafted '+out.replaceAll('_',' '))})}
-function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Owner commands: type /help in chat. This starter's Owner-name check and ranks are a prototype, not secure cross-device admin permissions.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
-function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localStorage.setItem('tc_player_name',playerName);localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||'');$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say('Welcome to TevCraft, '+playerName+'!');}
-// Input: touch joystick
-const pad=$('leftPad'),stick=$('stick');let padTouch=null;pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();padTouch=e.pointerId;pad.setPointerCapture(e.pointerId);moveStick(e)});pad.addEventListener('pointermove',e=>{if(e.pointerId===padTouch){e.preventDefault();moveStick(e)}});function moveStick(e){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,lim=38,len=Math.hypot(dx,dy)||1;const scale=Math.min(1,lim/len),x=(dx*scale)/lim,y=(dy*scale)/lim;stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
-function resetStick(){padTouch=null;stick.style.left='34px';stick.style.top='34px';moveInput={x:0,y:0}}pad.addEventListener('pointerup',resetStick);pad.addEventListener('pointercancel',resetStick);
+function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Command grants and bans in this starter are client-side prototype controls. True global anti-cheat, permanent bans, and tamper-proof OWNER access require server-side authenticated authorization.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
+function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localRank=cosmeticRanks[playerName.toLowerCase()]||localRank;localStorage.setItem('tc_player_name',playerName);
+const av=localStorage.getItem('tc_avatar')||'classic';buildAvatar(localAvatar,skinColor,av);localAvatar.add(makeNameTag(playerName));$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();const myBan=banDetails[playerName.toLowerCase()];say(bannedPlayers.includes(playerName.toLowerCase())?'You are banned. Message: '+(myBan?.reason||'You were banned by the server owner.'):'Welcome to TevCraft, '+playerName+'!');}
+// Mobile joystick: pointer events plus touch fallback for iOS Safari.
+const pad=$('leftPad'),stick=$('stick');let padTouch=null;
+function setStick(clientX,clientY){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=clientX-cx,dy=clientY-cy,lim=38,len=Math.hypot(dx,dy)||1,scale=Math.min(1,len/lim);const x=(dx/len)*scale,y=(dy/len)*scale;stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
+pad.addEventListener('pointerdown',e=>{e.preventDefault();padTouch=e.pointerId;pad.setPointerCapture(e.pointerId);setStick(e.clientX,e.clientY)});pad.addEventListener('pointermove',e=>{if(e.pointerId===padTouch){e.preventDefault();setStick(e.clientX,e.clientY)}});
+function resetStick(){padTouch=null;stick.style.left='34px';stick.style.top='34px';moveInput={x:0,y:0}}
+pad.addEventListener('pointerup',resetStick);pad.addEventListener('pointercancel',resetStick);pad.addEventListener('lostpointercapture',resetStick);
+pad.addEventListener('touchstart',e=>{e.preventDefault();const t=e.changedTouches[0];if(t)setStick(t.clientX,t.clientY)},{passive:false});pad.addEventListener('touchmove',e=>{e.preventDefault();const t=e.changedTouches[0];if(t)setStick(t.clientX,t.clientY)},{passive:false});pad.addEventListener('touchend',e=>{e.preventDefault();resetStick()},{passive:false});pad.addEventListener('touchcancel',resetStick);
 let lookTouch=null,lastLook={x:0,y:0};$('game').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){if(document.pointerLockElement!==$('game'))$('game').requestPointerLock?.();return}if(e.clientX>innerWidth*.34){lookTouch=e.pointerId;lastLook={x:e.clientX,y:e.clientY};$('game').setPointerCapture(e.pointerId)}});
 $('game').addEventListener('pointermove',e=>{if(lookTouch===e.pointerId){const dx=e.clientX-lastLook.x,dy=e.clientY-lastLook.y;yaw-=dx*.006;pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.006));lastLook={x:e.clientX,y:e.clientY}}});$('game').addEventListener('pointerup',e=>{if(lookTouch===e.pointerId)lookTouch=null});$('game').addEventListener('pointercancel',e=>{if(lookTouch===e.pointerId)lookTouch=null});document.addEventListener('mousemove',e=>{if(document.pointerLockElement===$('game')){yaw-=e.movementX*.0025;pitch=Math.max(-1.35,Math.min(1.35,pitch-e.movementY*.0025))}});
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space'){if(flyMode)player.y+=.35;else jumpQueued=true;}if(e.code.startsWith('Digit')){const n=Number(e.code.slice(5))-1;if(n>=0&&n<9){selectedSlot=n;updateHotbar()}}if(e.code==='KeyE')openInventory()});addEventListener('keyup',e=>keys[e.code]=false);
-$('mineBtn').onclick=mineBlock;$('placeBtn').onclick=placeBlock;$('jumpBtn').onclick=()=>{if(flyMode)player.y+=1;else jumpQueued=true};$('crouchBtn').onclick=()=>{if(flyMode){player.y=Math.max(worldDepth+2,player.y-1);return}crouching=!crouching;$('crouchBtn').style.borderColor=crouching?'#ff7777':'#ffffff35'};$('invBtn').onclick=openInventory;$('menuBtn').onclick=openMenu;$('playBtn').onclick=start;$('chatForm').addEventListener('submit',e=>{e.preventDefault();const v=$('chatInput').value;$('chatInput').value='';sendChat(v)});
+addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')jumpQueued=true;if(e.code.startsWith('Digit')){const n=Number(e.code.slice(5))-1;if(n>=0&&n<9){selectedSlot=n;updateHotbar()}}if(e.code==='KeyE')openInventory()});addEventListener('keyup',e=>keys[e.code]=false);
+$('mineBtn').onclick=mineBlock;$('placeBtn').onclick=placeBlock;$('jumpBtn').onclick=()=>jumpQueued=true;$('crouchBtn').onclick=()=>{crouching=!crouching;$('crouchBtn').style.borderColor=crouching?'#ff7777':'#ffffff35'};$('invBtn').onclick=openInventory;$('menuBtn').onclick=openMenu;$('playBtn').onclick=start;$('chatForm').addEventListener('submit',e=>{e.preventDefault();const v=$('chatInput').value;$('chatInput').value='';sendChat(v)});
 // Resume the same name between visits.
 $('playerName').value=localStorage.getItem('tc_player_name')||'Tev';
 window.addEventListener('pagehide',()=>{if(channel){channel.send({type:'broadcast',event:'player_leave',payload:{id:playerId}});channel.untrack();supabase?.removeChannel(channel)}localStorage.setItem('tc_play_seconds',Math.floor(playSeconds))});
