@@ -57,7 +57,7 @@
 </head>
 <body>
 <div id="leaderboard" class="collapsed"><div id="leaderHead"><span>🏆</span><span id="leaderTitle">LEADERBOARD</span><button id="leaderToggle" aria-label="Expand leaderboard">⌄</button></div><div id="leaderBody"></div></div>
-<div id="menu"><div class="menu-card"><div class="menu-kicker">WELCOME TO</div><h1 class="menu-title">TEVCRAFT</h1><p class="menu-subtitle">Gather wood, craft tools, meet animals, and survive the night.</p><input id="menuName" maxlength="16" placeholder="ENTER YOUR USERNAME (REQUIRED)" autocomplete="off"><div class="skin-pick"><button type="button" class="skin active" data-skin="🧑‍🚀">🧑‍🚀</button><button type="button" class="skin" data-skin="🧙">🧙</button><button type="button" class="skin" data-skin="🥷">🥷</button></div><button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button><button class="menu-button" id="multiplayer">🌐 MULTIPLAYER</button><div class="menu-note">V11 · GLOBAL MULTIPLAYER & NIGHT SURVIVAL</div></div></div>
+<div id="menu"><div class="menu-card"><div class="menu-kicker">WELCOME TO</div><h1 class="menu-title">TEVCRAFT</h1><p class="menu-subtitle">Gather wood, craft tools, meet animals, and survive the night.</p><input id="menuName" maxlength="16" placeholder="CHOOSE YOUR USERNAME" autocomplete="username"><input id="accountPassword" type="password" minlength="8" maxlength="72" placeholder="PASSWORD (8+ CHARACTERS)" autocomplete="current-password" style="width:100%;padding:13px 16px;border-radius:14px;border:2px solid #ffffff44;background:#08121bd9;color:white;font-size:16px;font-weight:800;text-align:center;outline:none;margin:0 0 8px"><div style="display:flex;gap:8px"><button class="menu-button" id="createAccount" style="flex:1;font-size:13px">📝 CREATE ACCOUNT</button><button class="menu-button" id="loginAccount" style="flex:1;font-size:13px">🔐 LOG IN</button></div><div id="accountStatus" class="menu-note">Create an account or log in to play.</div><div class="skin-pick"><button type="button" class="skin active" data-skin="🧑‍🚀">🧑‍🚀</button><button type="button" class="skin" data-skin="🧙">🧙</button><button type="button" class="skin" data-skin="🥷">🥷</button></div><button class="menu-button" id="singleplayer">▶ SINGLEPLAYER</button><button class="menu-button" id="multiplayer">🌐 MULTIPLAYER</button><div class="menu-note">V11 · GLOBAL MULTIPLAYER & NIGHT SURVIVAL</div></div></div>
 <div id="mpLobby"><div class="mp-card"><div class="menu-kicker">ONE SHARED WORLD</div><h2>🌍 GLOBAL TEVCRAFT</h2><p class="mp-help">Everyone joins the same world. No room codes and no host required.</p><div id="mpStatus" role="status">Ready to connect to the global server.</div><button class="mp-action green" id="joinGlobalWorld">🌍 JOIN THE GLOBAL WORLD</button><button id="mpCancel">← BACK TO MENU</button></div></div>
 <div id="roomBadge" title="Tap to copy room code">🌐 ONLINE ROOM</div><div id="miningMeter" aria-hidden="true"></div><div id="netToast" role="status"></div>
 <div id="skinBadge">🧑‍🚀 YOU</div><div id="topRight"><button id="inventoryBtn">🎒 BAG</button><button id="musicBtn">🎵 MUSIC</button><button id="crouchBtn">⬇ CROUCH</button><button id="backMenu">☰ MENU</button></div><div id="worldClock" class="world-clock">🕒 08:00</div><div id="achievement" class="achievement">🏆 Achievement Unlocked!</div><div id="chatBox"><div id="chatLog" class="chat-log">💬 Welcome to TevCraft chat!</div><div class="chat-row"><input id="chatInput" maxlength="80" placeholder="Type a message..."><button id="chatSend">SEND</button></div></div>
@@ -88,6 +88,29 @@ let globalChannel=null;
 const SUPABASE_URL="https://yponwuolrhksgwkkphcb.supabase.co";
 const SUPABASE_KEY="sb_publishable_2ybcTWgi7brnJbmcd5mFbQ_vQo_CHEN";
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{realtime:{params:{eventsPerSecond:20}}});
+let accountUser=null;
+const accountPassword=document.getElementById("accountPassword"),accountStatus=document.getElementById("accountStatus");
+function accountEmailFor(name){return String(name).trim().toLowerCase()+"@accounts.tevcraft.invalid";}
+function setAccountStatus(message){accountStatus.textContent=message;}
+async function authenticateAccount(mode){
+ const rawName=menuName.value.trim(),password=accountPassword.value;
+ if(!/^[A-Za-z0-9_]{3,16}$/.test(rawName)){setAccountStatus("Username: 3–16 letters, numbers, or _ only.");return;}
+ if(password.length<8){setAccountStatus("Password must be at least 8 characters.");return;}
+ const email=accountEmailFor(rawName);setAccountStatus(mode==="signup"?"Creating your account…":"Logging in…");
+ try{
+  let result;
+  if(mode==="signup")result=await supabase.auth.signUp({email,password,options:{data:{username:rawName}}});
+  else result=await supabase.auth.signInWithPassword({email,password});
+  if(result.error)throw result.error;
+  if(!result.data.session){setAccountStatus("Account created, but email confirmation is enabled. Turn OFF email confirmations in Supabase Auth settings, then log in.");return;}
+  accountUser=result.data.user;playerName=String(accountUser.user_metadata?.username||rawName);menuName.value=playerName;
+  localStorage.setItem("tevcraftName",playerName);localStorage.setItem("tevcraftAccountId",accountUser.id);localStorage.setItem("tevcraftSkin",selectedSkin);
+  if(!(playerName in playtimes))playtimes[playerName]=0;savePlaytimes();renderLeaderboard();setAccountStatus("✅ Logged in as "+playerName+". Choose Singleplayer or Multiplayer!");
+ }catch(err){setAccountStatus((mode==="signup"?"Could not create account: ":"Login failed: ")+(err?.message||String(err)));}
+}
+document.getElementById("createAccount").addEventListener("click",()=>authenticateAccount("signup"));
+document.getElementById("loginAccount").addEventListener("click",()=>authenticateAccount("login"));
+supabase.auth.getSession().then(async({data})=>{if(data?.session?.user){accountUser=data.session.user;const savedName=accountUser.user_metadata?.username;if(savedName){playerName=savedName;menuName.value=savedName;localStorage.setItem("tevcraftName",savedName);setAccountStatus("✅ Logged in as "+savedName+".");}}});
 let globalJoinBusy=false;
 let lastNetworkSend=0,lastOnlineLeaderboard=0,netToastTimer=null;
 function showNetToast(message){const el=document.getElementById("netToast");el.textContent=message;el.style.display="block";clearTimeout(netToastTimer);netToastTimer=setTimeout(()=>el.style.display="none",2600);}
@@ -223,7 +246,7 @@ player.y=terrainHeightAt(player.x,player.z)+2.1;const menu=document.getElementBy
 function updateSkinButtons(){document.querySelectorAll(".skin").forEach(b=>b.classList.toggle("active",b.dataset.skin===selectedSkin));}
 selectedSkin=localStorage.getItem("tevcraftSkin")||"🧑‍🚀";updateSkinButtons();
 document.querySelectorAll(".skin").forEach(b=>b.addEventListener("click",()=>{selectedSkin=b.dataset.skin;localStorage.setItem("tevcraftSkin",selectedSkin);updateSkinButtons();skinBadge.textContent=selectedSkin+" "+playerName;}));
-function acceptProfile(){const typed=menuName.value.trim();if(!typed){menuName.focus();menuName.style.outline="3px solid #ff4d4d";document.querySelector(".menu-note").textContent="PLEASE ENTER A USERNAME BEFORE STARTING!";return false;}playerName=typed.replace(/[<>]/g,"").slice(0,16);localStorage.setItem("tevcraftName",playerName);localStorage.setItem("tevcraftSkin",selectedSkin);if(!(playerName in playtimes))playtimes[playerName]=0;savePlaytimes();renderLeaderboard();skinBadge.textContent=selectedSkin+" "+playerName;return true;}
+function acceptProfile(){if(!accountUser){setAccountStatus("🔐 Create an account or log in first!");accountPassword.focus();return false;}const typed=String(accountUser.user_metadata?.username||playerName);localStorage.setItem("tevcraftName",playerName);localStorage.setItem("tevcraftSkin",selectedSkin);if(!(playerName in playtimes))playtimes[playerName]=0;savePlaytimes();renderLeaderboard();skinBadge.textContent=selectedSkin+" "+playerName;return true;}
 function startGameScreen(){gameStarted=true;menu.style.display="none";document.getElementById("mpLobby").style.display="none";hud.classList.remove("hidden");skinBadge.textContent=selectedSkin+" "+playerName;skinBadge.style.display="block";document.getElementById("chatBox").style.display="block";document.getElementById("inventoryBtn").style.display="block";closeInventory();}
 document.getElementById("singleplayer").addEventListener("click",()=>{if(!acceptProfile())return;disconnectMultiplayer(false);multiplayerActive=false;resetBaseWorld();worldChanges.clear();try{const saved=JSON.parse(localStorage.getItem("tevcraftSingleWorld")||"[]");for(const ch of saved)applyRemoteBlockChange(ch);}catch(e){}renderLeaderboard();startGameScreen();document.getElementById("roomBadge").style.display="none";});
 menuName.addEventListener("input",()=>{menuName.style.outline="";document.querySelector(".menu-note").textContent="V11 · GLOBAL MULTIPLAYER & NIGHT SURVIVAL";});
@@ -349,16 +372,16 @@ const chatLog=document.getElementById("chatLog"),chatInput=document.getElementBy
 const PERMANENT_OWNER_NAMES=["tev","tevuwu"];
 const playerRanks=JSON.parse(localStorage.getItem("tevcraftRanks")||"{}");
 function saveRanks(){localStorage.setItem("tevcraftRanks",JSON.stringify(playerRanks));}
-function isPermanentOwner(){return PERMANENT_OWNER_NAMES.includes(String(playerName||"").trim().toLowerCase());}
+function isPermanentOwner(){return !!accountUser&&PERMANENT_OWNER_NAMES.includes(String(accountUser.user_metadata?.username||"").trim().toLowerCase());}
 function getRankStyle(name){const v=playerRanks[String(name||"").toLowerCase()];if(typeof v==="string")return {label:v,color:"normal",sparkles:false};return v&&typeof v==="object"?{label:String(v.label||""),color:v.color==="rainbow"?"rainbow":"normal",sparkles:!!v.sparkles}:{label:"",color:"normal",sparkles:false};}
 function rankLabel(name){return getRankStyle(name).label;}
 function appendChat(name,text,owner=false,rank=""){const d=document.createElement("div");const style=(rank&&typeof rank==="object")?rank:getRankStyle(name);const label=typeof rank==="string"?rank:style.label;if(label){const tag=document.createElement("span");tag.style.fontWeight="1000";tag.textContent="("+label+") ";if(style.color==="rainbow")tag.className="rainbow-chat-name";d.appendChild(tag);}else if(owner){const tag=document.createElement("span");tag.className="owner-title";tag.textContent="(Owner) ";d.appendChild(tag);}if(style.sparkles){const sp=document.createElement("span");sp.className="sparkle-mark";sp.textContent="✦ ";d.appendChild(sp);}const who=document.createElement("span");who.textContent=name+": ";if(style.color==="rainbow")who.className="rainbow-chat-name";d.appendChild(who);const msg=document.createElement("span");msg.textContent=cleanChat(text);d.appendChild(msg);chatLog.appendChild(d);while(chatLog.children.length>80)chatLog.removeChild(chatLog.firstChild);chatLog.scrollTop=chatLog.scrollHeight;}
 function isOwner(){return isPermanentOwner()||!multiplayerActive;}
 async function runAdminCommand(raw){const parts=raw.trim().split(/\s+/),cmd=parts[0].toLowerCase();
 if(cmd==="/fly"){if(!hasCommand("fly")){showNetToast("You don't have /fly permission. Ask the OWNER!");return true;}flyMode=!flyMode;grounded=!flyMode;if(flyMode)verticalVelocity=0;document.getElementById("flyControls").style.display=flyMode?"flex":"none";showNetToast(flyMode?"🪽 Flying enabled! Use UP and DOWN controls.":"⬇️ Flying disabled.");appendChat("SYSTEM",flyMode?playerName+" enabled flying.":playerName+" disabled flying.");return true;}
-if(!["/give","/take","/ban","/unban","/rank","/help"].includes(cmd))return false;
+if(!["/give","/take","/ban","/unban","/rank","/time","/help"].includes(cmd))return false;
 if(!isOwner()){showNetToast("Only the OWNER can use that command.");return true;}
-if(cmd==="/help"){appendChat("COMMANDS","👑 /give name fly | /take name fly | ⛔ /ban name reason | /unban name | 🪽 /fly | 🏷️ /rank name rainbow sparkles OWNER! | /help",false);return true;}
+if(cmd==="/help"){appendChat("COMMANDS","👑 /give name fly | /take name fly | ⛔ /ban name reason | /unban name | 🪽 /fly | 🏷️ /rank name rainbow sparkles OWNER! | ⏱️ /time Tev 5000 | /help",false);return true;}
 if(cmd==="/give"||cmd==="/take"){
  const target=(parts[1]||"").toLowerCase(),ability=(parts[2]||"").toLowerCase();if(!target||!ability){showNetToast("Use: /"+cmd.slice(1)+" player fly");return true;}if(ability!=="fly"){showNetToast("Available command: fly");return true;}
  const current=[...(playerPermissions[target]||[])];const next=cmd==="/give"?[...new Set([...current,ability])]:current.filter(x=>x!==ability);playerPermissions[target]=next;savePermissions();
@@ -371,6 +394,14 @@ if(cmd==="/ban"||cmd==="/unban"){
  const result=cmd==="/ban"?await supabase.from("tc_player_bans").upsert({player_name:target,reason,banned_by:playerName},{onConflict:"player_name"}):await supabase.from("tc_player_bans").delete().eq("player_name",target);
  if(result.error){showNetToast("Ban save failed. Run the setup SQL first.");return true;}
  globalChannel?.send({type:"broadcast",event:"system_message",payload:{type:cmd==="/ban"?"player_banned":"player_unbanned",name:target,reason}});appendChat("SYSTEM",cmd==="/ban"?target+" was banned: "+reason:target+" was unbanned.");showNetToast(cmd==="/ban"?"⛔ Banned "+target:"✅ Unbanned "+target);return true;
+}
+if(cmd==="/time"){
+ const target=(parts[1]||"").toLowerCase(),minutes=Number(parts[2]);
+ if(!target||!Number.isFinite(minutes)||minutes<0||minutes>100000000){showNetToast("Use: /time Tev 5000 (minutes)");return true;}
+ if(target!==String(playerName).toLowerCase()){showNetToast("For safety, /time can only change your own leaderboard time.");return true;}
+ playtimes[playerName]=Math.floor(minutes*60);savePlaytimes();
+ if(multiplayerActive&&globalChannel){const snap=playerSnapshot();roomPlayers.set(myPeerId,snap);globalChannel.track(snap);globalChannel.send({type:"broadcast",event:"player_state",payload:snap});}
+ renderLeaderboard();appendChat("SYSTEM","Set "+playerName+"'s leaderboard time to "+minutes+" minutes.");showNetToast("⏱️ Your leaderboard time was updated!");return true;
 }
 if(cmd==="/rank"){const args=parts.slice(1);const target=args.shift();if(!target){showNetToast("Use: /rank username rainbow sparkles OWNER!");return true;}const colorIndex=args.findIndex(v=>v.toLowerCase()==="rainbow");const sparkleIndex=args.findIndex(v=>v.toLowerCase()==="sparkles");const color=colorIndex>=0?"rainbow":"normal";if(sparkleIndex>=0)args.splice(sparkleIndex,1);if(colorIndex>=0)args.splice(args.findIndex(v=>v.toLowerCase()==="rainbow"),1);const label=args.join(" ").trim();if(!label){showNetToast("Add a rank name, like OWNER!");return true;}const style={label,color,sparkles:sparkleIndex>=0};playerRanks[target.toLowerCase()]=style;saveRanks();if(multiplayerActive){globalChannel?.send({type:"broadcast",event:"system_message",payload:{type:"rank_update",name:target,rankStyle:style}});}appendChat("SYSTEM",target+" is now "+label+"!");showNetToast("✨ Ranked "+target+" as "+label);return true;}
 return true;}
