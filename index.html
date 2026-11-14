@@ -21,18 +21,11 @@
   .slot{width:42px;height:44px;border:1px solid #ffffff40;border-radius:7px;background:#202b36;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:10px;color:#fff;flex:0 0 auto}
   .slot.selected{outline:3px solid #ff6868;border-color:#fff}
   .slot .glyph{font-size:19px;line-height:20px}.slot .count{position:absolute;right:4px;bottom:2px;font-size:10px;text-shadow:0 1px 3px #000}
-  #actions{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);width:190px;height:190px;display:block;z-index:7;pointer-events:none}
+  #actions{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);display:grid;grid-template-columns:repeat(2,64px);gap:8px;z-index:7}
   button{font:inherit;color:#fff;background:#2a3744;border:1px solid #ffffff35;border-radius:11px;padding:10px 12px;font-weight:700;box-shadow:0 3px 9px #0005;touch-action:manipulation}
   button:active{transform:translateY(1px);filter:brightness(1.2)}
-  .action{position:absolute;height:48px;min-width:66px;font-size:10px;padding:4px;background:rgba(20,30,40,.48);border:1px solid #ffffff65;backdrop-filter:blur(3px);box-shadow:0 2px 8px #0004;pointer-events:auto;opacity:.78}
-  .action strong{display:block;font-size:17px}
-  #jumpBtn{right:0;bottom:0;width:88px;height:88px;border-radius:50%;font-size:12px;background:rgba(224,68,68,.40);opacity:.82}
-  #jumpBtn strong{font-size:29px}
-  #crouchBtn{right:94px;bottom:12px;width:76px;height:58px;border-radius:18px}
-  #mineBtn{right:104px;bottom:112px;width:78px}
-  #placeBtn{right:12px;bottom:112px;width:78px}
-  #invBtn{right:104px;bottom:58px;width:78px}
-  #menuBtn{right:12px;bottom:58px;width:78px}
+  .action{height:52px;font-size:11px;padding:5px;background:#18232edb}
+  .action strong{display:block;font-size:18px}
   #leftPad{position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 82px);width:116px;height:116px;border-radius:50%;border:1px solid #ffffff45;background:#10182070;z-index:7;touch-action:none}
   #stick{position:absolute;width:48px;height:48px;border-radius:50%;background:#f5f5f5aa;border:2px solid white;left:34px;top:34px;box-shadow:0 2px 8px #0008}
   #lookHint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 80px);transform:translateX(-50%);font-size:10px;color:#fff9;text-shadow:0 1px 3px #000;z-index:2;pointer-events:none;white-space:nowrap}
@@ -48,6 +41,8 @@
   .small{font-size:12px;color:var(--muted)}
   #chatBox{position:fixed;left:10px;top:56px;width:min(310px,72vw);z-index:8;background:#111a22b8;border:1px solid var(--line);border-radius:12px;padding:8px;pointer-events:none}
   #chatLines{height:112px;overflow:hidden;font-size:11px;line-height:1.45;text-shadow:0 1px 2px black;display:flex;flex-direction:column;justify-content:flex-end}
+  .rainbow-owner{font-weight:1000;background:linear-gradient(90deg,#ff4545,#ffb52e,#fff34a,#42e66b,#35cfff,#a56bff,#ff55bd,#ff4545);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ownerRainbow 2s linear infinite}
+  @keyframes ownerRainbow{to{background-position:250% 0}}
   #chatForm{display:flex;gap:5px;margin-top:6px;pointer-events:auto}#chatInput{font-size:12px;padding:8px}#chatSend{padding:7px 9px;font-size:11px}
   #startScreen{position:fixed;inset:0;z-index:30;background:linear-gradient(#101820d9,#101820f2),radial-gradient(circle at 50% 35%,#557d8a,#14212d);display:flex;align-items:center;justify-content:center;padding:18px}
   #startCard{width:min(460px,100%);background:#101923ee;border:1px solid #ffffff30;border-radius:20px;padding:22px;box-shadow:0 16px 60px #0009}
@@ -56,8 +51,7 @@
   #connectStatus{font-size:12px;margin-top:10px;color:#ffd27b;min-height:18px}
   #toast{position:fixed;left:50%;top:45px;transform:translateX(-50%);z-index:15;background:#111e;border:1px solid #ffffff45;border-radius:10px;padding:9px 13px;font-size:12px;display:none;max-width:90vw;text-align:center}
   @media (max-width:460px){.slot{width:34px;height:42px;font-size:8px}.slot .glyph{font-size:16px}.slot .count{font-size:9px}#hotbar{gap:3px;padding:4px}}
-  @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{transform:scale(.92);transform-origin:bottom right}}
-  @media (max-width:460px){#actions{right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 76px);transform:scale(.92);transform-origin:bottom right}#jumpBtn{width:84px;height:84px}#hotbar{bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}}
+  @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{grid-template-columns:repeat(2,70px)}}
 </style>
 </head>
 <body>
@@ -82,7 +76,7 @@
   <h1>TEV<span>CRAFT</span></h1><div class="sub">GLOBAL SURVIVAL · ONE SHARED WORLD</div>
   <div class="row"><input id="playerName" maxlength="16" placeholder="Your player name" value="Tev"></div>
   <div class="row"><button class="primary" id="playBtn" style="width:100%;padding:14px">JOIN THE GLOBAL WORLD</button></div>
-  <div id="connectStatus">Supabase global server · join to connect live.</div>
+  <div id="connectStatus">Supabase connection will start when you join.</div>
   <p class="small">Mobile: left joystick moves · drag right side to look · use the buttons to mine, place, jump and crouch. Desktop: WASD + mouse.</p>
 </div></div>
 
@@ -105,7 +99,11 @@ const blockInfo = {
  grass:{name:'Grass',color:0x68a94a,glyph:'🟩',drop:'dirt'},dirt:{name:'Dirt',color:0x805232,glyph:'🟫',drop:'dirt'},stone:{name:'Stone',color:0x828990,glyph:'⬜',drop:'cobblestone'},wood:{name:'Wood',color:0x80552e,glyph:'🪵',drop:'wood'},leaves:{name:'Leaves',color:0x347b42,glyph:'🌿',drop:'leaves'},planks:{name:'Planks',color:0xb7824d,glyph:'🪵',drop:'planks'},crafting_table:{name:'Crafting Table',color:0x9a6334,glyph:'🛠️',drop:'crafting_table'},sand:{name:'Sand',color:0xd8c27b,glyph:'🟨',drop:'sand'},bedrock:{name:'Bedrock',color:0x292d32,glyph:'⬛',drop:null},coal_ore:{name:'Coal Ore',color:0x44484c,glyph:'⚫',drop:'coal'},iron_ore:{name:'Iron Ore',color:0xb58c72,glyph:'🟤',drop:'iron_ore'},diamond_ore:{name:'Diamond Ore',color:0x45cbd0,glyph:'💎',drop:'diamond'},deepslate:{name:'Deepslate',color:0x414750,glyph:'◼️',drop:'cobblestone'},glass:{name:'Glass',color:0x9bd9e8,glyph:'🔹',drop:'glass'}};
 const hotbarItems=['wood_pickaxe','stone_pickaxe','dirt','grass','stone','wood','planks','crafting_table','sand']; let selectedSlot=0;
 let scene,camera,renderer,raycaster,worldGroup,remoteGroup,animalGroup,mobGroup,localAvatar; let thirdPerson=false; let channel=null,supabase=null,joined=false,dbReady=false;
-let playerName='Tev',skinColor=0xc8794e,yaw=0,pitch=0,velY=0,onGround=false,crouching=false,alive=true;
+let playerName='Tev',skinColor=0xc8794e,yaw=0,pitch=0,velY=0,onGround=false,crouching=false,alive=true,flyMode=false;
+const playerRanks=JSON.parse(localStorage.getItem('tc_player_ranks')||'{}');
+const isOwnerAccount=()=>['tev','tevuwu'].includes(String(playerName||'').trim().toLowerCase());
+let localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||'');
+const rankFor=name=>String(name||'').trim().toLowerCase()==='tev'||String(name||'').trim().toLowerCase()==='tevuwu'?'OWNER':(playerRanks[String(name||'').trim().toLowerCase()]||'');
 const player={x:0,y:4,z:0}; const remotePlayers=new Map(); const animals=[],mobs=[];
 let moveInput={x:0,y:0},jumpQueued=false,lastFrame=0,lastBroadcast=0,lastPresence=0,dayTime=8*60,playSeconds=Number(localStorage.getItem('tc_play_seconds')||0),lastSave=Date.now();
 let keys={},audioCtx=null,muted=false;
@@ -150,21 +148,6 @@ function makeScene(){
   rebuildWorld();addCreatures();
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 }
-const textureCache={};
-function voxelTexture(type){
-  if(textureCache[type])return textureCache[type];
-  const canvas=document.createElement('canvas');canvas.width=canvas.height=32;const c=canvas.getContext('2d');
-  const base={grass:'#6fae42',dirt:'#805334',stone:'#858b91',wood:'#936037',leaves:'#347b42',planks:'#bd8b53',crafting_table:'#a66d38',sand:'#ddc98a',bedrock:'#30343a',coal_ore:'#74787b',iron_ore:'#a88b78',diamond_ore:'#579fa5',deepslate:'#444c58',glass:'#a9dce8'}[type]||'#888888';
-  c.fillStyle=base;c.fillRect(0,0,32,32);
-  let seed=Array.from(type).reduce((a,ch)=>a+ch.charCodeAt(0),0)+91;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
-  const palettes={grass:['#4f8e35','#82bd50','#a0c96a'],dirt:['#684128','#986641','#b17a4d'],stone:['#6c737b','#a2a7aa','#555d66'],wood:['#603d24','#bd8950','#7d4e2c'],leaves:['#205d32','#4e9843','#78ad4d'],deepslate:['#303945','#59616c','#737b83'],sand:['#c4ae6e','#eee0a7','#d3bf80']};
-  const colors=palettes[type]||[base,'#ffffff','#222222'];
-  for(let i=0;i<95;i++){c.globalAlpha=.18+rand()*.35;c.fillStyle=colors[Math.floor(rand()*colors.length)];const x=Math.floor(rand()*32),y=Math.floor(rand()*32),w=1+Math.floor(rand()*5);c.fillRect(x,y,w,1+Math.floor(rand()*4));}
-  if(type==='grass'){c.fillStyle='#397b32';c.fillRect(0,0,32,7);c.fillStyle='#795034';c.fillRect(0,8,32,24);}
-  if(type==='wood'||type==='planks'){c.globalAlpha=.55;c.fillStyle='#4d301d';for(let x=5;x<32;x+=9)c.fillRect(x,0,2,32)}
-  if(type.includes('ore')){c.globalAlpha=1;const ore=type==='diamond_ore'?'#50e3df':type==='iron_ore'?'#d7b49c':'#24272b';for(let i=0;i<9;i++){c.fillStyle=ore;c.fillRect(Math.floor(rand()*28),Math.floor(rand()*28),3,3)}}
-  c.globalAlpha=1;const tex=new THREE.CanvasTexture(canvas);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestMipmapNearestFilter;tex.colorSpace=THREE.SRGBColorSpace;textureCache[type]=tex;return tex;
-}
 function rebuildWorld(){
   while(worldGroup.children.length){const o=worldGroup.children.pop();if(o.geometry)o.geometry.dispose();if(o.material&&o.material.dispose)o.material.dispose();}
   const groups={};for(const b of blocks.values()){
@@ -172,7 +155,7 @@ function rebuildWorld(){
   }
   const geo=new THREE.BoxGeometry(1,1,1);
   for(const [type,list] of Object.entries(groups)){
-    const mat=new THREE.MeshLambertMaterial({map:voxelTexture(type),color:0xffffff});
+    const mat=new THREE.MeshLambertMaterial({color:blockInfo[type]?.color||0x888888});
     const mesh=new THREE.InstancedMesh(geo,mat,list.length);mesh.userData.blockType=type;mesh.userData.blocks=list;
     const dummy=new THREE.Object3D();list.forEach((b,i)=>{dummy.position.set(b.x+.5,b.y+.5,b.z+.5);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)});
     mesh.instanceMatrix.needsUpdate=true;worldGroup.add(mesh);
@@ -193,10 +176,9 @@ function mineBlock(){const target=getTarget();if(!target){say('Look at a block f
 function placeBlock(){const target=getTarget();if(!target){say('Look at a block face first');return}const item=currentItem();if(!blockInfo[item]||!(inventory[item]>0)){say('You do not have that block');return}const n=target.normal;const x=target.block.x+Math.round(n.x),y=target.block.y+Math.round(n.y),z=target.block.z+Math.round(n.z);if(blocks.has(key(x,y,z))){say('That space is occupied');return}if(Math.abs(x-player.x)<.8&&Math.abs(z-player.z)<.8&&y>player.y-2&&y<player.y+1){say('Too close to place there');return}blocks.set(key(x,y,z),{x,y,z,type:item});inventory[item]--;changedBlocks.set(key(x,y,z),item);if(channel)channel.send({type:'broadcast',event:'block_edit',payload:{x,y,z,type:item,by:playerId}});saveBlock(x,y,z,item);rebuildWorld();updateHotbar();playSound('place')}
 async function saveBlock(x,y,z,type){if(!supabase||!dbReady)return;try{const {error}=await supabase.from('tc_world_blocks').upsert({x,y,z,block_type:type,updated_at:new Date().toISOString()},{onConflict:'x,y,z'});if(error)throw error}catch(e){console.warn('Block save:',e.message);dbReady=false;say('Live multiplayer works, but world saving needs the SQL setup.')}}
 async function loadSavedBlocks(){if(!supabase)return;try{const {data,error}=await supabase.from('tc_world_blocks').select('x,y,z,block_type').limit(10000);if(error)throw error;(data||[]).forEach(r=>{const k=key(r.x,r.y,r.z);if(r.block_type==='__air__')blocks.delete(k);else blocks.set(k,{x:r.x,y:r.y,z:r.z,type:r.block_type})});dbReady=true;rebuildWorld();say('Saved world loaded')}catch(e){dbReady=false;console.warn('World load:',e.message);say('Multiplayer is live; run the Supabase setup SQL to save the world')}}
-function addChatLine(name,msg,rank=''){const line=document.createElement('div');line.innerHTML=`<b style="color:${rank==='OWNER'?'#ff7777':rank==='VIP'?'#f6d36b':'#a9d5ff'}">${rank?`[${esc(rank)}] `:''}${esc(name)}:</b> ${esc(msg)}`;$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
-async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(msg.startsWith('/')){handleCommand(msg);return}addChatLine(playerName,msg,localRank);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{name:playerName,msg,rank:localRank}});if(supabase&&dbReady){try{await supabase.from('tc_chat_messages').insert({player_name:playerName,message:msg})}catch(e){console.warn(e)}}playSound('chat')}
-let localRank='';
-function handleCommand(raw){const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /rank <player> <VIP|OG|BETA TESTER>');return}if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);say('Returned to spawn');return}if(cmd==='/rank'){addChatLine('SERVER','Rank editing is a local prototype right now. Secure permanent owner ranks need an authenticated owner profile; I will not pretend this public demo is secure.');return}addChatLine('SERVER','Unknown command. Try /help')}
+function addChatLine(name,msg,rank=''){const line=document.createElement('div');const shownRank=rank||rankFor(name);const owner=shownRank==='OWNER';const b=document.createElement('b');b.className=owner?'rainbow-owner':'';b.style.color=owner?'':shownRank==='VIP'?'#f6d36b':shownRank==='OG'?'#ffad55':shownRank==='BETA TESTER'?'#c5a4ff':'#a9d5ff';b.textContent=(shownRank?`[${shownRank}] `:'')+String(name||'Player')+': ';const m=document.createElement('span');m.className=owner?'rainbow-owner':'';m.textContent=String(msg||'');line.append(b,m);$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
+async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(msg.startsWith('/')){handleCommand(msg);return}localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||localRank||'');addChatLine(playerName,msg,localRank);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank}});if(supabase&&dbReady){try{await supabase.from('tc_chat_messages').insert({player_name:playerName,message:msg})}catch(e){console.warn(e)}}playSound('chat')}
+function handleCommand(raw){const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /fly, /rank <player> <VIP|OG|BETA|NONE>');return}if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;onGround=true;say('Returned to spawn');return}if(!['/fly','/rank'].includes(cmd)){addChatLine('SERVER','Unknown command. Try /help');return}if(!isOwnerAccount()){say('Only TevCraft Owner can use that command');return}if(cmd==='/fly'){flyMode=!flyMode;velY=0;onGround=!flyMode;say(flyMode?'🪽 FLY ON — JUMP/SPACE rises, CROUCH/SHIFT descends':'🪽 FLY OFF');return}if(cmd==='/rank'){let rankToken=a[a.length-1].toUpperCase();if(a.length>=4&&a[a.length-2].toUpperCase()==='BETA')rankToken='BETA';const allowed={VIP:'VIP',OG:'OG',BETA:'BETA TESTER',BETA_TESTER:'BETA TESTER',NONE:'',PLAYER:''};if(!(rankToken in allowed)||a.length<3){say('Use /rank PlayerName VIP, OG, BETA, or NONE');return}const target=a.slice(1,rankToken==='BETA'? -2:-1).join(' ').trim();if(!target){say('Enter a player name');return}const rank=allowed[rankToken];playerRanks[target.toLowerCase()]=rank;localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));if(channel)channel.send({type:'broadcast',event:'rank_update',payload:{name:target,rank}});addChatLine('SERVER',`${target} rank set to ${rank||'PLAYER'} on this device`);say('Rank updated. Note: this starter does not yet save ranks securely across devices.')}}
 function createRemote(id,p){let r=remotePlayers.get(id);if(!r){r=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.55,1,.35),new THREE.MeshLambertMaterial({color:p.skin||0xc8794e}));body.position.y=.75;r.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe6b895}));head.position.y=1.5;r.add(head);const tag=document.createElement('div');tag.style.cssText='position:absolute;color:white;background:#0009;padding:2px 5px;border-radius:5px;font-size:10px;white-space:nowrap;pointer-events:none';tag.textContent=p.name||'Player';r.userData.tag=tag;r.userData.body=body;remoteGroup.add(r);remotePlayers.set(id,r)}r.position.set(p.x,p.y-1.7,p.z);r.rotation.y=p.yaw||0;if(r.userData.body&&p.skin)r.userData.body.material.color.set(p.skin);r.userData.tag.textContent=(p.rank?`[${p.rank}] `:'')+(p.name||'Player')}
 function syncRemoteTags(){/* tags are represented by the online list to keep mobile rendering light */}
 function countOnline(){let n=1;if(channel){const state=channel.presenceState();n=Object.keys(state).length||1} $('online').textContent=`Online: ${n}`}
@@ -205,27 +187,43 @@ async function connectSupabase(){
   try{
     supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{realtime:{params:{eventsPerSecond:25}}});
     channel=supabase.channel(WORLD_TOPIC,{config:{private:false,broadcast:{self:false},presence:{key:playerId}}});
-    channel.on('presence',{event:'sync'},()=>{countOnline();const state=channel.presenceState();Object.values(state).flat().forEach(p=>{if(p.id&&p.id!==playerId&&Number.isFinite(p.x))createRemote(p.id,p)});});
+    channel.on('presence',{event:'sync'},countOnline);
     channel.on('broadcast',{event:'player_move'},({payload})=>{if(payload&&payload.id!==playerId)createRemote(payload.id,payload)});
     channel.on('broadcast',{event:'chat'},({payload})=>{if(payload&&payload.id!==playerId)addChatLine(payload.name||'Player',payload.msg||'',payload.rank||'')});
+    channel.on('broadcast',{event:'rank_update'},({payload})=>{if(payload?.name){playerRanks[String(payload.name).toLowerCase()]=payload.rank||'';localStorage.setItem('tc_player_ranks',JSON.stringify(playerRanks));}});
     channel.on('broadcast',{event:'block_edit'},({payload})=>{if(!payload||payload.by===playerId)return;const k=key(payload.x,payload.y,payload.z);if(payload.type==='__air__')blocks.delete(k);else blocks.set(k,{x:payload.x,y:payload.y,z:payload.z,type:payload.type});rebuildWorld()});
     channel.on('broadcast',{event:'player_leave'},({payload})=>{const r=remotePlayers.get(payload?.id);if(r){remoteGroup.remove(r);remotePlayers.delete(payload.id)}});
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),x:player.x,y:player.y,z:player.z,yaw,online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
     $('connectStatus').textContent='🟢 Connected to the shared Supabase world.';
     await loadSavedBlocks();
     try{const {data,error}=await supabase.from('tc_chat_messages').select('player_name,message').order('created_at',{ascending:false}).limit(6);if(!error)(data||[]).reverse().forEach(r=>addChatLine(r.player_name,r.message))}catch(e){}
   }catch(e){console.error(e);$('status').textContent='⚠️ OFFLINE';$('status').style.color='#ff9c72';$('connectStatus').textContent='Could not connect: '+e.message+'. Check your Supabase project settings.';say('Could not connect to Supabase')}
 }
 function updateClock(dt){dayTime=(dayTime+dt*.18)%(24*60);const h=Math.floor(dayTime/60),m=Math.floor(dayTime%60);const day=Math.floor(playSeconds/600)+1;$('clock').textContent=`Day ${day} · ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;const daylight=Math.max(0,Math.sin((dayTime/1440)*Math.PI*2-Math.PI/2)*.5+.5);const night=1-daylight;const c=new THREE.Color().setRGB(.05+.5*daylight,.08+.65*daylight,.16+.75*daylight);scene.background.copy(c);scene.fog.color.copy(c);scene.fog.near=18;scene.fog.far=60;scene.children.forEach(o=>{if(o.isDirectionalLight)o.intensity=.18+daylight*1.1});if(daylight<.22&&mobs.length<5&&Math.random()<.002)addMob();if(daylight>.3&&mobs.length){mobs.forEach(m=>mobGroup.remove(m));mobs.length=0}}
+function collidesAt(x,z,feetY){
+  const radius=.29,bodyTop=feetY+(crouching?1.15:1.62),bodyBottom=feetY+.08;
+  const minX=Math.floor(x-radius),maxX=Math.floor(x+radius),minZ=Math.floor(z-radius),maxZ=Math.floor(z+radius);
+  for(let bx=minX;bx<=maxX;bx++)for(let bz=minZ;bz<=maxZ;bz++)for(let by=Math.floor(bodyBottom);by<=Math.floor(bodyTop);by++){
+    if(blocks.has(key(bx,by,bz)) && by+1>bodyBottom && by<bodyTop)return true;
+  }
+  return false;
+}
 function updatePlayer(dt){
   let ix=moveInput.x,iz=moveInput.y;if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
   const len=Math.hypot(ix,iz);if(len>1){ix/=len;iz/=len}
-  const speed=crouching?2.2:4.4;const dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt;const dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
-  const nx=Math.max(worldMin+1,Math.min(worldMax-1,player.x+dx)),nz=Math.max(worldMin+1,Math.min(worldMax-1,player.z+dz));const floor=surfaceY(nx,nz);
-  if(player.y<=floor+.08){player.y=floor;velY=0;onGround=true}else onGround=false;
-  player.x=nx;player.z=nz;
-  if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}jumpQueued=false;
-  velY-=18*dt;player.y+=velY*dt;if(player.y<floor){player.y=floor;velY=0;onGround=true}
+  const speed=crouching?2.2:4.4,dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt,dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
+  const oldFloor=surfaceY(player.x,player.z),feet=player.y-1.72;
+  const nx=Math.max(worldMin+1,Math.min(worldMax-1,player.x+dx));
+  if(!collidesAt(nx,player.z,feet) && surfaceY(nx,player.z)<=Math.max(player.y,oldFloor)+.55)player.x=nx;
+  const nz=Math.max(worldMin+1,Math.min(worldMax-1,player.z+dz));
+  if(!collidesAt(player.x,nz,feet) && surfaceY(player.x,nz)<=Math.max(player.y,oldFloor)+.55)player.z=nz;
+  const floor=surfaceY(player.x,player.z);
+  if(flyMode){if(jumpQueued)player.y+=1.0;if(keys.ShiftLeft||keys.ShiftRight)player.y-=5*dt;velY=0;onGround=false;jumpQueued=false;}
+  else{
+    if(player.y<=floor+.08 && floor<=player.y+.55){player.y=floor;velY=0;onGround=true}else onGround=false;
+    if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}
+    velY-=18*dt;player.y+=velY*dt;if(player.y<floor){player.y=floor;velY=0;onGround=true}jumpQueued=false;
+  }
   localAvatar.position.set(player.x,player.y-1.72,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
   if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.45:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
 }
@@ -234,15 +232,15 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last
  if(scene){updatePlayer(dt);updateClock(dt);updateCreatures(dt);renderer.render(scene,camera)}}
 function openModal(title,html){$('modal').innerHTML=`<h2>${title}</h2>${html}<div class="row"><button id="closeModal" style="width:100%">CLOSE</button></div>`;$('modalLayer').style.display='flex';$('closeModal').onclick=()=>$('modalLayer').style.display='none'}
 function openInventory(){const entries=Object.entries(inventory).filter(([k,v])=>v>0);const inv=entries.length?entries.map(([k,v])=>`<div class="item"><span>${esc(blockInfo[k]?.glyph||'🎒')} ${esc(blockInfo[k]?.name||k.replaceAll('_',' '))}</span><b>${v}</b></div>`).join(''):'<p>Your inventory is empty. Punch a tree to collect wood!</p>';const recipes=[['4 Planks','wood',1,'planks',4],['4 Sticks','planks',2,'stick',4],['Crafting Table','planks',4,'crafting_table',1],['Wood Pickaxe','planks',3,'wood_pickaxe',1],['Stone Pickaxe','cobblestone',3,'stone_pickaxe',1]];const rec=recipes.map(r=>`<div class="item"><span>${r[0]}<br><small class="small">Needs ${r[2]} ${r[1]}</small></span><button data-recipe="${r[3]}" data-cost="${r[1]}" data-amount="${r[2]}" data-out="${r[4]}">CRAFT</button></div>`).join('');openModal('🎒 Inventory & Crafting',`<h3>Inventory</h3><div class="grid">${inv}</div><h3>Recipes</h3><div class="grid">${rec}</div><p class="small">Tip: collect wood by mining tree trunks. Craft planks, then a crafting table and tools.</p>`);$('modal').querySelectorAll('[data-recipe]').forEach(b=>b.onclick=()=>{const cost=b.dataset.cost,amount=Number(b.dataset.amount),out=b.dataset.recipe,n=Number(b.dataset.out);if((inventory[cost]||0)<amount){say(`Need ${amount} ${cost}`);return}inventory[cost]-=amount;inventory[out]=(inventory[out]||0)+n;playSound('craft');openInventory();updateHotbar();say('Crafted '+out.replaceAll('_',' '))})}
-function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Ranks/owner permissions are not enabled as secure global permissions in this starter. They need authenticated owner setup, not a public password embedded in the game.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
-function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localStorage.setItem('tc_player_name',playerName);$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say('Welcome to TevCraft, '+playerName+'!');}
+function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Owner commands: type /help in chat. This starter's Owner-name check and ranks are a prototype, not secure cross-device admin permissions.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
+function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localStorage.setItem('tc_player_name',playerName);localRank=isOwnerAccount()?'OWNER':(playerRanks[playerName.toLowerCase()]||'');$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say('Welcome to TevCraft, '+playerName+'!');}
 // Input: touch joystick
 const pad=$('leftPad'),stick=$('stick');let padTouch=null;pad.addEventListener('pointerdown',e=>{padTouch=e.pointerId;pad.setPointerCapture(e.pointerId);moveStick(e)});pad.addEventListener('pointermove',e=>{if(e.pointerId===padTouch)moveStick(e)});function moveStick(e){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,lim=38,len=Math.hypot(dx,dy)||1;const x=dx/Math.max(len,lim),y=dy/Math.max(len,lim);stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
 function resetStick(){padTouch=null;stick.style.left='34px';stick.style.top='34px';moveInput={x:0,y:0}}pad.addEventListener('pointerup',resetStick);pad.addEventListener('pointercancel',resetStick);
 let lookTouch=null,lastLook={x:0,y:0};$('game').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){if(document.pointerLockElement!==$('game'))$('game').requestPointerLock?.();return}if(e.clientX>innerWidth*.34){lookTouch=e.pointerId;lastLook={x:e.clientX,y:e.clientY};$('game').setPointerCapture(e.pointerId)}});
 $('game').addEventListener('pointermove',e=>{if(lookTouch===e.pointerId){const dx=e.clientX-lastLook.x,dy=e.clientY-lastLook.y;yaw-=dx*.006;pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.006));lastLook={x:e.clientX,y:e.clientY}}});$('game').addEventListener('pointerup',e=>{if(lookTouch===e.pointerId)lookTouch=null});$('game').addEventListener('pointercancel',e=>{if(lookTouch===e.pointerId)lookTouch=null});document.addEventListener('mousemove',e=>{if(document.pointerLockElement===$('game')){yaw-=e.movementX*.0025;pitch=Math.max(-1.35,Math.min(1.35,pitch-e.movementY*.0025))}});
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')jumpQueued=true;if(e.code.startsWith('Digit')){const n=Number(e.code.slice(5))-1;if(n>=0&&n<9){selectedSlot=n;updateHotbar()}}if(e.code==='KeyE')openInventory()});addEventListener('keyup',e=>keys[e.code]=false);
-$('mineBtn').onclick=mineBlock;$('placeBtn').onclick=placeBlock;$('jumpBtn').onclick=()=>jumpQueued=true;$('crouchBtn').onclick=()=>{crouching=!crouching;$('crouchBtn').style.borderColor=crouching?'#ff7777':'#ffffff35'};$('invBtn').onclick=openInventory;$('menuBtn').onclick=openMenu;$('playBtn').onclick=start;$('chatForm').addEventListener('submit',e=>{e.preventDefault();const v=$('chatInput').value;$('chatInput').value='';sendChat(v)});
+addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space'){if(flyMode)player.y+=.35;else jumpQueued=true;}if(e.code.startsWith('Digit')){const n=Number(e.code.slice(5))-1;if(n>=0&&n<9){selectedSlot=n;updateHotbar()}}if(e.code==='KeyE')openInventory()});addEventListener('keyup',e=>keys[e.code]=false);
+$('mineBtn').onclick=mineBlock;$('placeBtn').onclick=placeBlock;$('jumpBtn').onclick=()=>{if(flyMode)player.y+=1;else jumpQueued=true};$('crouchBtn').onclick=()=>{if(flyMode){player.y=Math.max(worldDepth+2,player.y-1);return}crouching=!crouching;$('crouchBtn').style.borderColor=crouching?'#ff7777':'#ffffff35'};$('invBtn').onclick=openInventory;$('menuBtn').onclick=openMenu;$('playBtn').onclick=start;$('chatForm').addEventListener('submit',e=>{e.preventDefault();const v=$('chatInput').value;$('chatInput').value='';sendChat(v)});
 // Resume the same name between visits.
 $('playerName').value=localStorage.getItem('tc_player_name')||'Tev';
 window.addEventListener('pagehide',()=>{if(channel){channel.send({type:'broadcast',event:'player_leave',payload:{id:playerId}});channel.untrack();supabase?.removeChannel(channel)}localStorage.setItem('tc_play_seconds',Math.floor(playSeconds))});
