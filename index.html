@@ -286,6 +286,27 @@ window.addEventListener("keydown",e=>{if(e.key==="Escape"&&inventoryPanel.style.
 // Health and hunger HUD.
 let health=10,hunger=10,hungerElapsed=0,starvationElapsed=0;const healthRow=document.getElementById("healthRow"),hungerRow=document.getElementById("hungerRow");
 function groundHeightAt(x,z){const px=Math.round(x),pz=Math.round(z);let highestGround=BASE_Y;for(let y=24;y>=BASE_Y;y--){const b=occupied.get(keyOf(px,y,pz));if(b&&!['wood','leaves'].includes(b.kind)){highestGround=y;break;}}return highestGround+2.1;}
+// Solid voxel collision: the player is a narrow, 1.5-block-tall body.
+function canPlayerOccupy(x,z,y){
+  const radius=.32,bottom=y-1.6,top=y-.1;
+  const minX=Math.floor(x-radius-.5),maxX=Math.floor(x+radius+.5);
+  const minZ=Math.floor(z-radius-.5),maxZ=Math.floor(z+radius+.5);
+  const minY=Math.floor(bottom-.5),maxY=Math.floor(top+.5);
+  for(let bx=minX;bx<=maxX;bx++)for(let bz=minZ;bz<=maxZ;bz++){
+    if(Math.abs(x-bx)>=.5+radius||Math.abs(z-bz)>=.5+radius)continue;
+    for(let by=minY;by<=maxY;by++){
+      if(by+.5<=bottom+.015||by-.5>=top-.015)continue;
+      if(occupied.has(keyOf(bx,by,bz)))return false;
+    }
+  }
+  return true;
+}
+function movePlayerHorizontally(dx,dz){
+  const nx=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x+dx));
+  const nz=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z+dz));
+  if(dx&&canPlayerOccupy(nx,player.z,player.y))player.x=nx;
+  if(dz&&canPlayerOccupy(player.x,nz,player.y))player.z=nz;
+}
 
 // Passive animals wander around the grassland; night monsters hunt the player.
 function surfaceTopAt(x,z){const px=Math.round(x),pz=Math.round(z);for(let y=24;y>=BASE_Y;y--){const b=occupied.get(keyOf(px,y,pz));if(b&&!['wood','leaves'].includes(b.kind))return y+.5;}return .5;}
@@ -402,9 +423,9 @@ let previousTime=performance.now(),lastSave=0;
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previousTime)/1000,.05);previousTime=now;
   updateMining(now);updateItemDrops(dt);
   if(gameStarted){gameTick(dt);let forward=moveY,strafe=moveX,len=Math.hypot(forward,strafe);if(len>1){forward/=len;strafe/=len;}const speed=crouching?2.4:5.4;const dx=(-Math.sin(yaw)*forward+Math.cos(yaw)*strafe)*speed*dt,dz=(-Math.cos(yaw)*forward-Math.sin(yaw)*strafe)*speed*dt;
-    if(flyMode){player.x=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x+dx));player.z=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z+dz));if(jumpQueued){player.y+=1.1;jumpQueued=false;}if(flyUpHeld)player.y+=6*dt;if(flyDownHeld)player.y-=6*dt;if(crouching)player.y-=2.2*dt;}
+    if(flyMode){movePlayerHorizontally(dx,dz);if(jumpQueued){if(canPlayerOccupy(player.x,player.z,player.y+1.1))player.y+=1.1;jumpQueued=false;}if(flyUpHeld&&canPlayerOccupy(player.x,player.z,player.y+6*dt))player.y+=6*dt;if(flyDownHeld&&canPlayerOccupy(player.x,player.z,player.y-6*dt))player.y-=6*dt;if(crouching&&canPlayerOccupy(player.x,player.z,player.y-2.2*dt))player.y-=2.2*dt;}
     else{const currentFloor=groundHeightAt(player.x,player.z);const nx=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.x+dx)),nz=Math.max(-WORLD_RADIUS+1,Math.min(WORLD_RADIUS-1,player.z+dz));const nextFloor=groundHeightAt(nx,nz);
-      if(!grounded || nextFloor<=currentFloor+.55){player.x=nx;player.z=nz;} // one-block ledges require jumping
+      if(!grounded || nextFloor<=currentFloor+.55)movePlayerHorizontally(dx,dz); // one-block ledges require jumping; trees and placed blocks stop movement
       if(jumpQueued&&grounded){verticalVelocity=7.4;grounded=false;fallStartY=player.y;jumpQueued=false;}
       const floorY=groundHeightAt(player.x,player.z);
       if(!grounded){verticalVelocity-=18*dt;player.y+=verticalVelocity*dt;if(player.y<=floorY){const fallDistance=Math.max(0,fallStartY-floorY);player.y=floorY;verticalVelocity=0;grounded=true;applyFallDamage(fallDistance);}}
