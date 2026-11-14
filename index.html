@@ -54,7 +54,7 @@
   #startCard h1{font-size:34px;margin:0;color:#ff6969;letter-spacing:1px}#startCard h1 span{color:#f4f6f7}
   #startCard .sub{margin:5px 0 18px;color:#bfccd5;font-size:13px}
   #connectStatus{font-size:12px;margin-top:10px;color:#ffd27b;min-height:18px}
-  #toast{position:fixed;left:50%;top:45px;transform:translateX(-50%);z-index:15;background:#111e;border:1px solid #ffffff45;border-radius:10px;padding:9px 13px;font-size:12px;display:none;max-width:90vw;text-align:center}
+  .playerTag{background:#101820dd;border:1px solid #ffffff88;border-radius:6px;padding:2px 6px;color:#fff;font:700 11px system-ui;white-space:nowrap;text-shadow:0 1px 2px #000;pointer-events:none}\n  #toast{position:fixed;left:50%;top:45px;transform:translateX(-50%);z-index:15;background:#111e;border:1px solid #ffffff45;border-radius:10px;padding:9px 13px;font-size:12px;display:none;max-width:90vw;text-align:center}
   @media (max-width:460px){.slot{width:34px;height:42px;font-size:8px}.slot .glyph{font-size:16px}.slot .count{font-size:9px}#hotbar{gap:3px;padding:4px}}
   @media (pointer:fine){#leftPad,#lookHint{display:none}#actions{transform:scale(.92);transform-origin:bottom right}}
   @media (max-width:460px){#actions{right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 76px);transform:scale(.92);transform-origin:bottom right}#jumpBtn{width:84px;height:84px}#hotbar{bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}}
@@ -139,13 +139,38 @@ function generateWorld(){
   // A small sandy pond/shore patch.
   for(let x=-4;x<=-1;x++)for(let z=5;z<=8;z++){const h=terrainHeight(x,z);blocks.set(key(x,h,z),{x,y:h,z,type:'sand',base:true});}
 }
+
+function makeNameTag(label){
+  const c=document.createElement('canvas');c.width=512;c.height=96;const g=c.getContext('2d');
+  g.fillStyle='#101820dd';g.strokeStyle='#ffffffaa';g.lineWidth=5;
+  g.beginPath();g.roundRect(8,8,496,80,18);g.fill();g.stroke();
+  g.font='bold 42px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff';g.fillText(String(label||'Player').slice(0,24),256,48);
+  const tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;
+  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  sprite.scale.set(2.2,.42,1);sprite.position.y=2.35;return sprite;
+}
+function buildAvatar(group,skin=0xc8794e,style='classic'){
+  while(group.children.length){const o=group.children.pop();if(o.geometry)o.geometry.dispose();if(o.material?.dispose)o.material.dispose();}
+  const mat=(color)=>new THREE.MeshLambertMaterial({color});
+  const add=(w,h,d,color,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=true;group.add(m);return m;};
+  const outfits={classic:0x3979b8,red:0xb93636,purple:0x713ca8,green:0x39834b,robot:0x9aa7b2,cat:0x34343c};
+  const shirt=outfits[style]||outfits.classic;
+  add(.62,1.08,.36,shirt,0,.93,0);
+  add(.48,.48,.48,skin,0,1.72,0);
+  add(.18,.78,.2,skin,-.42,1.03,0);add(.18,.78,.2,skin,.42,1.03,0);
+  add(.24,.72,.25,0x263342,-.17,.36,0);add(.24,.72,.25,0x263342,.17,.36,0);
+  if(style==='cat'){add(.13,.2,.13,0x34343c,-.16,2.06,0);add(.13,.2,.13,0x34343c,.16,2.06,0);}
+  if(style==='robot'){add(.52,.12,.5,0x4de1e8,0,1.98,0);}
+  if(style==='red'||style==='purple'||style==='green'){add(.5,.13,.5,shirt,0,2.02,0);}
+}
+
 function makeScene(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0x8dc9ed);scene.fog=new THREE.Fog(0x8dc9ed,22,68);
   camera=new THREE.PerspectiveCamera(76,innerWidth/innerHeight,.1,150);
   renderer=new THREE.WebGLRenderer({canvas:$('game'),antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
   scene.add(new THREE.HemisphereLight(0xdcefff,0x536044,1.65));const sun=new THREE.DirectionalLight(0xffefcf,1.55);sun.position.set(-20,35,15);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-32;sun.shadow.camera.right=32;sun.shadow.camera.top=32;sun.shadow.camera.bottom=-32;sun.shadow.bias=-0.0004;scene.add(sun);
   worldGroup=new THREE.Group();scene.add(worldGroup);remoteGroup=new THREE.Group();scene.add(remoteGroup);animalGroup=new THREE.Group();scene.add(animalGroup);mobGroup=new THREE.Group();scene.add(mobGroup);
-  localAvatar=new THREE.Group();const localBody=new THREE.Mesh(new THREE.BoxGeometry(.58,1,.38),new THREE.MeshLambertMaterial({color:skinColor}));localBody.position.y=.72;localAvatar.add(localBody);const localHead=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe3b28f}));localHead.position.y=1.48;localAvatar.add(localHead);localAvatar.visible=false;scene.add(localAvatar);
+  localAvatar=new THREE.Group();buildAvatar(localAvatar,skinColor,'classic');localAvatar.add(makeNameTag('Tev'));localAvatar.visible=false;scene.add(localAvatar);
   raycaster=new THREE.Raycaster();raycaster.far=6;
   rebuildWorld();addCreatures();
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
@@ -178,7 +203,7 @@ function rebuildWorld(){
     mesh.instanceMatrix.needsUpdate=true;worldGroup.add(mesh);
   }
 }
-function surfaceY(x,z){let top=0;for(let y=worldDepth;y<10;y++)if(blocks.has(key(Math.floor(x),y,Math.floor(z))))top=y;return top+1.72;}
+function surfaceY(x,z){let top=0;for(let y=worldDepth;y<10;y++){const b=blocks.get(key(Math.floor(x),y,Math.floor(z)));if(b&&b.type!=='leaves'&&b.type!=='wood')top=y;}return top+2;}
 function playSound(kind){if(muted)return;try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);const t=audioCtx.currentTime;const f={mine:170,place:260,step:90,craft:520,hit:70,chat:600}[kind]||220;o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(Math.max(35,f*.55),t+.09);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.11);o.start(t);o.stop(t+.12)}catch(e){}}
 let musicTimer=null;function startAmbientMusic(){try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const notes=[261.63,329.63,392,329.63,293.66,349.23,440,349.23];let i=0;const tick=()=>{if(!muted&&audioCtx){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=notes[i++%notes.length];g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.012,audioCtx.currentTime+.08);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.55);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.58)}musicTimer=setTimeout(tick,720)};if(!musicTimer)tick()}catch(e){console.warn('Music unavailable',e)}}
 function addCreatures(){
@@ -200,11 +225,88 @@ const playerChatColors={};const cosmeticRanks={};let myChatColor=localStorage.ge
 function rankParts(value){const bits=String(value||'').split('|');return {label:bits[0]||'',rainbow:bits.includes('rainbow'),purple:bits.includes('purple'),sparkle:bits.includes('sparkle')}}
 function colorFor(name,rank){return playerChatColors[name]||chatColors[myChatColor]||'#a9d5ff'}
 function addChatLine(name,msg,rank='',color=''){const line=document.createElement('div');rank=rank||cosmeticRanks[String(name).toLowerCase()]||'';const style=rankParts(rank);const rainbow=style.rainbow;const sparkle=style.sparkle;const chatRainbow=String(color).toLowerCase()==='rainbow';const safeColor=/^#[0-9a-f]{6}$/i.test(color)?color:colorFor(name,rank);const rankClass=style.rainbow?'rainbowText':(style.purple?'rankPurpleText':(style.sparkle?'sparkleText':''));const rankHtml=style.label?`<span class="${rankClass}">[${esc(style.label)}]</span> `:'';line.innerHTML=`<b style="color:${safeColor}">${rankHtml}${esc(name)}:</b> <span class="${chatRainbow?'rainbowText':''}" style="color:${safeColor}">${esc(msg)}</span>${sparkle?' <span class="'+(style.purple?'purpleSparkleText':'sparkleText')+'">✦</span>':''}`;$('chatLines').appendChild(line);while($('chatLines').children.length>7)$('chatLines').removeChild($('chatLines').firstChild)}
-async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(msg.startsWith('/')){handleCommand(msg);return}const chosenColor=playerChatColors[playerName.toLowerCase()]||myChatColor;const color=chosenColor==='rainbow'?'rainbow':(chatColors[chosenColor]||'#a9d5ff');addChatLine(playerName,msg,localRank,color);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank,color}});if(supabase&&dbReady){try{const {error}=await supabase.from('tc_chat_messages').insert({player_id:playerId,player_name:playerName,message:msg,rank:localRank||'',chat_color:color});if(error)throw error}catch(e){console.warn('Chat save:',e.message)}}playSound('chat')}
+async function sendChat(msg){msg=msg.trim().slice(0,180);if(!msg)return;if(bannedPlayers.includes(playerName.toLowerCase()))return say('You are banned from this local prototype session.');if(msg.startsWith('/')){handleCommand(msg);return}const chosenColor=playerChatColors[playerName.toLowerCase()]||myChatColor;const color=chosenColor==='rainbow'?'rainbow':(chatColors[chosenColor]||'#a9d5ff');addChatLine(playerName,msg,localRank,color);if(channel)await channel.send({type:'broadcast',event:'chat',payload:{id:playerId,name:playerName,msg,rank:localRank,color}});if(supabase&&dbReady){try{const {error}=await supabase.from('tc_chat_messages').insert({player_id:playerId,player_name:playerName,message:msg,rank:localRank||'',chat_color:color});if(error)throw error}catch(e){console.warn('Chat save:',e.message)}}playSound('chat')}
 let localRank='';
 try{Object.assign(cosmeticRanks,JSON.parse(localStorage.getItem('tc_cosmetic_ranks')||'{}'));Object.assign(playerChatColors,JSON.parse(localStorage.getItem('tc_player_chat_colors')||'{}'))}catch(e){}
-function handleCommand(raw){const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();if(cmd==='/help'){addChatLine('SERVER','Commands: /help, /time, /spawn, /chatcolor rainbow OR /chatcolor player red, /rank player rainbow sparkle');return}if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return}if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;say('Returned to spawn');return}if(cmd==='/chatcolor'||cmd==='/color'){const target=a.length>2?a[1]:'';const value=(a.length>2?a[2]:a[1]||'').toLowerCase();if(value==='rainbow'||chatColors[value]){if(target){playerChatColors[target.toLowerCase()]=value;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));if(channel)channel.send({type:'broadcast',event:'chat_color',payload:{target,color:value}});say(target+' chat color changed to '+value)}else{myChatColor=value;localStorage.setItem('tc_chat_color',value);saveMyProfile();say('Your chat color is '+value)}}else addChatLine('SERVER','Use /chatcolor rainbow OR /chatcolor player red. Colors: red, green, purple, pink, yellow, white, orange, cyan, blue, rainbow');return}if(cmd==='/rank'){const target=a[1];const parts=a.slice(2);const styles=parts.map(x=>x.toLowerCase()).filter(x=>['rainbow','purple','sparkle'].includes(x));const label=parts.filter(x=>!['rainbow','purple','sparkle'].includes(x)).join(' ').trim();if(!target||(!label&&!styles.length)){addChatLine('SERVER','Use: /rank Tev OWNER RAINBOW SPARKLE or /rank friend FRIEND PURPLE SPARKLE');return}const previous=rankParts(cosmeticRanks[target.toLowerCase()]||(target.toLowerCase()===playerName.toLowerCase()?localRank:''));const finalLabel=label||previous.label||'PLAYER';const rank=[finalLabel,...styles].join('|');cosmeticRanks[target.toLowerCase()]=rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));if(target.toLowerCase()===playerName.toLowerCase()){localRank=rank;saveMyProfile()}addChatLine('SERVER',`Cosmetic rank set for ${target}: ${finalLabel}${styles.length?' ('+styles.join(' ')+')':''}`);if(channel)channel.send({type:'broadcast',event:'rank_cosmetic',payload:{target,rank,by:playerName}});return}addChatLine('SERVER','Unknown command. Try /help')}
-function createRemote(id,p){let r=remotePlayers.get(id);if(!r){r=new THREE.Group();const body=new THREE.Mesh(new THREE.BoxGeometry(.55,1,.35),new THREE.MeshLambertMaterial({color:p.skin||0xc8794e}));body.position.y=.75;r.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.48,.48,.48),new THREE.MeshLambertMaterial({color:0xe6b895}));head.position.y=1.5;r.add(head);const tag=document.createElement('div');tag.style.cssText='position:absolute;color:white;background:#0009;padding:2px 5px;border-radius:5px;font-size:10px;white-space:nowrap;pointer-events:none';tag.textContent=p.name||'Player';r.userData.tag=tag;r.userData.body=body;remoteGroup.add(r);remotePlayers.set(id,r)}r.position.set(p.x,p.y-1.7,p.z);r.rotation.y=p.yaw||0;if(r.userData.body&&p.skin)r.userData.body.material.color.set(p.skin);r.userData.tag.textContent=(p.rank?`[${p.rank}] `:'')+(p.name||'Player')}
+const OWNER_NAME='tev';
+const commandPermissions=JSON.parse(localStorage.getItem('tc_command_permissions')||'{}');
+const bannedPlayers=JSON.parse(localStorage.getItem('tc_banned_players')||'[]');
+let flying=false;
+function isOwner(){return playerName.toLowerCase()===OWNER_NAME;}
+function hasCommandPermission(command){return isOwner()||((commandPermissions[playerName.toLowerCase()]||[]).includes(command)|| (commandPermissions[playerName.toLowerCase()]||[]).includes('all'));}
+function saveCommandPermissions(){localStorage.setItem('tc_command_permissions',JSON.stringify(commandPermissions));}
+function handleCommand(raw){
+  const a=raw.trim().split(/\s+/),cmd=a[0].toLowerCase();
+  if(cmd==='/help'){
+    addChatLine('SERVER','/time /spawn /chatcolor /rank /avatar /fly /give player fly|rank|ban|all /take player command|all /ban player');
+    return;
+  }
+  if(cmd==='/time'){addChatLine('SERVER',`World time: ${$('clock').textContent}`);return;}
+  if(cmd==='/spawn'){player.x=0;player.z=0;player.y=surfaceY(0,0);velY=0;return say('Returned to spawn');}
+  if(cmd==='/avatar'){
+    const styles=['classic','red','purple','green','robot','cat'];const style=(a[1]||'classic').toLowerCase();
+    if(!styles.includes(style))return say('Use /avatar classic, red, purple, green, robot, or cat');
+    localStorage.setItem('tc_avatar',style);buildAvatar(localAvatar,skinColor,style);localAvatar.add(makeNameTag(playerName));
+    if(channel)channel.send({type:'broadcast',event:'player_avatar',payload:{id:playerId,name:playerName,avatar:style,skin:skinColor}});
+    return say('Avatar changed to '+style);
+  }
+  if(cmd==='/fly'){
+    if(!hasCommandPermission('fly'))return say('You do not have /fly permission');
+    flying=!flying;return say('Fly '+(flying?'enabled':'disabled'));
+  }
+  if(cmd==='/give'||cmd==='/take'){
+    if(!isOwner())return say('Only the OWNER can give or take command permissions');
+    const target=(a[1]||'').toLowerCase(),permission=(a[2]||'').toLowerCase();
+    const allowed=['fly','rank','ban','all'];
+    if(!target||!allowed.includes(permission))return say(`Use ${cmd} player fly|rank|ban|all`);
+    const list=commandPermissions[target]||[];
+    if(cmd==='/give'){if(!list.includes(permission))list.push(permission);commandPermissions[target]=list;}
+    else {commandPermissions[target]=permission==='all'?[]:list.filter(x=>x!==permission);}
+    saveCommandPermissions();
+    if(channel)channel.send({type:'broadcast',event:'command_permission',payload:{target,permissions:commandPermissions[target]}});
+    return say(`${permission} ${cmd==='/give'?'given to':'taken from'} ${target}`);
+  }
+  if(cmd==='/ban'){
+    if(!hasCommandPermission('ban'))return say('You do not have /ban permission');
+    const target=(a[1]||'').toLowerCase();if(!target)return say('Use /ban player');
+    if(target===OWNER_NAME)return say('You cannot ban the OWNER');
+    if(!bannedPlayers.includes(target))bannedPlayers.push(target);
+    localStorage.setItem('tc_banned_players',JSON.stringify(bannedPlayers));
+    if(channel)channel.send({type:'broadcast',event:'player_banned',payload:{target,by:playerName}});
+    addChatLine('SERVER',`${target} was banned (prototype/local moderation).`);return;
+  }
+  if(cmd==='/chatcolor'||cmd==='/color'){
+    const target=a.length>2?a[1]:'',value=(a.length>2?a[2]:a[1]||'').toLowerCase();
+    if(value==='rainbow'||chatColors[value]){
+      if(target){playerChatColors[target.toLowerCase()]=value;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));if(channel)channel.send({type:'broadcast',event:'chat_color',payload:{target,color:value}});say(target+' chat color changed to '+value);}
+      else{myChatColor=value;localStorage.setItem('tc_chat_color',value);saveMyProfile();say('Your chat color is '+value);}
+    }else addChatLine('SERVER','Use /chatcolor rainbow OR /chatcolor player red.');return;
+  }
+  if(cmd==='/rank'){
+    if(!hasCommandPermission('rank'))return say('You do not have /rank permission');
+    const target=a[1],parts=a.slice(2),styles=parts.map(x=>x.toLowerCase()).filter(x=>['rainbow','purple','sparkle'].includes(x));
+    const label=parts.filter(x=>!['rainbow','purple','sparkle'].includes(x)).join(' ').trim();
+    if(!target||(!label&&!styles.length))return say('Use /rank player VIP RAINBOW SPARKLE');
+    const previous=rankParts(cosmeticRanks[target.toLowerCase()]||(target.toLowerCase()===playerName.toLowerCase()?localRank:''));
+    const finalLabel=label||previous.label||'PLAYER',rank=[finalLabel,...styles].join('|');
+    cosmeticRanks[target.toLowerCase()]=rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));
+    if(target.toLowerCase()===playerName.toLowerCase()){localRank=rank;saveMyProfile();}
+    addChatLine('SERVER',`Cosmetic rank set for ${target}: ${finalLabel}`);
+    if(channel)channel.send({type:'broadcast',event:'rank_cosmetic',payload:{target,rank,by:playerName}});return;
+  }
+  addChatLine('SERVER','Unknown command. Try /help');
+}
+function createRemote(id,p){
+  let r=remotePlayers.get(id);
+  if(!r){
+    r=new THREE.Group();buildAvatar(r,p.skin||0xc8794e,p.avatar||'classic');
+    const tag=makeNameTag(p.name||'Player');r.add(tag);r.userData.tag=tag;
+    remoteGroup.add(r);remotePlayers.set(id,r);
+  }
+  r.position.set(p.x,p.y-2,p.z);r.rotation.y=p.yaw||0;
+  if(r.userData.tag){r.userData.tag.position.y=2.35;}
+  r.userData.name=p.name||'Player';
+}
 function syncRemoteTags(){/* tags are represented by the online list to keep mobile rendering light */}
 function countOnline(){let n=1;if(channel){const state=channel.presenceState();n=Object.keys(state).length||1} $('online').textContent=`Online: ${n}`}
 async function connectSupabase(){
@@ -216,10 +318,13 @@ async function connectSupabase(){
     channel.on('broadcast',{event:'player_move'},({payload})=>{if(payload&&payload.id!==playerId)createRemote(payload.id,payload)});
     channel.on('broadcast',{event:'chat'},({payload})=>{if(payload&&payload.id!==playerId)addChatLine(payload.name||'Player',payload.msg||'',payload.rank||cosmeticRanks[String(payload.name||'').toLowerCase()]||'',payload.color||playerChatColors[String(payload.name||'').toLowerCase()]||'')});
     channel.on('broadcast',{event:'rank_cosmetic'},({payload})=>{if(payload?.target&&payload?.rank){cosmeticRanks[String(payload.target).toLowerCase()]=payload.rank;localStorage.setItem('tc_cosmetic_ranks',JSON.stringify(cosmeticRanks));addChatLine('SERVER',`${payload.target} received cosmetic rank: ${payload.rank}`)}});
+    channel.on('broadcast',{event:'player_avatar'},({payload})=>{if(payload?.id&&payload.id!==playerId){const r=remotePlayers.get(payload.id);if(r){buildAvatar(r,payload.skin||0xc8794e,payload.avatar||'classic');const tag=makeNameTag(payload.name||'Player');r.add(tag);r.userData.tag=tag;}}});
+    channel.on('broadcast',{event:'command_permission'},({payload})=>{if(payload?.target&&payload?.permissions){commandPermissions[String(payload.target).toLowerCase()]=payload.permissions;saveCommandPermissions();}});
+    channel.on('broadcast',{event:'player_banned'},({payload})=>{if(payload?.target&&String(payload.target).toLowerCase()===playerName.toLowerCase()){say('You were banned by '+(payload.by||'OWNER')+' (this prototype can only block locally).');bannedPlayers.push(playerName.toLowerCase());localStorage.setItem('tc_banned_players',JSON.stringify([...new Set(bannedPlayers)]));}});
     channel.on('broadcast',{event:'chat_color'},({payload})=>{if(payload?.target&&payload?.color){playerChatColors[String(payload.target).toLowerCase()]=payload.color;localStorage.setItem('tc_player_chat_colors',JSON.stringify(playerChatColors));addChatLine('SERVER',`${payload.target}'s chat color changed`)}});
     channel.on('broadcast',{event:'block_edit'},({payload})=>{if(!payload||payload.by===playerId)return;const k=key(payload.x,payload.y,payload.z);if(payload.type==='__air__')blocks.delete(k);else blocks.set(k,{x:payload.x,y:payload.y,z:payload.z,type:payload.type});rebuildWorld()});
     channel.on('broadcast',{event:'player_leave'},({payload})=>{const r=remotePlayers.get(payload?.id);if(r){remoteGroup.remove(r);remotePlayers.delete(payload.id)}});
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),x:player.x,y:player.y,z:player.z,yaw,online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
+    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out')),12000);channel.subscribe(async status=>{if(status==='SUBSCRIBED'){clearTimeout(timer);joined=true;$('status').textContent='🟢 LIVE';$('status').style.color='#7deda1';await channel.track({id:playerId,name:playerName,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,playSeconds:Math.floor(playSeconds),x:player.x,y:player.y,z:player.z,yaw,online_at:new Date().toISOString()});resolve()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){clearTimeout(timer);reject(new Error(status))}})});
     $('connectStatus').textContent='🟢 Connected to the shared Supabase world.';
     await loadSavedBlocks();
     await loadMyProfile();await saveMyProfile();try{const {data,error}=await supabase.from('tc_chat_messages').select('player_name,message,rank,chat_color').order('created_at',{ascending:false}).limit(12);if(!error)(data||[]).reverse().forEach(r=>addChatLine(r.player_name,r.message,r.rank||'',r.chat_color||''))}catch(e){console.warn('Chat history:',e.message)}
@@ -230,24 +335,26 @@ function updatePlayer(dt){
   let ix=moveInput.x,iz=moveInput.y;if(keys.KeyW||keys.ArrowUp)iz-=1;if(keys.KeyS||keys.ArrowDown)iz+=1;if(keys.KeyA||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
   const len=Math.hypot(ix,iz);if(len>1){ix/=len;iz/=len}
   const speed=crouching?2.4:5.2;const dx=(Math.cos(yaw)*ix+Math.sin(yaw)*iz)*speed*dt;const dz=(-Math.sin(yaw)*ix+Math.cos(yaw)*iz)*speed*dt;
-  const currentFeet=player.y-1.72;
-  const canStep=(x,z)=>{const floor=surfaceY(x,z)-1.72;return floor<=currentFeet+.62};
+  const currentFeet=player.y-2;
+  const canStep=(x,z)=>{const floor=surfaceY(x,z)-2;return floor<=currentFeet+.62};
   const nx=Math.max(worldMin+1,Math.min(worldMax-1,player.x+dx));if(canStep(nx,player.z))player.x=nx;
   const nz=Math.max(worldMin+1,Math.min(worldMax-1,player.z+dz));if(canStep(player.x,nz))player.z=nz;
   const floor=surfaceY(player.x,player.z);
   if(player.y<=floor+.10){player.y=floor;velY=0;onGround=true}else onGround=false;
-  if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}jumpQueued=false;
+  if(flying){if(jumpQueued||keys.Space)player.y+=Math.max(0,dt*5);if(keys.ShiftLeft||keys.ShiftRight)player.y-=dt*5;velY=0;onGround=false;}
+  else if(jumpQueued&&onGround){velY=7.2;onGround=false;playSound('step')}jumpQueued=false;
   velY-=18*dt;player.y+=velY*dt;if(player.y<floor){player.y=floor;velY=0;onGround=true}
-  localAvatar.position.set(player.x,player.y-1.72,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
-  if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.45:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
+  localAvatar.position.set(player.x,player.y-2,player.z);localAvatar.rotation.y=yaw;localAvatar.visible=thirdPerson;
+  if(thirdPerson){camera.position.set(player.x-Math.sin(yaw)*3.4,player.y+.8,player.z+Math.cos(yaw)*3.4);camera.lookAt(player.x,player.y+.7,player.z)}else{camera.position.set(player.x,player.y-(crouching?.5:0),player.z);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;}
 }
 function updateCreatures(dt){animals.forEach((a,i)=>{a.userData.phase+=dt*.8;if(Math.random()<.001){a.userData.x+=(Math.random()-.5)*2;a.userData.z+=(Math.random()-.5)*2}a.position.x+=(a.userData.x-a.position.x)*dt*.25;a.position.z+=(a.userData.z-a.position.z)*dt*.25;a.position.y=surfaceY(a.position.x,a.position.z)-1.35+Math.sin(a.userData.phase)*.025});mobs.forEach(m=>{const dx=player.x-m.position.x,dz=player.z-m.position.z,d=Math.hypot(dx,dz);if(d>1.4){m.position.x+=dx/d*dt*.8;m.position.z+=dz/d*dt*.8;m.position.y=surfaceY(m.position.x,m.position.z)-1.7}else if(Math.random()<.006){say('A monster hit you!');playSound('hit')}})}
-function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-lastFrame)/1000||0);lastFrame=now;if(joined){playSeconds+=dt;if(Date.now()-lastSave>5000){localStorage.setItem('tc_play_seconds',Math.floor(playSeconds));lastSave=Date.now()}if(Date.now()-lastBroadcast>120){channel.send({type:'broadcast',event:'player_move',payload:{id:playerId,name:playerName,x:player.x,y:player.y,z:player.z,yaw,pitch,skin:skinColor,crouching}});lastBroadcast=Date.now()}if(Date.now()-lastPresence>15000){channel.track({id:playerId,name:playerName,skin:skinColor,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});lastPresence=Date.now()}}
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-lastFrame)/1000||0);lastFrame=now;if(joined){playSeconds+=dt;if(Date.now()-lastSave>5000){localStorage.setItem('tc_play_seconds',Math.floor(playSeconds));lastSave=Date.now()}if(Date.now()-lastBroadcast>120){channel.send({type:'broadcast',event:'player_move',payload:{id:playerId,name:playerName,x:player.x,y:player.y,z:player.z,yaw,pitch,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,crouching}});lastBroadcast=Date.now()}if(Date.now()-lastPresence>15000){channel.track({id:playerId,name:playerName,skin:skinColor,avatar:localStorage.getItem('tc_avatar')||'classic',rank:localRank,playSeconds:Math.floor(playSeconds),online_at:new Date().toISOString()});lastPresence=Date.now()}}
  if(scene){updatePlayer(dt);updateClock(dt);updateCreatures(dt);renderer.render(scene,camera)}}
 function openModal(title,html){$('modal').innerHTML=`<h2>${title}</h2>${html}<div class="row"><button id="closeModal" style="width:100%">CLOSE</button></div>`;$('modalLayer').style.display='flex';$('closeModal').onclick=()=>$('modalLayer').style.display='none'}
 function openInventory(){const entries=Object.entries(inventory).filter(([k,v])=>v>0);const inv=entries.length?entries.map(([k,v])=>`<div class="item"><span>${esc(blockInfo[k]?.glyph||'🎒')} ${esc(blockInfo[k]?.name||k.replaceAll('_',' '))}</span><b>${v}</b></div>`).join(''):'<p>Your inventory is empty. Punch a tree to collect wood!</p>';const recipes=[['4 Planks','wood',1,'planks',4],['4 Sticks','planks',2,'stick',4],['Crafting Table','planks',4,'crafting_table',1],['Wood Pickaxe','planks',3,'wood_pickaxe',1],['Stone Pickaxe','cobblestone',3,'stone_pickaxe',1]];const rec=recipes.map(r=>`<div class="item"><span>${r[0]}<br><small class="small">Needs ${r[2]} ${r[1]}</small></span><button data-recipe="${r[3]}" data-cost="${r[1]}" data-amount="${r[2]}" data-out="${r[4]}">CRAFT</button></div>`).join('');openModal('🎒 Inventory & Crafting',`<h3>Inventory</h3><div class="grid">${inv}</div><h3>Recipes</h3><div class="grid">${rec}</div><p class="small">Tip: collect wood by mining tree trunks. Craft planks, then a crafting table and tools.</p>`);$('modal').querySelectorAll('[data-recipe]').forEach(b=>b.onclick=()=>{const cost=b.dataset.cost,amount=Number(b.dataset.amount),out=b.dataset.recipe,n=Number(b.dataset.out);if((inventory[cost]||0)<amount){say(`Need ${amount} ${cost}`);return}inventory[cost]-=amount;inventory[out]=(inventory[out]||0)+n;playSound('craft');openInventory();updateHotbar();say('Crafted '+out.replaceAll('_',' '))})}
-function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Ranks/owner permissions are not enabled as secure global permissions in this starter. They need authenticated owner setup, not a public password embedded in the game.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
-function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localRank=cosmeticRanks[playerName.toLowerCase()]||localRank;localStorage.setItem('tc_player_name',playerName);$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say('Welcome to TevCraft, '+playerName+'!');}
+function openMenu(){openModal('☰ TevCraft Menu',`<div class="grid"><div class="item"><span>Skin</span><button id="skinBtn">CHANGE</button></div><div class="item"><span>Camera</span><button id="viewBtn">${thirdPerson?'FIRST':'THIRD'}</button></div><div class="item"><span>Leaderboard</span><button id="leaderBtn">VIEW</button></div><div class="item"><span>Sound</span><button id="soundBtn">${muted?'UNMUTE':'MUTE'}</button></div><div class="item"><span>Play time</span><b>${Math.floor(playSeconds/60)} min</b></div></div><p>Global server: ${joined?'Connected':'Not connected'}. All players use the same world channel.</p><p class="small">Command grants and bans in this starter are client-side prototype controls. True global anti-cheat, permanent bans, and tamper-proof OWNER access require server-side authenticated authorization.</p>`);$('skinBtn').onclick=()=>{const colors=[0xc8794e,0xe8c49a,0x8cafd2,0xd28cb9,0x72b58b];skinColor=colors[(colors.indexOf(skinColor)+1)%colors.length];if(localAvatar?.children?.[0])localAvatar.children[0].material.color.set(skinColor);say('Skin color changed');openMenu()};$('viewBtn').onclick=()=>{thirdPerson=!thirdPerson;openMenu()};$('leaderBtn').onclick=()=>{const list=[{name:playerName,time:Math.floor(playSeconds/60)}];Object.values(channel?.presenceState?.()||{}).flat().forEach(p=>{if(p.id!==playerId)list.push({name:p.name||'Player',time:Math.floor((p.playSeconds||0)/60)})});openModal('🏆 Online Leaderboard',`<div class="grid">${list.sort((a,b)=>b.time-a.time).map((p,i)=>`<div class="item"><span>#${i+1} ${esc(p.name)}</span><b>${p.time} min</b></div>`).join('')}</div><p class="small">This starter shows current online players; personal playtime is saved on this device.</p>`) };$('soundBtn').onclick=()=>{muted=!muted;openMenu()}}
+function start(){playerName=($('playerName').value||'Player').trim().slice(0,16)||'Player';localRank=cosmeticRanks[playerName.toLowerCase()]||localRank;localStorage.setItem('tc_player_name',playerName);
+const av=localStorage.getItem('tc_avatar')||'classic';buildAvatar(localAvatar,skinColor,av);localAvatar.add(makeNameTag(playerName));$('startScreen').style.display='none';player.y=surfaceY(0,0);camera.position.set(player.x,player.y,player.z);connectSupabase();startAmbientMusic();say(bannedPlayers.includes(playerName.toLowerCase())?'This name is locally banned in this prototype.':'Welcome to TevCraft, '+playerName+'!');}
 // Mobile joystick: pointer events plus touch fallback for iOS Safari.
 const pad=$('leftPad'),stick=$('stick');let padTouch=null;
 function setStick(clientX,clientY){const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=clientX-cx,dy=clientY-cy,lim=38,len=Math.hypot(dx,dy)||1,scale=Math.min(1,len/lim);const x=(dx/len)*scale,y=(dy/len)*scale;stick.style.left=(34+x*38)+'px';stick.style.top=(34+y*38)+'px';moveInput={x,y}}
