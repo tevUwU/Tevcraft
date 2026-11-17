@@ -264,9 +264,17 @@ function recordWorldChange(op,kind,x,y,z){const change={op,kind,x,y,z};worldChan
 function applyRemoteBlockChange(change){if(!change||!Number.isFinite(change.x)||!Number.isFinite(change.y)||!Number.isFinite(change.z))return false;let ok=false;if(change.op==="remove")ok=removeBlockAt(change.x,change.y,change.z,false);else if(change.op==="place"&&definitions[change.kind])ok=createBlockInstance(change.kind,change.x,change.y,change.z);if(ok)worldChanges.set(keyOf(change.x,change.y,change.z),{op:change.op,kind:change.kind,x:change.x,y:change.y,z:change.z});return ok;}
 // Floating item drops: blocks now fall out into the world before entering your inventory.
 const itemDrops=[];
-function spawnItemDrop(kind,x,y,z){const mat=(definitions[kind]?.material||stoneMat).clone();const mesh=new T.Mesh(new T.BoxGeometry(.34,.34,.34),mat);mesh.position.set(x,y+.65,z);mesh.rotation.set(Math.random(),Math.random(),0);scene.add(mesh);itemDrops.push({kind,mesh,baseY:y+.65,age:0});}
+function spawnItemDrop(kind,x,y,z){const mat=(definitions[kind]?.material||stoneMat).clone();const mesh=new T.Mesh(new T.BoxGeometry(.34,.34,.34),mat);mesh.position.set(x,y+.65,z);mesh.rotation.set(Math.random(),Math.random(),0);scene.add(mesh);itemDrops.push({kind,mesh,velocityY:1.8,age:0});}
 function collectItemDrop(drop){inventory[drop.kind]=(inventory[drop.kind]||0)+1;addToHotbar(drop.kind);renderHotbar();if(document.getElementById("inventoryPanel").style.display==="flex")renderInventory();scene.remove(drop.mesh);drop.mesh.geometry.dispose();if(drop.mesh.material.dispose)drop.mesh.material.dispose();}
-function updateItemDrops(dt){for(let i=itemDrops.length-1;i>=0;i--){const d=itemDrops[i];d.age+=dt;d.mesh.rotation.y+=dt*2.8;d.mesh.position.y=d.baseY+Math.sin(d.age*3)*.10;if(Math.hypot(player.x-d.mesh.position.x,player.y-d.mesh.position.y,player.z-d.mesh.position.z)<1.35){collectItemDrop(d);itemDrops.splice(i,1);}}}
+function updateItemDrops(dt){
+ for(let i=itemDrops.length-1;i>=0;i--){
+  const d=itemDrops[i];d.age+=dt;d.mesh.rotation.y+=dt*2.8;
+  const floorY=surfaceTopAt(d.mesh.position.x,d.mesh.position.z)+.18;
+  if(d.mesh.position.y>floorY){d.velocityY-=18*dt;d.mesh.position.y+=d.velocityY*dt;if(d.mesh.position.y<=floorY){d.mesh.position.y=floorY;d.velocityY=0;}}
+  else{d.mesh.position.y=floorY;d.velocityY=0;}
+  if(Math.hypot(player.x-d.mesh.position.x,player.y-d.mesh.position.y,player.z-d.mesh.position.z)<1.35){collectItemDrop(d);itemDrops.splice(i,1);}
+ }
+}
 function removeBlock(hit){const g=blockGroups[hit.kind],i=hit.instanceId;if(!g||!g.alive[i])return false;const b=g.items[i];if(!removeBlockAt(b.x,b.y,b.z,false))return false;spawnItemDrop(b.kind,b.x,b.y,b.z);recordWorldChange("remove",b.kind,b.x,b.y,b.z);return true;}
 let miningTarget=null,miningStart=0,miningDuration=.75,miningPointer=null;const miningMeter=document.getElementById("miningMeter");
 function miningTime(kind){if(kind==="wood"&&inventory.woodAxe>0)return .35;if((kind==="stone"||kind==="deepslate"||kind==="coal"||kind==="iron"||kind==="diamond"||kind.startsWith("deep"))&&inventory.stonePickaxe>0)return .35;if((kind==="stone"||kind==="deepslate"||kind==="coal"||kind==="iron"||kind==="diamond"||kind.startsWith("deep"))&&inventory.woodPickaxe>0)return .68;return kind==="wood"?1.0:(kind==="stone"||kind==="deepslate"?.95:.7);}
